@@ -141,6 +141,8 @@ Error message and password prompt
 
 <p>This <a class="tc-tiddlylink-external" href="https://tiddlywiki.com" rel="noopener noreferrer" target="_blank">TiddlyWiki</a> contains the following tiddlers:</p><p><ul>
 
+<li>$:/config/AutoSave</li>
+
 <li>$:/core</li>
 
 <li>$:/DefaultTiddlers</li>
@@ -160,6 +162,8 @@ Error message and password prompt
 <li>$:/SiteSubtitle</li>
 
 <li>$:/SiteTitle</li>
+
+<li>$:/state/showeditpreview</li>
 
 <li>$:/state/tab--2112689675</li>
 
@@ -199,6 +203,9 @@ Error message and password prompt
 <!--~~ Ordinary tiddlers ~~-->
 
 <div id="storeArea" style="display:none;">
+<div created="20201110223656363" modified="20201110223656363" title="$:/config/AutoSave">
+<pre>no</pre>
+</div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="TiddlyWiki5 core" list="readme" name="Core" plugin-priority="0" plugin-type="plugin" title="$:/core" type="application/json" version="5.1.22">
 <pre>{
     &quot;tiddlers&quot;: {
@@ -9600,14 +9607,17 @@ Error message and password prompt
 <div created="20201110221206973" modified="20201110223419561" title="$:/SiteTitle">
 <pre>SAPBC</pre>
 </div>
+<div created="20201110224811648" modified="20201110225442781" title="$:/state/showeditpreview">
+<pre>no</pre>
+</div>
 <div created="20201110222032038" modified="20201110223234859" title="$:/state/tab--2112689675">
 <pre>$:/core/ui/ControlPanel/Basics</pre>
 </div>
-<div created="20201110220032682" modified="20201110223415418" title="$:/state/tab-1749438307">
-<pre>$:/core/ui/ControlPanel/Info</pre>
+<div created="20201110220032682" modified="20201110223651647" title="$:/state/tab-1749438307">
+<pre>$:/core/ui/ControlPanel/Saving</pre>
 </div>
-<div created="20201110220034424" modified="20201110222023087" title="$:/state/tab-2065006209">
-<pre>$:/core/ui/ControlPanel/Saving/GitHub</pre>
+<div created="20201110220034424" modified="20201110223704167" title="$:/state/tab-2065006209">
+<pre>$:/core/ui/ControlPanel/Saving/General</pre>
 </div>
 <div created="20201110222857129" modified="20201110222857129" title="$:/state/tab/moresidebar-1850697562">
 <pre>$:/core/ui/MoreSideBar/All</pre>
@@ -9618,7 +9628,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201110223601079" list="[[Table of contents]] AIX" modified="20201110223601079" title="$:/StoryList">
+<div created="20201110223601079" list="[[Table of contents]] AIX" modified="20201110223649057" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -9788,94 +9798,99 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20201110223614062" modified="20201110223620061" title="AIX">
+<div created="20201110223614062" modified="20201110225651873" title="AIX">
 <pre>''Uzitecne prikazy operacniho systemu AIX:''
-''- seznam procesu prihlaseneho uzivatele''
-{{{ps -fu ${USER}}}}
 
-''- seznam procesu prihlaseneho uzivatele serazeno podle vyuziti pameti''
-{{{ps -eo &quot;%U %p %P %c %z&quot; | sort -k 4 | grep -i ${USER}}}}
+*''seznam procesu prihlaseneho uzivatele''
+`ps -fu ${USER}`
 
-''- Pocet CPU v pocitaci:''
-{{{lscfg -v | grep proc | wc -l}}}
+*''seznam procesu prihlaseneho uzivatele serazeno podle vyuziti pameti''
+`ps -eo &quot;%U %p %P %c %z&quot; | sort -k 4 | grep -i ${USER}`
 
-''- Pocet CPU core a velikost pameti:''
-{{{vmstat | head -2 | tail -1}}}
+*''Pocet CPU v pocitaci:''
+`lscfg -v | grep proc | wc -l`
 
-''- Rychlost CPU''
-{{{lsattr -El proc0 | grep frequency | awk '{printf(&quot;Frequency: %d\n&quot;, $2/1000000)}'}}}
+*''Pocet CPU core a velikost pameti:''
+`vmstat | head -2 | tail -1`
 
-''- Uvolneni sdilene pameti a semaforu !!! POUZIVAT JEN S VYPNUTYM SAPEM''
-{{{cleanipc &lt;sysnr&gt; remove}}}
+*''Rychlost CPU''
+`lsattr -El proc0 | grep frequency | awk '{printf(&quot;Frequency: %d\n&quot;, $2/1000000)}'`
+
+*''Uvolneni sdilene pameti a semaforu !!! POUZIVAT JEN S VYPNUTYM SAPEM''
+`cleanipc &lt;sysnr&gt; remove`
+
 nesapovska cesta, potencialne nebezpecna
-{{{ipcs -s | grep ${USER} | awk '{print $2}' | xargs -n 1 ipcrm -s}}}
-{{{ipcs -m | grep ${USER} | awk '{print $2}' | xargs -n 1 ipcrm -m}}}
 
-''- Priklad zabiti konkretniho segmentu sdilene pameti''
+```
+ipcs -s | grep ${USER} | awk '{print $2}' | xargs -n 1 ipcrm -s
+ipcs -m | grep ${USER} | awk '{print $2}' | xargs -n 1 ipcrm -m
+```
+
+*''Priklad zabiti konkretniho segmentu sdilene pameti''
 {{{ipcrm -m 12584089}}}
 
-''- Vypise jaky shell pouzivam''
+*''Vypise jaky shell pouzivam''
 {{{echo $0}}}
 {{{ps -e | grep $$}}}
 
-''- Vypis konfigurace systemu''
+*''Vypis konfigurace systemu''
 {{{lsconf}}}
 
-''- Vypis 10 nejvetsich souboru v adresari:''
+*''Vypis 10 nejvetsich souboru v adresari:''
 {{{ls -l | sort -k 5,5n | tail -10}}}
 
-''- Vypis 10 nejvetsich adresaru''
+*''Vypis 10 nejvetsich adresaru''
 {{{du -k | sort -k 1,1n | tail -10}}}
 
-''- Vypis velikosti adresaru''
+*''Vypis velikosti adresaru''
 {{{du -sg *}}}
 
-''- Vypis 10 nejvetsich souboru v adresari a podadresarich''
+*''Vypis 10 nejvetsich souboru v adresari a podadresarich''
 {{{find . -type f -print | xargs ls -l | sort -k 5,5n | tail -10}}}
 
-''- Vypis 10 nejnovejsich (nejmladsich) souboru v adresari a podadresarich''
+*''Vypis 10 nejnovejsich (nejmladsich) souboru v adresari a podadresarich''
 {{{find . -type f -print | xargs ls -lrdt | tail -10}}}
 
-''- Celkova velikost souboru *arch1*.dbf v adresari v GB''
+*''Celkova velikost souboru *arch1*.dbf v adresari v GB''
 {{{ls -l *arch1*.dbf | awk '{ printf(&quot;%.2f\n&quot;, (sum = sum + $5)/1024/1024/1024 ) }' | tail -1}}}
 
-''- Ukonceni vsech procesu s nazvem dw, bezicich pod uzivatelem aktualnim''
+*''Ukonceni vsech procesu s nazvem dw, bezicich pod uzivatelem aktualnim''
 {{{ps -ef | grep ${USER} | grep dw | grep -v grep | awk '{print $2}' | xargs kill -9}}}
 
-''- Vycisteni obsahu souboru, do ktereho nekdo zapisuje''
+*''Vycisteni obsahu souboru, do ktereho nekdo zapisuje''
 {{{cat /dev/null &gt; filename}}}
 
-''- Nalezeni souboru na filesystemu, kdyz nezname jeho presne jmeno:''
+*''Nalezeni souboru na filesystemu, kdyz nezname jeho presne jmeno:''
 {{{find / -name '*filepart*' -print}}}
 (bude hledat od korenoveho adresare. Kvuli ryhlosti je vhodne nahradit cestou nebo . v hledanem adresari)
 
-''- Rozcarovani vsech souboru v adresari (dalsi pouziti programu find)''
+*''Rozcarovani vsech souboru v adresari (dalsi pouziti programu find)''
 {{{find ./*SAR -exec SAPCAR -xvf {} \;}}}
 
-''- Nalezeni vsech souboru ktere obsahuji nejake slovo:''
+*''Nalezeni vsech souboru ktere obsahuji nejake slovo:''
 {{{find ./* -exec grep -l -i 'error' {} \; | uniq}}}
 
-''- Vyrobeni timestampu:''
+*''Vyrobeni timestampu:''
 {{{echo `date +%Y%m%d_%H%M%S`}}}
 
-''- Volna pamet na serveru:''
+*''Volna pamet na serveru:''
 {{{echo Free physical memory: `vmstat | tail -1 | awk '{ printf(&quot;%ld\n&quot;,$4*4/1024)}'` MB}}}
 (vmstat ukazuje hodnoty v 4kb strankach)
 
-''- Zobazeni obsahu souboru pomoci prikazu more''
+*''Zobazeni obsahu souboru pomoci prikazu more''
 {{{more &lt;jmeno souboru&gt;}}} - zobrazi obsah
 {{{G}}} - prejde na konec souboru
 {{{p}}} - prejde na zacatek souboru
 {{{&lt;space&gt;}}} - o stranku dolu
 {{{b}}} - o stranku nahoru
 
-''- Monitorovani vyuziti systemu:''
+*''Monitorovani vyuziti systemu:''
 {{{sar cas pocet}}}
 spusti sledovani vyuziti system po cas vterinach na pocet opakovani. Naprikad:
 {{{sar 2 10}}}
 bude vypisovat vysledky po 2 vterinach po dobu 10 opakovani (20 vterin)
 
-{{{
+```
 srvcdv # sar 2 10
 AIX srvcdv 1 5 0053CCDA4C00    04/29/08
 
@@ -9891,14 +9906,13 @@ AIX srvcdv 1 5 0053CCDA4C00    04/29/08
 09:55:39     0       1       2      97
 09:55:41     0       0       2      98
 Average      0       0       2      97
-}}}
-
+```
 
 Dalsi moznosti je nechat sledovani bezet na pozadi prikazem
-{{{nohup /usr/lib/sa/sa1 2 10 &amp;}}}
-system bude psat vysledky prubezne do souboru {{{/var/adm/sa/sa21}}} (v binarni podobe) a pri spusteni prikazu {{{sar}}} bez parametru vypise nasbirane hodnoty.
+`nohup /usr/lib/sa/sa1 2 10 &amp;`
+system bude psat vysledky prubezne do souboru `/var/adm/sa/sa21` (v binarni podobe) a pri spusteni prikazu `sar` bez parametru vypise nasbirane hodnoty.
 
-''- Zprovozneni xforwardingu po su na jineho uzivatele''
+*''Zprovozneni xforwardingu po su na jineho uzivatele''
 otevrit si nove okno a zkontrolovat funkcnost xwindows (napriklad pomoci {{{xclock}}})
 {{{
 rm /tmp/xauth_xx.tmp
@@ -9915,7 +9929,7 @@ nebo ksh/bash:
 {{{export DISPLAY=`cat /tmp/display_xx.tmp`}}}
 a overit vysledek pomoci xclock
 
-''- Hledani souboru podle data, prace s nalezenymi soubory''
+*''Hledani souboru podle data, prace s nalezenymi soubory''
 
 {{{find . -mtime +365 -type f}}}
 rika to: v aktualnim adresari (a podadresarich, samozrejme) - to je ta TECKA, najdi obycejne soubory (-type f),
@@ -9944,7 +9958,7 @@ nalezeni souboru s datem zmeny mladsim nez 26 dni a starsim nez 24 dni
 celkova velikost souboru v adresari za posledni mesic
 {{{find . -type f -mtime -31 -exec ls -l {} \; | awk '{ s+=$5 } END { print s }'}}}
 
-''- Prikaz niping, testovani prostupu pres &quot;&quot;&quot;SAProuter&quot;&quot;&quot; ''
+*''Prikaz niping, testovani prostupu pres &quot;&quot;&quot;SAProuter&quot;&quot;&quot; ''
 test jednoho saprouteru:
 {{{niping -c -H /H/rztrmb.rdm.cz -S 3299 -O}}}
 
@@ -9955,15 +9969,15 @@ test dvou saprouteru a serveru za nimi:
 {{{niping -c -H /H/rztrmb.rdm.cz/H/cirmb01/H/cirmt03 -S 3303 -O}}}
 ... kde rztrmb.rdm.cz je prvni saprouter, cirmb01 je druhy saprouter a cirmt03 je sap server s cislem instance 03
 
-''- Prikaz niping, spusteni procesu na konkretnim portu''
+*''Prikaz niping, spusteni procesu na konkretnim portu''
 {{{niping -s -I 0 -S 3301}}}
 
-''- Vytvoreni souboru se zadanou velikosti''
+*''Vytvoreni souboru se zadanou velikosti''
 {{{dd if=/dev/zero of=testfile.bin bs=1048576 count=1024}}}
 kde: bs je blocksize, v tomto pripade 1MB = 1024x1024b
 a count je pocet bloku. V tomto pripade ma tedy vysledny soubor 1GB
 
-''- Nastaveni DNS na AIX''
+*''Nastaveni DNS na AIX''
 - use vi to put following content into {{{/etc/resolv.conf}}}
 {{{
 nameserver 1.2.3.4
@@ -9986,7 +10000,7 @@ Add following lines to {{{.profile}}}:
 export NSORDER=local4,bind4
 }}}
 
-''- Logovani login/logout casu a vsech prikazu na AIX/ksh''
+*''Logovani login/logout casu a vsech prikazu na AIX/ksh''
 do souboru {{{.profile}}} pridat na konec
 {{{
 # HISTFILE setting (to reflect server name)
@@ -10008,7 +10022,7 @@ a zalozit soubor {{{.ksh_logout}}} (s opravnenim 700) do ktereho dat
 echo &quot;&gt;&gt;&gt; Logout: ${_timestamp} ${_user} &lt;&lt;&lt;&quot; &gt;&gt; ${HISTFILE}
 }}}
 
-''- blbosti na zaver''
+*''blbosti na zaver''
 Timestamp v ksh
 {{{
 $(date +%Y%m%d_%H%M%S)
