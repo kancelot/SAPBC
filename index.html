@@ -9611,11 +9611,11 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20201111113733090" modified="20201111113734862" module-type="wikirule" title="$:/core/modules/parsers/wikiparser/rules/wikilink.js" type="application/javascript">
+<div created="20201111114101579" modified="20201111114116882" module-type="wikirule" title="$:/core/modules/parsers/wikiparser/rules/wikilink.js" type="application/javascript">
 <pre>/*\
 title: $:/core/modules/parsers/wikiparser/rules/wikilink.js
 type: application/javascript
-module-type: wikirule-disabled
+module-type: wikirule
 
 Wiki text inline rule for wiki links. For example:
 
@@ -9664,16 +9664,7 @@ exports.parse = function() {
 			return [{type: &quot;text&quot;, text: linkText}];
 		}
 	}
-	return [{
-		type: &quot;link&quot;,
-		attributes: {
-			to: {type: &quot;string&quot;, value: linkText}
-		},
-		children: [{
-			type: &quot;text&quot;,
-			text: linkText
-		}]
-	}];
+	return [{type: &quot;text&quot;, text: linkText}];
 };
 
 })();
@@ -9731,7 +9722,7 @@ exports.parse = function() {
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111101544580" list="$:/AdvancedSearch $:/core/modules/parsers/wikiparser/rules/wikilink.js [[Table of contents]] SAP" modified="20201111113559442" title="$:/StoryList">
+<div created="20201111113833992" list="$:/AdvancedSearch $:/core/modules/parsers/wikiparser/rules/wikilink.js SAP" modified="20201111114008445" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
