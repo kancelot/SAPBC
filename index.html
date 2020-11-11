@@ -227,6 +227,12 @@ Error message and password prompt
 
 <li>SCP</li>
 
+<li>Screen</li>
+
+<li>Scripty</li>
+
+<li>SED</li>
+
 <li>Table of contents</li>
 
 </ul>
@@ -9730,7 +9736,7 @@ exports.parse = function() {
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111115445898" list="[[Table of contents]] SCP" modified="20201111123031835" title="$:/StoryList">
+<div created="20201111115445898" list="[[Table of contents]]" modified="20201111124436309" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
@@ -11985,6 +11991,750 @@ find SIDarch1*.dbf -type f -newer SIDarch1_105.dbf &gt; /path/filelist.txt
 ```
 
 ... pokracovani priste</pre>
+</div>
+<div created="20201111123633446" modified="20201111123647153" title="Screen">
+<pre>&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;sapbc - Screen&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;static/style.css&quot; type=&quot;text/css&quot; /&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div class=&quot;wiki&quot; id=&quot;content_view&quot; style=&quot;display: block;&quot;&gt;
+&lt;h3 id=&quot;toc0&quot;&gt;&lt;a name=&quot;x--Starting screen&quot;&gt;&lt;/a&gt;Starting screen&lt;/h3&gt;
+ &lt;br /&gt;
+To start a fresh screen session:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ screen&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Once in the screen session, you can use screen commands to manage various screens. All screen commands start with Ctrl-a.&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;&lt;strong&gt;Function&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;&lt;strong&gt;Key command&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Full list of available commands&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a ?&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Open a new screen in existing session&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a c&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Switch to next screen&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a n&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Switch to previous screens&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a p&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Switch to specific screen&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a [0-9]&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Disconnect, leaving the session running in background&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a d&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Split screen vertically&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a S&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Unsplit screen&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a Q&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Move focus between splits&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a Tab&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;List currently opened screens&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Ctrl-a w&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;h3 id=&quot;toc1&quot;&gt;&lt;a name=&quot;x--Resuming a screen session&quot;&gt;&lt;/a&gt;Resuming a screen session&lt;/h3&gt;
+ &lt;br /&gt;
+To connect to an already open session running in background, use “screen” with following options:&lt;br /&gt;
+Reattach a session and if necessary detach or create it. Use the first session if more than one session is available.&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;strong&gt;Options&lt;/strong&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;-r&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Reattach a session&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;-d -r&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Reattach a session and if necessary detach it first&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;-d -RR&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Reattach a session and if necessary detach or create it. Use the first session if more than one session is available.&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;-D -RR&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;Attach here and now. Whatever that means, just do it.&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+It is always a good idea to check the status of your sessions by means of “screen -list”&lt;br /&gt;
+&lt;br /&gt;
+&lt;em&gt;--- ceka na zkraceni navodu ---&lt;/em&gt;&lt;br /&gt;
+&lt;em&gt;zkopirovano z&lt;/em&gt; &lt;a class=&quot;wiki_link_ext&quot; href=&quot;http://www.abclinuxu.cz/clanky/tipy/gnu-screen/&quot; rel=&quot;nofollow&quot;&gt;http://www.abclinuxu.cz/clanky/tipy/gnu-screen/&lt;/a&gt; &lt;em&gt;autor: Petr Sýkora, 1.9.2006&lt;/em&gt;&lt;br /&gt;
+&lt;h2 id=&quot;toc2&quot;&gt;&lt;a name=&quot;x-Co to vlastně je?&quot;&gt;&lt;/a&gt;Co to vlastně je?&lt;/h2&gt;
+ Screen sám sebe označuje za &amp;quot;full-screen window manager that multiplexes a physical terminal between several processes&amp;quot;, což by se dalo přeložit jako &amp;quot;celoobrazovkový správce oken, který rozmnožuje terminál mezi více procesů&amp;quot;. Nenechte se zastrašit. V zásadě jde o to, že se vytvářejí &amp;quot;okna&amp;quot; (windows), která se z hlediska procesů uvnitř tváři jako normální terminály a poté se s nimi různými způsoby pracuje. Například taková základní funkce je, že se dané okno zobrazí na terminálu a vstup z terminálu je přeposílán tomuto oknu.&lt;br /&gt;
+To by samo o sobě ještě nebylo tak skvělé, ale screen umí s okny dělat mnohem zajímavější kouzla. Například jde screen odpojit od terminálu na pozadí (detach), zatímco procesy spuštěné uvnitř běží nerušeně dál. Nebo třeba rozdělit si terminál na dvě oblasti.&lt;br /&gt;
+Díky své popularitě se dostal do balíčkových repozitářů většiny distribucí, a tak by neměl být problém s jeho instalací.&lt;br /&gt;
+&lt;h2 id=&quot;toc3&quot;&gt;&lt;a name=&quot;x-První spuštění&quot;&gt;&lt;/a&gt;První spuštění&lt;/h2&gt;
+ Dost bylo teorie a nyní praktická ukázka. Spustíme si tedy screen.&lt;br /&gt;
+
+&lt;style type=&quot;text/css&quot;&gt;&lt;!--
+
+--&gt;
+&lt;/style&gt;&lt;pre class=&quot;kodrmargin&quot;&gt;screen&lt;/pre&gt;
+
+Na první pohled se pouze smazal obsah terminálu a nahoře je jen jeden řádek s výzvou. Stiskneme-li ^a ? (nejdříve zmáčknout Ctrl-a, pustit a poté zmáčknout ?) objeví se obrazovka s nápovědou screenu.&lt;br /&gt;
+Pro pochopení této nápovědy je nutné vědět, že veškeré klávesové zkratky v programu screen se skládají z ^a a nějakého dalšího znaku. Pro stručnost se v nápovědě uvádí pouze druhý znak, pokud je u jednoho příkazu více znaků, znamená to, že daný příkaz je vyvolán kterýmkoliv z nich. Pokud jsou tedy například u příkazu detach uvedeny dvě varianty, ^D a d, znamená to, že po stisknutí ^a ^D (Ctrl-a Ctrl-d) se stane totéž, co po stisknutí ^a d.&lt;br /&gt;
+Stisknutím klávesy Enter se vrátíme zpět k našemu oknu.&lt;br /&gt;
+&lt;h2 id=&quot;toc4&quot;&gt;&lt;a name=&quot;x-Více oken&quot;&gt;&lt;/a&gt;Více oken&lt;/h2&gt;
+ K čemu více oken? Třeba v případě, kdy jsme připojeni přes SSH na vzdálený počítač a najednou zjistíme, že jeden terminál nám nestačí — například chceme mít naráz spuštěnou kompilaci nějakého balíčku a při tom se hrabat v nastavení jiného. Otevírat nové SSH spojení by bylo neefektivní.&lt;br /&gt;
+Nové okno se nejjednodušeji vytváří pomocí klávesové zkratky ^a c. Zkuste si tedy nejdříve spustit nějaký program v prvním okně. Poté si pomocí výše uvedené zkratky otevřte nové okno. Nyní zmizelo vše, co jste měli v terminálu, a objevil se nově spuštěný shell.&lt;br /&gt;
+Cyklit mezi okny lze pomocí klávesové zkratky ^a n v jednom směru a pomocí ^a p ve směru opačném. Pro vyvolání seznamu všech oken slouží zkratka ^a &amp;quot;. Pro lepší orientaci v tomto seznamu lze nastavit jména jednotlivých oken, a to klávesovou zkratkou ^a A (pozor, A je Shift-a), kterou se nastavuje jméno aktuálního okna. Mezi prvními deseti okny lze přepínat také pomocí ^a [číslo okna]. Okna se číslují od 0 — tedy ^a 0 nás přepne na první okno, ^a 1 na druhé...&lt;br /&gt;
+&lt;h2 id=&quot;toc5&quot;&gt;&lt;a name=&quot;x-Odpojení a připojení k terminálu&quot;&gt;&lt;/a&gt;Odpojení a připojení k terminálu&lt;/h2&gt;
+ Představme si nyní modelovou situaci. Jsme připojeni ke vzdálenému terminálu přes SSH a máme rozdělanou nějakou práci. Najednou se potřebujeme odpojit, přesunout se k jinému počítači, tam se připojit a pokračovat v práci.&lt;br /&gt;
+Přesně na podobné účely se velmi hodí funkce detach, která odpojí screen od terminálu. Po stisknutní klávesové zkratky ^a d vše zmizí, tedy až na hlášení [detached].&lt;br /&gt;
+Pomocí programu ps se lze přesvědčit, že screen je stále spuštěný, jen nemá přiřazený žádný terminál. Nyní je možné s klidným svědomím se třeba i odhlásit, a opětovně se přihlásit, a procesy spuštěné uvnitř screenu si toho ani nevšimnou.&lt;br /&gt;
+Screen se zpátky připojuje k terminálu pomocí parametru -r. Pokud na pozadí čeká pouze jedna spuštěná instance screen, tak se bez ptaní obnoví. Pokud ale na pozadí čeká více spuštěných instancí, screen -r pouze výpíše jejich seznam ve tvaru pid.tty.host. Tento výpis můžeme získat kdykoliv spuštěním screen -ls. K připojení k danému screenu povětšinou stačí zadat pid dané instance, tedy screen -r [pid], kde [pid] nahradíme číslem PID. Ve výjimečných situacích může být nutné zadat celou identifikaci, tedy screen -r [pid.tty.host]. Zajímavým doplňujícím parametrem je -d, který říká, že pokud instance, ke které se snažíme připojit, je již připojena k nějakému terminálu, chceme ji nejdříve od toho terminálu odpojit a pak připojit k aktuálnímu.&lt;br /&gt;
+&lt;h2 id=&quot;toc6&quot;&gt;&lt;a name=&quot;x-Rozdělení terminálu na více regionů&quot;&gt;&lt;/a&gt;Rozdělení terminálu na více regionů&lt;/h2&gt;
+ Je sice pěkné mít více oken, ale zatím jsme uměli mít zobrazeno pouze jedno okno naráz. Bylo by pěkné mít například v horní polovině obrazovky otevřenou manuálovou stránku k nástroji, který se snažíme v dolní části terminálu používat. Není nic jednoduššího, než zmáčknout ^a S, čímž rozdělíme terminál na dva stejně velké regiony. Mezi jednotlivými regiony se přepíná pomocí ^a &amp;lt;TAB&amp;gt;. V jednotlivých regionech fungují klávesové zkratky na přepínání oken tak, jak jsme zvyklí.&lt;br /&gt;
+&lt;h2 id=&quot;toc7&quot;&gt;&lt;a name=&quot;x-Historie a schránka&quot;&gt;&lt;/a&gt;Historie a schránka&lt;/h2&gt;
+ Jelikož při použití screen prakticky nefunguje prohlížení historie v terminálovém emulátoru, má screen funkci s názvem &amp;quot;copy/scrollback mode&amp;quot;. Stisknutím ^a [ (^a ^[, či ^a &amp;lt;ESC&amp;gt;) jej zapneme. Nyní se můžeme pohybovat kurzorem nahoru, dolu, doleva, či doprava pomocí šipek, hjkl, či pomocí PgUp, PgDown,^U,^D a dalších. Tento mód lze vypnout pomocí &amp;lt;ESC&amp;gt;.&lt;br /&gt;
+Pokud zmáčkneme mezerník, označíme začátek (konec) kopírované oblasti. Konec (začátek) označíme jednoduše tak, že kursorem najedeme na danou pozici a opět zmáčkneme mezerník. Tím se zároveň vrátíme do normálního módu. Z této schránky se vkládá pomocí ^a ].
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<div created="20201111123719967" modified="20201111124313172" title="Scripty">
+<pre>''Script na uklid v adresari /usr/sap/trans/log''
+
+```
+#!/usr/bin/ksh
+
+#####################################################################
+# Script for cleaning old records in /usr/sap/trans/log
+# Created: 20141204 aka
+# Changed: 20141205 aka, more checks, better error handling
+#####################################################################
+
+
+NEWERFILE=newer.aka
+MYPATH=/usr/sap/trans/log
+
+if [[ $# != 2 ]]
+then
+  echo &quot;Usage: $0 &lt;SID&gt; &lt;YEAR&gt;&quot;
+  echo &quot;Where &lt;SID&gt; is an extension of transport logs to be archived&quot;
+  echo &quot;and &lt;YEAR&gt; is the max year of logs to be archived. Previous years, if found, will be archived too.&quot;
+  exit 1
+else
+  echo going to target directory...
+  cd ${MYPATH}
+  rm -f ${NEWERFILE}
+
+  #MYSID=$1
+  #Getting &lt;SID&gt; from first parameter and converting to uppercase.
+  #Using MYSID to avoid possible conflict with SID variable.
+  MYSID=`echo $1 | tr '[a-z]' '[A-Z]'`
+  YEAR=$2
+  echo &quot;creating newerfile...&quot;
+  eval touch -t ${YEAR}12312359.59 ${NEWERFILE} &gt;/dev/null 2&gt;&amp;1
+  if [[ $? != 0 ]]
+  then
+    echo ERROR! Parameter 2 \(${YEAR}\) does not seem to be YEAR
+    exit 1
+  fi
+
+  #Checking SID
+  # note: ${#VARIABLE} returns variable length
+  if [[ ${#MYSID} != 3 ]]
+  then
+    echo &quot;ERRROR! SAP SID must have exactly 3 characters. Entered value: ${MYSID}.&quot;
+    exit 1
+  fi
+
+  OUTFILENAME=${MYSID}_${YEAR}.tar
+
+  echo checking output file...
+  if test -e ${OUTFILENAME}
+  then
+    echo &quot;ERROR! File ${OUTFILENAME} already exists. Quitting...&quot;
+    exit 1
+  fi
+  if test -e ${OUTFILENAME}.gz
+  then
+    echo &quot;ERROR! File ${OUTFILENAME}.gz already exists. Quitting...&quot;
+    exit 1
+  fi
+
+  echo YEAR to archive = ${YEAR}
+  echo SYSTEM to archive = ${MYSID}
+  read prompt?'Press ^C to stop or &lt;enter&gt; to continue.'
+fi
+
+echo looking for newerfile...
+if test -e ${NEWERFILE}
+then
+  echo newerfile exists...
+else
+  echo &quot;ERROR! Newer file does not exist, something went wrong.&quot;
+  exit 1
+fi
+
+
+echo setting find command...
+MYFIND=&quot;find . -name \&quot;*.${MYSID}\&quot; ! -newer ${NEWERFILE}&quot;
+#eval &quot;$MYFIND -exec ls -l {} \;&quot;
+
+echo creating tar file...
+tar -cvf ${OUTFILENAME} `eval ${MYFIND}`
+if [[ $? == 0 ]]
+then
+  echo gzipping tar file...
+  gzip ${OUTFILENAME}
+else
+  echo Possible error in creating tarfile. Quitting.
+  exit 1
+fi
+if [[ $? == 0 ]]
+then
+  echo deleting original files...
+  eval &quot;${MYFIND} -exec rm '{}' \;&quot;
+    if [[ $? == 0 ]]
+    then
+      echo &quot;all done... check ${OUTFILENAME}.gz&quot;
+    else
+      echo &quot;Possible error in deleting original files. Check result.&quot;
+      exit 1
+    fi
+else
+  echo &quot;Possible error in zipping tar file. Quitting.&quot;
+  exit 1
+fi
+```
+
+''Paralelni kopirovani souboru:''
+
+```
+#!/bin/ksh
+ 
+SRCDIR='/oracle/SRC/sapdata1'
+TGTDIR='/oracle/TGT/sapdata1'
+ 
+for i in `ls $SRCDIR`
+  do
+    while [ `ps -ef |grep -i cp |grep -v grep |wc -l` -ge 16 ]
+      do
+        sleep 30
+      done
+    nohup cp -pr $SRCDIR/$i $TGTDIR &amp;
+ done
+ 
+#end_of_script
+```
+
+''Kopirovani pouze chybejicich souboru:''
+
+```
+#! /bin/ksh
+ 
+export SRCDIR=/usr/sap/trans/cofiles_move
+export TGTDIR=/usr/sap/trans/cofiles
+ 
+for i in `ls $SRCDIR`
+  do
+    echo $i
+    if [ -f $TGTDIR/$i ]
+      then
+        echo &quot;File $i exists - will not overwrite it !&quot;
+      else
+        echo &quot;File $i is not present on target directory - copying&quot;
+        cp $SRCDIR/$i $TGTDIR/$i
+    fi
+  done
+ 
+#end_of_script
+```
+
+''Tohle se asi nikdy na nic hodit nebude, ale kdyby prece:''
+
+```
+#!/bin/ksh
+ 
+SRCDIR='/home/akanocz/scripts/data'
+FILESCOUNT=`ls -l $SRCDIR/RM_* | wc -l`
+FILETOKEEP=`ls -l $SRCDIR/RM_*.txt | tail -1 | awk '{printf(&quot;%s\n&quot;,$9)}'`
+ 
+if [ $FILESCOUNT -gt 1 ] ; then
+  for i in `ls $SRCDIR/RM_*` ;
+    do
+      if [ $i != $FILETOKEEP ] ; then
+        rm $i
+      fi
+    done
+fi
+```
+
+''Vymaz poslednich 100 redologu po zaplneni oraarch na 98%''
+
+```
+#!/bin/ksh
+ 
+_ORADIR=/oracle/${ORACLE_SID}/oraarch
+_curvalue=`df -k ${_ORADIR} | tail -1 | awk {'printf(&quot;%s\n&quot;, substr($4,1,length($4)-1))'}`
+_maxvalue=98
+_deletefiles=100
+ 
+if [ ${_curvalue} -ge ${_maxvalue} ]
+  then
+    for i in `ls -lat ${_ORADIR} | tail -${_deletefiles} | awk '{printf(&quot;%s\n&quot;,$9)}'`
+      do
+        rm $i
+      done
+fi
+```
+
+''Odstraneni pismen ze stringu:''
+
+```
+$string//[^0-9]/                               # v awk
+echo $string | sed &quot;s/[^0-9]//g&quot;               # obecne
+```
+
+''Odstraneni mezer na zacatku stringu:''
+
+```
+echo &quot;  abcd122&quot; | sed -e 's/^ *//'
+```
+
+''Vymazani obsahu adresare oraarch, krome 2 nejnovejsich souboru (protoze do nich muze oracle psat)''
+
+```
+#!/usr/bin/ksh
+_ARCHFILES=`ls -l /oracle/SAT/oraarch/SATarch1_*.dbf | wc -l | sed -e 's/^ *//'`
+_FILESTOKEEP=2
+ 
+#echo DEBUG: files in oraarch ${_ARCHFILES}
+#echo DEBUG: files to keep ${_FILESTOKEEP}
+ 
+_FILESTODELETE=$((${_ARCHFILES}-${_FILESTOKEEP}))
+ 
+#echo DEBUG: files to delete ${_FILESTODELETE}
+ 
+if [ ${_ARCHFILES} -gt ${_FILESTOKEEP} ]
+then
+  for i in `ls -latr /oracle/SAT/oraarch/SATarch1_*.dbf | head -${_FILESTODELETE} | awk '{printf(&quot;%s\n&quot;,$9)}'`
+  do
+    rm $i
+  done
+fi
+```
+
+''Zjisteni posledniho dne v mesici:''
+
+```
+#!/bin/bash
+set `date +%d&quot; &quot;%m&quot; &quot;%Y`
+CURDAY=$1
+CURMTH=$2
+CURYR=$3
+ 
+LASTDY=`cal $CURMTH $CURYR | egrep &quot;28|29|30|31&quot; |tail -1 |awk '{print $NF}'`
+ 
+echo DEBUG: This Day: $CURDAY-$CURMTH-$CURYR
+echo DEBUG: Last Day: $LASTDY-$CURMTH-$CURYR
+ 
+if [ $CURDAY -ne $LASTDY ]
+then
+  echo DEBUG: Today is NOT the last day of this month, quitting.
+  exit 1
+fi
+ 
+echo DEBUG: Today is the last day of this month, script continues.
+```
+
+''Zobrazeni kusu souboru kolem textu nalezeneho grepem tak, aby to bylo na jednu radku:''
+
+```
+myfile=alert_TSS.log; mysearchstring='Deprecated system parameters with specified values:';linesbefore=6; linesafter=4; cat ${myfile} | head -$((`grep -n &quot;${mysearchstring}&quot; ${myfile} | tail -1 | cut -f1 -d:` +${linesafter} )) | tail -$((${linesbefore} + ${linesafter} +1 ))
+```
+
+Neni to moc chytry.
+
+!!!Determine what process is listening on a port (AIX Unix specific)
+
+```
+#!/bin/ksh93
+
+OS_NAME=$( uname -s )
+
+if [[ $OS_NAME == &quot;AIX&quot; ]] ; then
+    echo &quot;--------------------------------------------------------------------------------------&quot;
+    printf &quot;| %-20s | %-15s | Protocol | %-30s |\n&quot; &quot;Process&quot; &quot;PID&quot; &quot;Listening On&quot;;
+    echo &quot;--------------------------------------------------------------------------------------&quot;
+
+    netstat -Ana | awk '
+    /[0-9\*].[0-9].+LISTEN/ {
+        SOCKET=$1;
+        IPPORT=$5;
+        &quot;rmsock &quot; SOCKET &quot; tcpcb&quot; | getline SOCKOUT;
+        split(SOCKOUT, sockarray, &quot; &quot;);
+        gsub(/[\.\(\)]/, &quot;&quot;, sockarray[10]);
+        LISTENERS[ sprintf(&quot;| %-20s | %15d | %8s | %30s |&quot;, sockarray[10], sockarray[9], &quot;TCP&quot;, IPPORT) ] = 1;
+    }
+    /udp.*.[0-9]/ {
+        SOCKET=$1;
+        IPPORT=$5;
+        &quot;rmsock &quot; SOCKET &quot; inpcb&quot; | getline SOCKOUT;
+        split(SOCKOUT, sockarray, &quot; &quot;);
+        gsub(/[\.\(\)]/, &quot;&quot;, sockarray[10]);
+        LISTENERS[ sprintf(&quot;| %-20s | %15d | %8s | %30s |&quot;, sockarray[10], sockarray[9], &quot;UDP&quot;, IPPORT) ] = 1;
+    }
+    END {
+        for (var in LISTENERS)
+            print var
+
+    }' | sort | uniq
+
+    echo &quot;--------------------------------------------------------------------------------------&quot;
+else
+    echo &quot;ERROR: Requires AIX&quot;
+    exit 1
+fi
+```
+
+...pokracovani priste</pre>
+</div>
+<div created="20201111124452792" modified="20201111125035157" title="SED">
+<pre>copied from: http://www.theunixschool.com/2014/08/sed-examples-remove-delete-chars-from-line-file.html
+
+
+In this article of sed series, we will see the examples of how to remove or delete characters from a file. The syntax of sed command replacement is:
+
+```
+$ sed 's/find/replace/' file
+```
+
+This sed command finds the pattern and replaces with another pattern. When the replace is left empty, the pattern/element found gets deleted.
+
+Let us consider a sample file as below:
+
+```
+$ cat file
+Linux
+Solaris
+Ubuntu
+Fedora
+RedHat
+```
+
+!!!To remove a specific character, say 'a' 
+
+```
+$ sed 's/a//' file
+Linux
+Solris
+Ubuntu
+Fedor
+RedHt
+```
+
+This will remove the first occurence of 'a' in every line of the file. To remove all occurences of 'a' in every line,
+
+```
+$ sed 's/a//g' file
+```
+
+!!!To remove 1st character in every line:
+
+```
+$ sed 's/^.//' file
+inux
+olaris
+buntu
+edora
+edHat
+```
+
+.(dot) tries to match a single character. The  ^ tries to match a pattern(any character) in the beginning of the line.   Another way to write the same:
+
+```
+$ sed 's/.//' file
+```
+
+This tells to replace a character with nothing. Since by default, sed starts from beginning, it replaces only the 1st character since 'g' is not passed.
+
+!!!To remove last character of every line : 
+
+```
+$ sed 's/.$//' file
+Linu
+Solari
+Ubunt
+Fedor
+RedHa
+```
+
+The $ tries to match a pattern in the end of the line.
+
+!!!To remove the 1st and last character of every line in the same command: 
+
+```
+$ sed 's/.//;s/.$//' file
+inu
+olari
+bunt
+edor
+edHa
+```
+
+Two commands can be given together with a semi-colon separated in between.
+
+!!!To remove first character only if it is a specific character: 
+
+```
+$ sed 's/^F//' file
+Linux
+Solaris
+Ubuntu
+edora
+RedHat
+```
+
+This removes the 1st character only if it is 'F'.
+
+!!!To remove last character only if it is a specific character: 
+
+```
+$ sed 's/x$//' file
+Linu
+Solaris
+Ubuntu
+Fedora
+RedHat
+```
+
+This removed the last character only if it s 'x'.
+
+!!!To remove 1st 3 characters of every line: 
+
+```
+$ sed 's/...//' file
+ux
+aris
+ntu
+ora
+Hat
+```
+
+A single dot(.) removes 1st character, 3 dots remove 1st three characters.
+
+!!!To remove 1st n characters of every line: 
+
+```
+$ sed -r 's/.{4}//' file
+x
+ris
+tu
+ra
+at
+```
+
+.{n} -&gt; matches any character n times, and hence the above expression matches 4 characters and deletes it.
+
+!!!To remove last n characters of every line: 
+
+```
+$ sed -r 's/.{3}$//' file
+Li
+Sola
+Ubu
+Fed
+Red
+```
+
+!!!To remove everything except the 1st n characters in every line: 
+
+```
+$ sed -r 's/(.{3}).*/\1/' file
+Lin
+Sol
+Ubu
+Fed
+Red
+```
+
+.* -&gt; matches any number of characters, and the first 3 characters matched are grouped using parantheses. In the replacement, by having \1 only the group is retained, leaving out the remaining part.
+
+!!!To remove everything except the last n characters in a file: 
+
+```
+$ sed -r 's/.*(.{3})/\1/' file
+nux
+ris
+ntu
+ora
+Hat
+```
+
+Same as last example, except that from the end.
+
+!!!To remove multiple characters present in a file: 
+
+```
+$ sed 's/[aoe]//g' file
+Linux
+Slris
+Ubuntu
+Fdr
+RdHt
+```
+
+To delete multiple characters, [] is used by specifying the characters to be removed. This will remove all occurences of the characters a, o and e.
+
+!!!To remove a pattern  : 
+
+```
+$ sed 's/lari//g' file
+Linux
+Sos
+Ubuntu
+Fedora
+RedHat
+```
+
+Not just a character, even a pattern can be removed. Here, 'lari' got removed from 'Solaris'.
+
+!!!To delete only nth occurrence of a character in every line: 
+
+```
+$ sed 's/u//2' file
+Linux
+Solaris
+Ubunt
+Fedora
+RedHat
+```
+
+By default, sed performs an activity only on the 1st occurence. If n is specifed, sed performs only on the nth occurence of the pattern. The 2nd 'u' of 'Ubuntu' got deleted.
+
+!!!To delete everything in a line followed by a character: 
+
+```
+$ sed 's/a.*//' file
+Linux
+Sol
+Ubuntu
+Fedor
+RedH
+```
+
+!!!To remove all digits present in every line of a file: 
+
+```
+$ sed 's/[0-9]//g' file
+```
+
+[0-9] stands for all characters between 0 to 9 meaning all digits, and hence all digits get removed.
+
+!!!To remove all lower case alphabets present in every line: 
+
+```
+$ sed 's/[a-z]//g' file
+L
+S
+U
+F
+RH
+```
+
+[a-z] represents lower case alphabets range and hence all lower-case characters get removed.
+
+!!!To remove everything other than the lower case alphabets: 
+
+```
+$ sed 's/[^a-z]//g' file
+inux
+olaris
+buntu
+edora
+edat
+```
+
+^ inside square brackets negates the condition. Here, all characters except lower case alphabets get removed.
+
+!!!To remove all alpha-numeric characters present in every line: 
+
+```
+$ sed 's/[a-zA-Z0-9]//g' file
+```
+
+All alpha-numeric characters get removed.
+
+!!!To remove a character irrespective of the case: 
+
+```
+$ sed 's/[uU]//g' file
+Linx
+Solaris
+bnt
+Fedora
+RedHat
+```
+
+By specifying both the lower and upper case character in brackets is equivalent to removing a character irrespective of the case.
+
+See more at: http://www.theunixschool.com/2014/08/sed-examples-remove-delete-chars-from-line-file.html#sthash.a0KkXozd.dpuf</pre>
 </div>
 <div created="20201110222858759" modified="20201111010224708" tags="toc" title="Table of contents">
 <pre>;Table of contents
