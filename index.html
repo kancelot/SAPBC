@@ -195,6 +195,12 @@ Error message and password prompt
 
 <li>BRtools</li>
 
+<li>CiselneRady</li>
+
+<li>DB2</li>
+
+<li>DeltaQueues</li>
+
 <li>Table of contents</li>
 
 </ul>
@@ -9636,7 +9642,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111011232657" list="[[Table of contents]]" modified="20201111011418571" title="$:/StoryList">
+<div created="20201111095304392" list="[[Table of contents]]" modified="20201111100957973" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -9652,7 +9658,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/full&quot;: {
             &quot;title&quot;: &quot;$:/info/url/full&quot;,
-            &quot;text&quot;: &quot;https://kancelot.github.io/SAPBC/&quot;
+            &quot;text&quot;: &quot;https://kancelot.github.io/SAPBC/index.html&quot;
         },
         &quot;$:/info/url/host&quot;: {
             &quot;title&quot;: &quot;$:/info/url/host&quot;,
@@ -9672,7 +9678,7 @@ Error message and password prompt
         },
         &quot;$:/info/url/pathname&quot;: {
             &quot;title&quot;: &quot;$:/info/url/pathname&quot;,
-            &quot;text&quot;: &quot;/SAPBC/&quot;
+            &quot;text&quot;: &quot;/SAPBC/index.html&quot;
         },
         &quot;$:/info/url/search&quot;: {
             &quot;title&quot;: &quot;$:/info/url/search&quot;,
@@ -9684,15 +9690,15 @@ Error message and password prompt
         },
         &quot;$:/info/browser/screen/width&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/width&quot;,
-            &quot;text&quot;: &quot;1920&quot;
+            &quot;text&quot;: &quot;1536&quot;
         },
         &quot;$:/info/browser/screen/height&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/screen/height&quot;,
-            &quot;text&quot;: &quot;1080&quot;
+            &quot;text&quot;: &quot;864&quot;
         },
         &quot;$:/info/browser/language&quot;: {
             &quot;title&quot;: &quot;$:/info/browser/language&quot;,
-            &quot;text&quot;: &quot;en&quot;
+            &quot;text&quot;: &quot;en-US&quot;
         }
     }
 }</pre>
@@ -10297,6 +10303,245 @@ BR1008I End of BRSPACE processing: seielxpw.mor 2012-03-26 10.43.28
 BR0280I BRSPACE time stamp: 2012-03-26 10.43.29
 BR1005I BRSPACE completed successfully 
 ```</pre>
+</div>
+<div created="20201111095344767" modified="20201111095607703" title="CiselneRady">
+<pre>Pokud se stava, ze ciselne rady nejsou spojite a jsou v nich diry, muze to byt zpusobeno zapnutym bufferem nad konkretni ciselnou radou.
+
+Nekolik informaci k number range bufferu:
+http://help.sap.com/saphelp_erp60_sp/helpdata/en/7b/6eb2aa7aed44ea92ebb969e03081fb/content.htm
+http://help.sap.com/saphelp_erp60_sp/helpdata/en/95/3d5540b8cdcd01e10000000a155106/content.htm
+
+Ciselne intervaly se udrzuji v transakci `SNRO` a prehled je v tabulce `TNRO`.
+
+Buffer je spolecny v pameti serveru. Kdyz dojde k vymazani bufferu, napriklad pri restartu serveru, tak je potreba nacist novy a v ciselne rade vznikde dira.
+
+!!!Ciselna rada SPO_NUM
+[[48284 - System cannot generate any more spool requests|http://service.sap.com/sap/support/notes/48284]]
+
+# Log on to the system in client 000 and call transaction SNRO.
+# Select the object SPO_NUM and choose the following button: Number ranges.
+# On the next screen, choose: Change Intervals.
+# In the &quot;To number&quot; column, change the upper limit of interval 01 to 999,999, for example.
+
+The changes must be made in client 000 only and then apply for all clients; changes in other clients have no effect. You can use the report ''RSPO_SHOW_SPO_NUM'' to display the setting from client 000 in all clients.
+
+You can use the spool number monitor in transaction ''RZ20'' to specify threshold values in which the system must create an alert if a certain percentage of the spool numbers are allocated.
+
+When transporting number range you must reset buffer in transaction ''SM56'' (for particular number range).
+
+Doplnit... </pre>
+</div>
+<div created="20201111095645396" modified="20201111100912087" title="DB2">
+<pre>''Pripojeni k databazi:''
+
+```
+db2 connect
+```
+
+''Vypis instanci:''
+
+```
+db2ilist
+```
+
+''Vypnuti automatickeho startu DB po restartu serveru:''
+
+```
+db2iauto -off &lt;instance name&gt;
+```
+
+''Kontrola nastaveni:''
+
+```
+db2set -all | grep -i autostart
+```
+
+''Zmena hesla pro uzivatele `dba&lt;sid&gt;`''
+
+Please use the following command to set the password for the users:
+
+
+```
+passwd &lt;sid&gt;adm &lt;password&gt;
+passwd sap&lt;sid&gt; &lt;password&gt; 
+```
+
+or if the system is created via a upgrade
+
+```
+passwd sapr3 &lt;password&gt;
+```
+
+after you have done this, perform the following:&lt;br&gt;
+logon as `&lt;sid&gt;adm`
+
+```
+dscdb6up &lt;sid&gt;adm &lt;password&gt;
+dscdb6up sap&lt;sid&gt; &lt;password&gt; or if the system is created via a upgrade
+dscdb6up sapr3 &lt;password&gt;
+```
+
+Please note this applies for the Abap schema, to update the java connect user, use the following method:
+
+To change the `sap&lt;sid&gt;db` password you have to change it on OS level and afterwards through the configtool. To change with the configtool, start the configtool, then click on secure store, then change the value for the key `jdbc/pool/&lt;SID&gt;/Password`, click add then click on `file&gt;apply`. You will have to restart the system.
+
+note: this is normal behaviour
+
+```
+dscdb6up sapr3 &lt;password&gt;
+and getting the below response:
+Password file '/usr/sap/RW2/SYS/global/dscdb6.conf' successfully written
+Effective userid is not root. OS passwords can not be changed.
+ABORTING! Please check permissions and ownership
+```
+
+Potom je potreba zmenit heslo v DBACOCKPIT podle sapnote &lt;br&gt;
+http://service.sap.com/sap/support/notes/1072206 &lt;br&gt;
+meni se v DB Connections a nastavuje se heslo pro uzivatele `db2&lt;dbsid&gt;`
+
+''Select tablespaces:''
+
+```
+db2 &quot;select \
+substr(tbsp_name,1,30) as TBSP_Name, \
+tbsp_type as Type, \
+(tbsp_total_size_kb / 1024 ) as Size_MB, \
+int((tbsp_free_size_kb) / 1024 ) as Free_MB, \
+tbsp_utilization_percent as Used, \
+tbsp_auto_resize_Enabled as AutoResize, \
+tbsp_max_size as MaxSizeBytes \
+from sysibmadm.tbsp_utilization&quot;
+```
+
+''Rotace a zalohovani &quot;redologu&quot;:''&lt;br&gt;
+DB2 je automaticky v &quot;archivnim modu&quot;, kdyz se nastavi parametr LOGARCHMETH1, napriklad DISK:/backup/log/ &lt;br&gt;
+Archivuje se vzdy log s nejnizsim cislem v ramci otevrenych logu. Pocet aktivnich logu se nastavuje parametrem LOGPRIMARY a velikost kazdeho z nich parametrem LOGFILSIZ (ve 4kb blocich).
+
+... pokracovani priste</pre>
+</div>
+<div created="20201111101025034" modified="20201111101243152" title="DeltaQueues">
+<pre>&lt;html&gt;  
+&lt;title&gt;Customizing Cockpit: Managing delta queues when... | SCN&lt;/title&gt;
+&lt;h2&gt;Customizing Cockpit: Managing delta queues when structure changes&lt;/h2&gt;
+&lt;a href=&quot;http://scn.sap.com/people/jfrancisco.fernandes/blog/2010/05/21/customizing-cockpit-managing-delta-queues-when-structure-changes&quot; target=&quot;_blank&quot;&gt;by J Francisco Fernandes&lt;/a&gt;
+&lt;h3&gt;Overview&lt;/h3&gt;
+As we know the Logistics Customizing Cockpit enables you to enhance the Datasources of the logistics listed there from a pool of predefined fields and before changing the extract structures in Customizing cockpit (transaction LBWE).&lt;br&gt;
+We must carry out several tasks to avoid inconsistencies into the system because when you change a DataSource or their extract structure, the data that is saved in the old form of the structure is no longer interpreted correctly.&lt;br&gt;
+This guide will give you some steps to help you to avoid inconsistencies problems.
+&lt;h3&gt;Reasons of these inconsistencies&lt;/h3&gt;
+When we change a structure, the data which is stored in the old form of the structure can no longer be interpreted correctly.&lt;br&gt;
+This can happen during following standard processes:&lt;br&gt;
+
+&lt;h3&gt;Update methods&lt;/h3&gt;
+&lt;h4&gt;1) Concept &lt;/h4&gt;
+There are three different ways to handle how the data can come from the document into the delta queue.&lt;br&gt;
+&lt;h4&gt;2) Types &lt;/h4&gt;
+These are the different types:&lt;br&gt;
+With PI 2002.1 the following new update methods for logistics extraction will be offered:
+&lt;h5&gt;2.1) Direct Delta:&lt;/h5&gt;
+With this update mode, the extraction data is transferred with each document posting directly into the BW delta queue. In doing so, each document posting with delta extraction is posted for exactly one LUW in the respective BW delta queues. When the document is created or modified, it is transferred to RSA7 directly.&lt;br&gt;
+SAP recommends to use this update mode, when the number of the delta records between 2 delta loads are &lt;strong&gt;less&lt;/strong&gt; then 100.000 records!
+&lt;h5&gt;2.2) Queued Delta:&lt;/h5&gt;
+With this update mode, the extraction data is collected for the affected application instead of being collected in an extraction queue, and can be transferred as usual with the V3 update by means of an updating collective run into the BW delta queue. In doing so, up to 10000 delta extractions of documents for an LUW are compressed for each DataSource into the BW delta queue, depending on the application.&lt;br&gt;
+When the document is created or modified, it is transferred to LBWQ and after executing the collective run this information is transferred to RSA7.
+&lt;h5&gt;2.3)Non-serialized V3 Update:&lt;/h5&gt;
+This update mode is recommended ONLY for the application &quot;03&quot;, the extraction data for the application considered is written as before into the update tables with the help of a V3 update module. They are kept there as long as the data is selected through an updating collective run and are processed. However, in contrast to the current default settings (serialized V3 update), the data in the updating collective run are thereby read without regard to sequence from the update tables and are transferred to the BW delta queue.&lt;br&gt;
+When the document is created or modified, it is transferred to SM13 and after executing the collective run this information is transferred to RSA7.&lt;br&gt;
+For additional info, refer to&amp;nbsp; note 505700 When using the method &quot;Queued Delta&quot;, it is strongly recommended, according to SAP Note 438015 that you use the newest qRFC version. (QRFC-Version 6.20.045, Supplement 9)&lt;br&gt;
+When using the new update methods &quot;Direct Delta&quot; and &quot;Queued Delta&quot;, the extraction with the new V1 update modules, such as MCEX_UPDATE_11_V1, is updated. In the case of &quot;Queued Delta&quot;, the storage of data occurs from there in the extraction queue with the RFC MCEX_UPDATE_11_QRFC.&lt;br&gt;
+
+&lt;h4&gt;3) Why is it necessary to know these methods? &lt;/h4&gt;
+It is important to know these because we will be able to understand the data flows to enable you to check the correct data containers before extract structure changes are made and to get a better explanation of which data containers must be emptied and at what time.&lt;br&gt;
+&lt;span&gt;When a document is created or changed, the data is written in the document tables, and they are used in parallel for the update into the Business Information Warehouse (BW). Transaction data from the Logistics Customizing Cockpit is collected for transferring into BW in the delta queue (transactions RSA7 or SMQ1). Please refer to document in link: &lt;/span&gt; &lt;a class=&quot;jive-link-external-small&quot; href=&quot;http://service.sap.com/~sapidb/011000358700005772172002&quot; target=&quot;_blank&quot;&gt;http://service.sap.com/~sapidb/011000358700005772172002&lt;/a&gt; &lt;span&gt; contains the technical details about the new update methods. &lt;/span&gt;&lt;p style=&quot;min-height: 8pt; height: 8pt; padding: 0px;&quot;&gt;&amp;nbsp;&lt;/p&gt;&lt;br&gt;Recommended steps&lt;br&gt;
+These are the steps that we need to follow before executing previous mentioned processes (plug-in upgrade, plug-in patch upgrade, R/3 upgrade, support package upgrade, cockpit datasource transports or manual changes and Unicode conversion. Please notice that the structure changes are client Independent, so in all clients has to be checked the extraction and delta queues before the changes!&lt;br&gt;They will be different in each case:
+&lt;h4&gt;1) Only for R/3 upgrade:&lt;/h4&gt;
+Regarding the delta queues generated during the &quot;online&quot; phases of upgrade, as mentioned in note 328181 we always recommend to transfer all the data from the delta queue into the BW system before the upgrade and after that lock all the users and processes that can lead to a creation of data into the delta queue. Now the upgrade can be started and once that it has finished the users can be unlocked again. Anyhow, as this is a productive system and in order to have a lower downtime period, you can do the following:&lt;br&gt;
+1. Lock users out of R/3.&lt;br&gt;
+2. Deletion of the contents of set-up tables for specific applications in transaction LBWG.&lt;br&gt;
+3. Run the collective run so all the data are sent into the delta queue.&lt;br&gt;
+The collective run will execute according to the selected update method:&lt;br&gt;
+4. Empty BW delta queues on R/3 by extraction to BW:&lt;br&gt;
+5. Start prepare phase on R/3 including generation of shadow instance.&lt;br&gt;
+6. Return R/3 productive instance to users.&lt;br&gt;
+7. Recommence normal extraction into BW from R/3 while upgrading shadow instance.&lt;br&gt;
+8. Lock users out of R/3.&lt;br&gt;
+9. Run the collective run so all the data are sent into the delta queue.&lt;br&gt;
+10. Empty BW delta queues on R/3 by extraction to BW.&lt;br&gt;
+11. Final upgrade of productive instance.&lt;br&gt;
+12. Return upgraded system to users.&lt;br&gt;
+13. Re-commence extraction into BW from upgraded R/3.&lt;br&gt;
+Refer to SAP Note 1081287.
+&lt;h4&gt;2) For the rest processes like plug-in upgrade or plug-in patch upgrade; support package upgrade; transports; manual changes; Unicode conversion.&lt;/h4&gt;
+1. Lock users out of R/3.&lt;br&gt;
+2. Deletion of the contents of set-up tables for specific applications in transaction LBWG.&lt;br&gt;
+3. Run the collective run so all the data are sent into the delta queue.&lt;br&gt;
+The collective run will execute according to the selected update method:&lt;br&gt;
+4. Empty BW delta queues on R/3 by extraction to BW.&lt;br&gt;
+5. Apply one of these processes: plug-in upgrade or plug-in patch upgrade; support package upgrade; transports; manual changes; Unicode conversion.&lt;br&gt;
+6. Unlock users out of R/3.&lt;br&gt;
+7. Run the collective run so all the data are sent into the delta queue.&lt;br&gt;
+8. Recommence extraction into BW from modified R/3.&lt;br&gt;
+The SAP Note 328181 describes the different errors when doing upgrades, importing support packages, transports, or making manual changes... And SAP Note 602260 also explains correct procedure for performing the statistical setup (reconstruction) and the delta initialization. Regarding to import support packages, consider the SAP Note 1083709.
+&lt;h4&gt;3) Another issue to take into in account&lt;/h4&gt;
+If, despite an empty SM13, there is not possibility to make a structure change in the Logistics Customizing Cockpit, inconsistencies may occur in your system: There are records in the VBMOD update table, for which there is no longer an entry in the VBHDR table. To solve this, refer to SAP Notes 652310 and 396647(question 10). To solve the inconsistencies, follow the instructions in the Solution section of note 67014.&lt;br&gt;
+&lt;h3&gt;If you forget to process the V3 update before a change&lt;/h3&gt;
+&lt;span&gt;Before deleting the delta data by customer, there can be an alternative solution (HASH Solution) or the logistic safety belt (see &lt;/span&gt; &lt;a class=&quot;jive-link-external-small&quot; href=&quot;http://www.sdn.sap.com/irj/scn/weblogs;jsessionid=%28J2EE3417500%29ID0294196150DB01660827622326273616End?blog=/pub/wlg/5316&quot; target=&quot;_blank&quot;&gt;http://www.sdn.sap.com/irj/scn/weblogs;jsessionid=%28J2EE3417500%29ID0294196150DB01660827622326273616End?blog=/pub/wlg/5316&lt;/a&gt;&lt;span&gt;)) &lt;/span&gt;&lt;br&gt;
+If the above solution does not work, at the last solution will be to delete the delta data. And for this case it means that this data is lost. So, to do this,
+&lt;h4&gt;1) For V3 update methods:&lt;/h4&gt;
+Go to the update overview (Transaction SM13), select the records (user *, V2 executed, set date), and select Update records -&amp;gt; Delete -&amp;gt; All records. Do not forget to deactivate the flag &quot;Only incorrect&quot;.
+&lt;h4&gt;2) For update method &quot;Delta Queued&quot; (as of PI(-A) 2002.1):&lt;/h4&gt;
+Go to the logistics queue overview (Transaction LBWQ). Mark the queues for the applications concerned one after the other (MCEXnn, nn = number of the logistics application, see Transaction LBWE), and choose the display function. Then choose the display function again to list all entries of the queue. Then select and delete all entries that had been stored before the structure change. In case of a very large number of entries in a queue it may be required to delete the entire contents of the queue. This is possible already on the initial screen of Transaction LBWQ.
+&lt;h3&gt;Guideline for structure changes in LWBE&lt;/h3&gt;
+We have a guideline as overview about structure changes in LBWE into the customizing of our R/3 system:&lt;br&gt;
+The available fields by default in LBWE are automatically filled during the extraction. Fields that are not available in LBWE can also be extended (user-defined fields, for example). We must then fill these fields in the exit user SAP Note 576886 describes the enhancement of extract structures with separate (user-defined) fields or fields that are not available in LBWE. &lt;/p&gt;&lt;p&gt;The changes to structures are frequently made in the development system and then these should be transported into the production system.
+&lt;h3&gt;How to detect errors&lt;/h3&gt;
+Usually, when we did not follow the steps aforementioned to avoid inconsistencies, the main effect is regarding to NO Delta works for implicated cockpit datasources. There are several cases which are collected in our messages:&lt;br&gt;
+1. The V3 control jobs LIS-BW-VB_APPLICATION* finished with errors (transaction code SM37), usually the dump arises, for instance&lt;br&gt;
+The job of collective run uses the same reports as before (RMBWV3&amp;lt;Appl.-No)&lt;br&gt;
+2. For the rest cases like upgrades, applying patches or similar, the system shows that the structure was changed into the log.
+&lt;h3&gt;Solutions:&lt;/h3&gt;
+To solve the dump problem&amp;nbsp; we can use the hash solution from the notes 835466 and 834897. The Hash-Solution enables you to redo the extractor structure change and load the &quot;old&quot; data up to the last old record, than switch to the new version of the extractor structure and start the normal data loading.&lt;br&gt;
+Otherwise another alternative is to reinitialize the involved application.&lt;br&gt;
+Please remeber that it is very important to clear all of the delta queues before an upgrade or changing of structure to avoid such kind of problems.&lt;br&gt;
+Please take a detailed look at the note 1081287 as well.
+&lt;h3&gt;More relevant Transaction codes and Reports&lt;/h3&gt;
+LBWE: to display all datasources of LO Data extraction: Customizing Cockpit.&lt;br&gt;
+LBWF: Log for logistics Extract Structures&lt;br&gt;
+LBWG: Deletion of Setup Data. The deletion will be executed by component,for instance for &quot;04&quot; component, all data from these setup tables will be deleted.&lt;br&gt;
+LBWQ: Logistics Queue Overview&lt;br&gt;
+SM13: Administrate Update Records&lt;br&gt;
+RSA7: BW Delta Queue Monitor&lt;br&gt;
+NPRT: Log for Setup of Statistical Data: Selection&lt;br&gt;
+To fill the set up tables of customizing cockpit we have the following transaction codes / reports:&lt;br&gt;
+1. Inventory Management (03):&lt;br&gt;
+2. Purchasing (02) -&amp;gt;OLI3BW /RMCENEUA&lt;br&gt;
+3. Production (04):&lt;br&gt;
+4. - Quality Management (05) -&amp;gt;OLIQBW / RMCQNEBW&lt;br&gt;
+5. - Plant Maintenance (17) -&amp;gt;OLIIBW / RMCINEBW&lt;br&gt;
+6. - Service Management (18) -&amp;gt;OLISBW / RMCSNEBW&lt;br&gt;
+7. - SD-Sales-Orders (11) -&amp;gt;OLI7BW / RMCVNEUA&lt;br&gt;
+8. - LE-Deliveries (12) -&amp;gt;OLI8BW / RMCVNEUL&lt;br&gt;
+9. - SD - Billing Documents (13) -&amp;gt; OLI9BW / RMCVNEUF&lt;br&gt;
+10. - LES-Shipment Costs (08) -&amp;gt; VIFBW / VTRBWVIFBW&lt;br&gt;
+11. - LES-Transport (08) -&amp;gt;VTBW / VTRBWVTBWNEW&lt;br&gt;
+12. - Retail (40) -&amp;gt;ORISBW / RMCBWEXUSEG&lt;br&gt;
+13. - Agency business (45) -&amp;gt;OLIABW / RMCENEUB&lt;br&gt;
+14. - Invoice Verification (06) -&amp;gt;OLI6BW / RMCENEUR
+&lt;h3&gt;Relevant SAP Notes&lt;/h3&gt;
+1081287 Data extraction orders block the upgrade process&lt;br&gt;
+1083709 Error when you import Support Packages&lt;br&gt;
+328181 Changes to extract structures in Customizing Cockpit&lt;br&gt;
+762951 Organization of structure changes in the LBWE&lt;br&gt;
+834897 Avoiding inconsistent data with extract structure&lt;br&gt;
+380078 FAQ: BW delta queue (RSA7): Questions and answers&lt;br&gt;
+396647 FAQ: V3 update: Questions and answers&lt;br&gt;
+835323 Hash solution - Application 11&lt;br&gt;
+835457 Hash solution - application 13&lt;br&gt;
+835466 Using the repair mode of the hash solution&lt;br&gt;
+602260 Procedure for reconstructing data for BW&lt;br&gt;
+67014 Reorganizing update requests&lt;br&gt;
+652310 LBWE: Message MCEX 140 with extract structure change&lt;br&gt;
+&lt;/html&gt;</pre>
 </div>
 <div created="20201110222858759" modified="20201111010224708" tags="toc" title="Table of contents">
 <pre>;Table of contents
