@@ -207,6 +207,10 @@ Error message and password prompt
 
 <li>DeltaQueues</li>
 
+<li>Draft 2 of 'Oracle'</li>
+
+<li>Draft of 'Oracle'</li>
+
 <li>EditorVI</li>
 
 <li>Filenet</li>
@@ -216,6 +220,8 @@ Error message and password prompt
 <li>IDoc</li>
 
 <li>Licence</li>
+
+<li>Oracle</li>
 
 <li>SAP</li>
 
@@ -9750,7 +9756,7 @@ exports.parse = function() {
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111115445898" list="[[Table of contents]]" modified="20201111145950868" title="$:/StoryList">
+<div created="20201111152450868" list="[[Table of contents]] Oracle" modified="20201111152450868" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
@@ -9769,7 +9775,7 @@ exports.parse = function() {
         },
         &quot;$:/info/url/full&quot;: {
             &quot;title&quot;: &quot;$:/info/url/full&quot;,
-            &quot;text&quot;: &quot;https://kancelot.github.io/SAPBC/index.html&quot;
+            &quot;text&quot;: &quot;https://kancelot.github.io/SAPBC/&quot;
         },
         &quot;$:/info/url/host&quot;: {
             &quot;title&quot;: &quot;$:/info/url/host&quot;,
@@ -9789,7 +9795,7 @@ exports.parse = function() {
         },
         &quot;$:/info/url/pathname&quot;: {
             &quot;title&quot;: &quot;$:/info/url/pathname&quot;,
-            &quot;text&quot;: &quot;/SAPBC/index.html&quot;
+            &quot;text&quot;: &quot;/SAPBC/&quot;
         },
         &quot;$:/info/url/search&quot;: {
             &quot;title&quot;: &quot;$:/info/url/search&quot;,
@@ -10654,6 +10660,1232 @@ To fill the set up tables of customizing cockpit we have the following transacti
 652310 LBWE: Message MCEX 140 with extract structure change&lt;br&gt;
 &lt;/html&gt;</pre>
 </div>
+<div modified="20201111160437952" title="Draft 2 of 'Oracle'">
+<pre></pre>
+</div>
+<div created="20201111153118530" modified="20201111153118530" title="Draft of 'Oracle'">
+<pre>!!!Zalozeni velkeho indexu pro SAP v oracle
+
+Pokud je potreba zalozit index pro tabulku vetsi nez 1GB, SAP doporucuje v sapnote 334224 zalozit index pomoci databazovych nastroju: &lt;br&gt;
+Je potreba uvolnit/vyrobit misto v PSAPTEMP - tam se bude vytvaret sort table. A potom mit dost mista v cilovem tablespace - pozor na to, ze to misto DB potrebuje v jednom kuse. Index bude vznikat v temporary datafile a az bude hotovy, oracle ho prepne na permanent. Viz hlaska ORA-1652: unable to extend temp segment by 163840 in tablespace
+
+Prikaz na zalozeni indexu:
+
+```
+create index sapr3.&quot;DFKKOP~Z02&quot;
+on sapr3.DFKKOP ( MANDT, AUGST, VKONT, BUKRS, AUGDT, GPART, OPUPW )
+tablespace PSAPBTABNI
+nologging
+parallel 8
+online;
+```
+
+Protoze v oracle 9i nedojde ke spocitani statistiky po zalozeni indexu, ale databaze ho hned zacne pouzivat, da se spocitat statistika nejdriv podle 5%
+
+```
+analyze index sapr3.&quot;DFKKOP~Z02&quot; estimate statistics sample 5 percent;
+```
+
+A potom vypoctem (pripadne) pres cely index. Nemelo by to nic zamykat, ani snizovat vykon a melo by to pouzivat tu uz vyrobenou statistiku
+
+```
+analyze index sapr3.&quot;DFKKOP~Z02&quot; compute statistics;
+```
+
+Sapove doporucuji jeste:
+
+```
+alter index sapr3.&quot;DFKKOP~Z02&quot; parallel 1;
+```
+
+* !!!Presouvani tabulek do jinych tablespace
+pred zacatkem akce jsme predelali dictionary managed tablespace na localy managed:
+{{{execute DBMS_SPACE_ADMIN.TABLESPACE_MIGRATE_TO_LOCAL ('PSAPBTABD');}}}
+{{{execute DBMS_SPACE_ADMIN.TABLESPACE_MIGRATE_TO_LOCAL ('PSAPBTABI');}}}
+potom nastavili na zdrojove tabulce mensi velikost next extentu a vypnuli logovani zmen po dobu presunu:
+{{{alter table sapr3.DFKKOP storage (next 200M);}}}
+{{{alter table sapr3.DFKKOP nologging;}}}
+a zkontrolovali, ze je to dobre nastaveno:
+{{{select table_name, tablespace_name, next_extent, logging from dba_tables where table_name = 'DFKKOP';}}}
+samotny presun se provede prikazem:
+{{{alter table sapr3.DFKKOP move tablespace PSAPBTABD storage (initial 3000M next 100M pctincrease 0) parallel 2 nologging;}}}
+po presunu nastavili zpet logovani zmen a nastavili vetsi next nextent
+{{{alter table sapr3.DFKKOP storage (next 500M);}}}
+{{{alter table sapr3.DFKKOP logging;}}}
+zkontrolovali, ze je cilovy tablespace prazdny
+{{{select owner, segment_name, segment_type from dba_segments where tablespace_name = 'PSAPBTAB2D';}}}
+a tablespace vymazali:
+{{{drop tablespace PSAPBTAB2D including contents and datafiles;}}}
+zkontrolovali, ze z disku zmizely vsechny datafile:
+{{{find . -name '*btab2d*' -print}}}
+presun tabulky do jineho tablespace rozbije indexy nad presouvanou tabulkou, jejich seznam se vypise prikazem:
+{{{
+SQL&gt; select index_name, status from dba_indexes where status&lt;&gt;'VALID' and owner='SAPR3';
+ 
+INDEX_NAME              STATUS
+----------------------- ---------
+DFKKOP~0                UNUSABLE
+}}}
+a oprava se udela pomoci:
+{{{alter index SAPR3.&quot;DFKKOP~0&quot; rebuild online storage (initial 100M next 100M pctincrease 0) parallel 4 nologging;}}}
+pro kazdy index
+nebo v pripade, ze bychom chteli index rebuildovat do jineho tablespace
+{{{alter index SAPR3.&quot;DFKKOP~0&quot; rebuild tablespace PSAPBTABNI online parallel 2 nologging;}}}
+Potom je potreba pro indexy spocitat statistiky:
+{{{analyze index SAPR3.&quot;DFKKOP~0&quot; estimate statistics sample 5 percent;}}}
+
+!!!Vypis nainstalovanych OPatchu
+{{{$ORACLE_HOME/OPatch/opatch lsinventory -invPtrLoc $ORACLE_HOME/oraInst.loc}}}
+Instalace noveho OPatche
+{{{$ORACLE_HOME/OPatch/opatch apply -invPtrLoc $ORACLE_HOME/oraInst.loc}}}
+A kdyz se posere jdk v oracle (jako po upgrade na 10.2.0.4)
+{{{$ORACLE_HOME/OPatch/opatch lsinventory -invPtrLoc $ORACLE_HOME/oraInst.loc -jdk /usr/java14}}}
+
+!!!MOpatch
+Ekvivalent OPatch paramtetru –invPtrLoc v MOpatchi je –p …priklad dole
+--{{{/oracle/I02/102_64/MOPatch/mopatch.sh -d -v -p /oracle/I02/102_64/oraInst.loc -s /usr/sap/scratch/OraclePatch/SAP_102049_201108_HPUXIA64.zip}}}--
+Aktualizace MOPatch: 
+{{{cd /oracle/&lt;DBSID&gt;/&lt;DB Version&gt;/}}}
+{{{unzip MOPATCHP_xxxxxx.ZIP}}}
+{{{unzip OPATCHP_xxxxxx.ZIP}}}
+Spusteni aktualizace: 
+{{{./mopatch.sh -v -s /oracle/&lt;SID&gt;/SBP/SAP12102P_1508-20012300.ZIP}}}
+vice [[Note 1027012 - MOPatch - Install Multiple Oracle Patches in One Run|https://service.sap.com/sap/support/notes/1027012]].
+
+!!!Nastaveni hodnoty next_extent
+Pro dictionary managed tablespaces SAP pocita hodnotu next_extent jobem &quot;adapt next extents&quot; v DB13.
+Pro velke tabulky/indext se muze stat, ze hodnota next_extent bude rovna maximu 2GB a zpusobovat velkou fragmentaci databaze.
+Maximalni velikost next extentu jde vynutit parametrem
+{{{next_max_size = &lt;velikost_v_mb&gt;M}}}
+v souboru {{{init&lt;DBSID&gt;.sap}}} viz. [[next_max_size|http://help.sap.com/saphelp_nwpi71/helpdata/en/46/ce2d80a5171827e10000000a1553f6/frameset.htm]]
+
+!!!seznam 20 nejvetsich objektu s nejvetsim next_extent:
+{{{
+select * from
+(select SEGMENT_NAME, SEGMENT_TYPE, TABLESPACE_NAME, NEXT_EXTENT
+from dba_segments where (next_extent is not null)
+order by next_extent desc) where rownum &lt; 21;
+}}}
+zmena velikosti next_extent pro tabulku/index:
+{{{alter table sapr3.TABLE_NAME storage (next 500M);}}}
+{{{alter index sapr3.&quot;INDEX_NAME~X&quot; storage (next 500M);}}}
+
+spusteni vypoctu next_extent pod uzivatelem &lt;sid&gt;adm:
+{{{brconnect -u / -c -f next -t ALL}}}
+
+!!!Prace s DB linky
+seznam DB linku na Oracle 9.2 (jako uzivatel sysdba)
+{{{
+select substr(u.name,1,10) owner
+,substr(l.name,1,25) db_link
+,substr(l.host,1,15) host
+,substr(l.userid||'/'||l.password,1,25) userpass
+from sys.link$ l, sys.user$ u
+where l.owner# = u.user#;
+}}}
+Pripadne jako vlastnik:
+{{{
+select substr(owner,1,10) as owner,
+substr(db_link,1,30) as db_link,
+substr(username,1,15) as username,
+substr(host,1,15) as host
+from dba_db_links;
+}}}
+Zalozeni DB linku
+{{{
+create database link JMENO_DB_LINKU
+connect to jmeno_uzivatele_ve_vzdalene_databazi
+identified by jeho_heslo
+using 'DBSID_V_TNSNAMES_ORA.WORLD';
+}}}
+Vymaz databazoveho linku
+{{{
+drop database link JMENO_DB_LINKU.WORLD;
+}}}
+Overeni funkcnosti DB linku
+{{{
+select * from dual@JMENO_DB_LINKU.WORLD;
+}}}
+Pouziti connect through, kdyz nezname heslo vlastnika linku:
+{{{
+create user through_user identified by zeus;
+alter user sapsr3 grant connect through through_user;
+}}}
+//There is also a corresponding revoke command to revoke the connect through syntax://
+{{{alter user sapsr3 revoke connect through through_user;}}}
+//Now that we have create a &quot;grant connect through&quot; assigned to user &quot;fred&quot;, we can connect//
+{{{
+connect through_user[sapsr3]/zeus;
+
+Connected.
+
+SQL&gt; show user
+
+USER is &quot;FRED&quot;
+}}}
+//zakazani uzivatele, odebrani opravneni://
+{{{
+alter user through_user account lock;
+alter user sapsr3 revoke connect through through_user;
+}}}
+
+!!!Kopirovani bezici databaze
+Pokud je potreba zkopirovat bezici databazi, je potreba vsechny tablespaces prepnout do &quot;begin backup&quot;
+uvedene scripty jsou nutne pro ''oracle 9i'', v oracle 10+ staci
+{{{ALTER DATABASE BEGIN BACKUP; a ALTER DATABASE END BACKUP;}}}
+
+{{{
+beginbackup.sh
+sqlplus -SL &quot;/as sysdba&quot; &lt;&lt;END_SQL
+declare
+i number;
+begin
+for i in (select tablespace_name from dba_tablespaces where contents &lt;&gt; 'TEMPORARY') loop
+execute immediate 'alter tablespace '||i.tablespace_name||' begin backup';
+end loop;
+end;
+/
+exit
+END_SQL
+}}}
+{{{
+endbackup.sh
+sqlplus -SL &quot;/as sysdba&quot; &lt;&lt;END_SQL
+declare
+i number;
+begin
+for i in (select tablespace_name from dba_tablespaces where contents &lt;&gt; 'TEMPORARY') loop
+execute immediate 'alter tablespace '||i.tablespace_name||' end backup';
+end loop;
+end;
+/
+exit
+END_SQL
+}}}
+kontrola:
+{{{
+select count(*) from V$BACKUP where status = 'ACTIVE';
+select count(*) from V$BACKUP where status = 'NOT ACTIVE';
+}}}
+
+!!!Statistiky pro tabulky a indexy:
+Urceni statistiky pomoci procedury dbms_stats.gather_&lt;object&gt;_stats:
+{{{exec dbms_stats.gather_table_stats(ownname =&gt; 'SAPR3', tabname =&gt; 'DFKKOP', estimate_percent =&gt; 5);}}}
+{{{exec dbms_stats.gather_index_stats(ownname =&gt; 'SAPR3', indname =&gt; 'DFKKOP~4', estimate_percent =&gt; 5);}}}
+nebo s urovni parallelismu 4:
+{{{exec dbms_stats.gather_table_stats(ownname =&gt; 'SAPR3', tabname =&gt; 'DFKKOP', estimate_percent =&gt; 5, degree =&gt; 4);}}}
+nebo pomoci sql prikazu:
+{{{analyze table sapr3.DFKKOP estimate statistics sample 5 percent;}}}
+{{{analyze index sapr3.&quot;DFKKOP~4&quot; estimate statistics sample 5 percent;}}}
+Statisku je mozne spocitat celou:
+{{{analyze index sapr3.&quot;DFKKOP~4&quot; compute statistics;}}}
+Seznam tabulek, ktere maji nejstarsi statistiky:
+{{{select * from (select table_name, last_analyzed from dba_tables where last_analyzed is not null order by last_analyzed asc) where rownum &lt; 90;}}}
+
+!!!Zjisteni s jak velkym vzorkem byla statistika spocitana:
+{{{
+SQL&gt; select table_name, last_analyzed, sample_size/num_rows*100 as percentage from dba_tables where table_name = 'RESB';
+TABLE_NAME  LAST_ANAL    PERCENTAGE
+----------  -----------  ----------
+RESB        07-MAR-12    10
+ 
+SQL&gt; select index_name, last_analyzed, sample_size/num_rows*100 as percentage from dba_indexes where table_name = 'RESB';
+INDEX_NAME   LAST_ANAL  PERCENTAGE
+-----------  ---------  ----------
+RESB~ZAK     07-MAR-12  100
+RESB~0       07-MAR-12  56.3113463
+RESB~M       07-MAR-12  34.6635699
+}}}
+
+!!!Seznam toho, co v DB bezi dele nez 6 sekund a jak dlouho to jeste pobezi:
+{{{
+column username format a10
+column opname format a20
+column target format a20
+select username,opname,target,round(((totalwork-sofar)/totalwork),4)*100 &quot;PCT_REMINING&quot;,round(time_remaining/60,2) &quot;Min&quot;
+from v$session_longops
+where time_remaining&gt;0;
+}}}
+
+!!!Vypis z V$SESSION:
+{{{
+set pagesize 100
+set lines 1000
+col c1 for a9
+col c1 heading &quot;OS User&quot;
+col c2 for a9
+col c2 heading &quot;Oracle User&quot;
+col b1 for a9
+col b1 heading &quot;Unix PID&quot;
+col b2 for 9999 justify left
+col b2 heading &quot;SID&quot;
+col b3 for 99999 justify left
+col b3 heading &quot;SERIAL#&quot;
+col sql_text for a66
+break on b1 nodup on c1 nodup on c2 nodup on b2 nodup on b3 skip 3
+select c.spid b1, b.osuser c1, b.username c2, b.sid b2, b.serial# b3,
+a.sql_text
+from v$sqltext a, v$session b, v$process c
+where
+-- b.sid=113 and /* ONLY SPECIFIED SID */
+a.address = b.sql_address
+and b.paddr = c.addr
+and a.hash_value = b.sql_hash_value
+order by c.spid,a.hash_value,a.piece
+/
+}}}
+
+!!!Seznam cekajicich session uzivatele SYS
+{{{select event, seconds_in_wait from v$session_wait where sid in (select sid from v$session where username = 'SYS');}}}
+
+!!!Seznam cekajicich session
+{{{
+set pagesize 100
+set lines 140
+column sid format 9999
+column username a20
+column event format a60
+column sec format 9999999
+select w.sid sid, s.username username, substr(w.event,1,60) event, w.seconds_in_wait sec
+from v$session_wait w
+join v$session s on s.sid = w.sid
+where w.event not in ('SQL*Net message from client')
+and s.username is not null;
+}}}
+
+!!!Seznam chained rows (A chained row is a row that is too large to fit into a single database data block) pro tablespace xxx :
+{{{
+select * from (
+select TABLE_NAME, CHAIN_CNT
+from dba_tables
+where TABLESPACE_NAME = ' xxx ' and CHAIN_CNT &lt;&gt; 0
+order by CHAIN_CNT desc
+) where rownum &lt; 30;
+}}}
+
+!!!Zobrazeni exekucniho planu pro DB dotaz:
+{{{
+set lines 200
+explain plan for
+SELECT opbel, xblnr, vkont, SUM( betrh ) AS betrh, waers, faedn, bldat, blart, hvorg
+FROM sapr3.dfkkop
+WHERE mandt = '003' AND augst = ' '
+GROUP BY opbel, xblnr, vkont, waers, faedn, bldat, blart, hvorg;
+select * from table (dbms_xplan.display);
+}}}
+
+!!!Find the last object in a oracle datafile
+Is always annoying to resize a datafile with empty space but some blocks occupied at the end of the file.
+You get the:
+{{{ERROR at line 1:}}}
+{{{ORA-03214: File Size specified is smaller than minimum required}}}
+There are may brute force ways to solve this as rebuild or move everthing in the tablespace or exp/imp.
+Sometimes you just want resize one datafile to archive some monitoring limits with no impact to production.
+
+Find the last object in the datafiles for a specific tablespace (the is slow, checkout Metalink Note 422730)
+{{{
+select owner,segment_name,partition_name,segment_type
+from dba_extents
+where (file_id,block_id) in (select file_id,max(block_id) from dba_extents group by file_id)
+and tablespace_name like 'TBSP_NAME%'
+}}}
+If you have the object, you can do:
+{{{Alter table move;}}} -- ! table unavailable, indexes need to be rebuild
+or
+{{{alter index rebuild;}}} -- index unavailable
+or
+{{{alter index rebuild online;}}} -- index available during rebuild
+
+!!!Presun datafile z sapdataX do sapdataY
+pozor: na spusteni prikazu alter database rename file je ''opravdu'' potreba mit databazi v ''mount''. NE open.
+postup
+{{{shutdown immediate}}}
+v tuto chvili presunout (fyzicky) soubor z sapdataX do sapdataY
+{{{
+startup mount
+alter database rename file '/oracle/SID/sapdataX/poold_1/poold.data1' to '/oracle/SID/sapdataY/poold_1/poold.data1';
+alter database rename file '/oracle/SID/sapdataX/loadd_2/loadd.data2' to '/oracle/SID/sapdataY/loadd_2/loadd.data2';
+alter database rename file '/oracle/SID/sapdataX/stabd_4/stabd.data4' to '/oracle/SID/sapdataY/stabd_4/stabd.data4';
+shutdown immediate
+startup
+}}}
+kontrola
+{{{select count(*) from dba_data_files where status != 'AVAILABLE';}}}
+{{{select count(*) from dba_data_files where file_name not like '%/sapdataY/%';}}}
+vysledkem obou je 0
+
+!!!Relink Oracle
+Na Unix systemech
+{{{set $ORACLE_HOME, $ORACLE_BASE, $ORACLE_SID and also the $PATH}}}
+and the go into {{{$ORACLE_HOME/bin}}} and then fire the command {{{relink all}}}.
+Before relinking Oracle, shut down both the database and the listener.
+{{{$ORACLE_HOME/bin/relink all;}}}
+
+!!!Aktualizace statistik vsech tabulek a indexu:
+{{{
+brconnect -u / -c -f stats -t oradict_stats
+brconnect -u / -c -f stats -t system_stats
+brconnect -c -u / -f stats -t all -f collect -p 4
+}}}
+
+!!!Default (temporary)tablespace:
+{{{ALTER DATABASE DEFAULT TABLESPACE PSAPSR3USR;}}}
+{{{ALTER DATABASE DEFAULT TEMPORARY TABLESPACE PSAPTEMP;}}}
+
+!!!Export/import schematu pomoci datove pumpy:
+V databazi je potreba vytvorit directory. Nejaka by (v Oracle 11g) mela existovat, pokud ji chceme pouzit, zjistime jeji jmeno pomoci:
+{{{
+set lines 200
+col directory_path for a100
+select * from dba_directories;
+}}}
+Je mozne pouzit existujici {{{DATA_PUMP_DIR}}}, pokud chceme/potrebujeme vytvorit novou, tak:
+{{{create directory export_directory as '/cesta_k_adresari_na_OS';}}}
+Nastavime uzivateli pravo na cteni/zapis:
+{{{grant read,write on directory DATA_PUMP_DIR to quest;}}}
+Potom uz je mozne udelat export, drop a import. Uzivatel se zakladat nemusi, import ho vytvori sam:
+{{{expdp schemas=QUEST directory=DATA_PUMP_DIR dumpfile=quest_schema.dmp logfile=quest_schema_exp.log}}}
+{{{drop user quest cascade;}}}
+a import/remap do noveho tablespace:
+{{{impdp schemas=QUEST directory=DATA_PUMP_DIR dumpfile=quest_schema.dmp logfile=quest_schema_imp.log remap_tablespace=PSAPUSER1D:PSAPSR3USR}}}
+
+''merged SQL prikazy page''
+
+!!!seznam nagrantovanych tabulek:
+{{{SELECT grantee, owner, table_name, privilege}}}
+{{{FROM dba_tab_privs}}}
+{{{WHERE grantee NOT IN ('SAPR3') AND owner = 'SAPR3';}}}
+
+!!!rychlost cteni databazovych bloku (test rychlosti DB na TS1)
+{{{SELECT file#, singleblkrdtim, lstiotim, maxiortm, maxiowtm}}}
+{{{FROM v$filestat;}}}
+lepsi:
+{{{
+select * from (
+ select a.file#,  substrb(b.file_name,1,50) as file_name, a.singleblkrdtim/a.singleblkrds*10 as average_wait 
+ from v$filestat a, dba_data_files b 
+ where a.file# = b.file_id 
+ and a.singleblkrds &gt; 0 
+ order by average_wait desc
+) where rownum &lt;11;
+}}}
+
+!!!Nastaveni auditovani databaze:
+do {{{init&lt;SID&gt;.ora}}} se doplni radek
+{{{
+audit_trail = db
+}}}
+v pripade pouziti spfile:
+{{{
+ALTER SYSTEM SET audit_trail = db SCOPE=SPFILE;
+}}}
+zaznamy auditu se zapisuji do tabulky {{{AUD$}}} ve schematu {{{SYS}}}
+a pokud ma v {{{SYS.AUD$}}} (dba_audit_trail) byt i konkretni SQL prikaz, je potreba nastavit audit_trail na db,extended
+{{{
+ALTER SYSTEM SET audit_trail = db,extended SCOPE=SPFILE;
+}}}
+
+!!!Nastaveni auditu pro pro vybrane tabulky:
+{{{
+AUDIT &lt;action&gt; on &lt;schema&gt;.&lt;table&gt; BY &lt;prepinac&gt;;
+}}}
+kde moznosti &lt;action&gt; jsou:
+ALL - protokoluje vsechno
+INSERT, SELECT, UPDATE, DELETE (seznam vsech akci je v tabulce AUDIT_ACTIONS)
+vice moznosti se oddeluje carkami, napriklad: INSERT,UPDATE,DELETE
+a &lt;prepinac&gt; muze nabyvat hodnot
+access - logoje se kazde provedeni sledovane akce
+session - zapise se pouze jeden radek pro celou session
+priklady:
+{{{AUDIT INSERT,UPDATE on sapr3.zanbi0x BY SESSION;}}}
+{{{AUDIT SELECT on sapr3.ztajnatabulka BY ACCESS;}}}
+
+!!!Zjisteni stavu auditu tabulky:
+{{{
+select * from dba_obj_audit_opts
+where ALT != '-/-' or AUD != '-/-' or COM != '-/-' or DEL != '-/-'
+   or GRA != '-/-' or IND != '-/-' or INS != '-/-' or LOC != '-/-'
+   or REN != '-/-' or SEL != '-/-' or UPD != '-/-' or REF != '-/-'
+   or EXE != '-/-' or CRE != '-/-' or REA != '-/-' or WRI != '-/-';
+}}}
+zruseni auditovani:
+{{{
+noaudit &lt;akce&gt; on &lt;schema&gt;.&lt;table&gt;;
+}}}
+dalsi priklady:
+zjistneni nastaveni auditu pro konkretni tabulku:
+{{{select * from dba_obj_audit_opts where owner = 'SAPR3' and object_name = 'ZANBI0X';}}}
+zruseni auditu pro konkretni tabulku:
+{{{noaudit all on sapr3.zanbi0x;}}}
+nastaveni auditu pro insert a update nad konkretni tabulkou, jeden zaznam za celou session:
+{{{audit insert,update on sapr3.zanbi0x by session;}}}
+
+!!!Nastaveni auditu pro vybrane akce konkretniho uzivatele:
+{{{
+audit select table, delete table, insert table, update table by &lt;username&gt;;
+audit table by &lt;username&gt;;
+}}}
+Prikaz &quot;audit table by &lt;user&gt;;&quot; dela audit DDL operaci, create, truncate, atd.
+vychozi nastaveni je audit by session, ktery ale od verze 11g stejne audituje vsechny zaznamy, pouze v jinem formatu. Audit by session jde vynutit prikazem:
+{{{
+audit select table by &lt;username&gt; by access;
+}}}
+Vypnuti auditu:
+{{{
+noaudit delete table, insert table, update table by &lt;username&gt;;
+noaudit table by &lt;username&gt;;
+}}}
+nejde {{{noaudit all;}}} ani {{{noaudit all by &lt;username&gt;;}}}
+
+Vypis nastaveni auditu pro uzivatele:
+{{{
+select substr(user_name,1,15) as user_name,
+       substr(audit_option,1,20) as audit_option,
+       success,
+       failure
+from dba_stmt_audit_opts;
+}}}
+Vypis auditniho protokolu v pripade audit by session:
+{{{
+select substr(username,1,15) as username,
+       substr(obj_name,1,30) as objname,
+       ses_actions
+FROM dba_audit_trail
+ORDER BY timestamp;
+}}}
+popis pole {{{SES_ACTIONS - VARCHAR2(19)}}}
+Session summary (a string of 16 characters, one for each action type in the order ALTER, AUDIT, COMMENT, DELETE, GRANT, INDEX, INSERT, LOCK, RENAME, SELECT, UPDATE, REFERENCES, and EXECUTE. Positions 14, 15, and 16 are reserved for future use. The characters are:
+{{{-}}} - None
+{{{S}}} - Success
+{{{F}}} - Failure
+{{{B}}} - Both
+[[Dokumentace|http://docs.oracle.com/cd/B19306_01/server.102/b14237/statviews_3056.htm]]
+
+Vypis auditnyho protokolu by access:
+{{{
+COLUMN username FORMAT A8
+COLUMN obj_name FORMAT A30
+COLUMN action_name FORMAT A12
+COLUMN sql_text FORMAT A50
+SELECT username,obj_name,action_name, sql_text
+FROM dba_audit_trail
+ORDER BY timestamp;
+}}}
+
+!!!Materializovane view
+vytvoreni materializovaneho view:
+{{{
+CREATE MATERIALIZED VIEW SAPR3.ZANBI0X
+TABLESPACE PSAPBTABD
+REFRESH COMPLETE ON DEMAND
+AS SELECT T1.&quot;MANDT&quot;, T1.&quot;VBELN&quot;, T1.&quot;POSNR&quot;, T1.&quot;ERDAT&quot;, T1.&quot;MATNR&quot;, T3.&quot;OBKNR&quot;, T3.&quot;OBZAE&quot;, T3.&quot;SERNR&quot;
+FROM &quot;LIPS&quot; T1, &quot;SER01&quot; T2, &quot;OBJK&quot; T3
+WHERE T1.&quot;VBELN&quot; = T2.&quot;LIEF_NR&quot; AND T1.&quot;POSNR&quot; = T2.&quot;POSNR&quot; AND T2.&quot;OBKNR&quot; = T3.&quot;OBKNR&quot; AND ( T1.&quot;LGORT&quot; = '4001' OR T1.&quot;LGORT&quot; = '4091' OR T1.&quot;LGORT&quot; = '4092' OR T1.&quot;LGORT&quot; = '4094');
+}}}
+vymaz materializovaneho view:
+{{{DROP MATERIALIZED VIEW SAPR3.ZANBI0X;}}}
+(materializovane view nejde zmenit. Je potreba stare smazat a zalozit nove)
+
+zobrazeni definice materializovaneho view:
+{{{set long 200000}}}
+{{{select DBMS_Metadata.Get_DDL('MATERIALIZED_VIEW','ZANBI0X','SAPR3') from dual;}}}
+
+seznam jobu:
+{{{set lines 160}}}
+{{{select job, schema_user, last_date, next_date, substr(what,1,90) as what from dba_jobs;}}}
+nebo:
+{{{select job, substr(schema_user,1,10) &quot;sch_usr&quot;, to_char(last_date,'dd.mm.yyyy hh24:mi:ss') &quot;Last&quot;,to_char(next_date,'dd.mm.yyyy hh24:mi:ss') &quot;next&quot;, substr(interval,1,15) &quot;interval&quot;, substr(what,1,50) &quot;what&quot; from dba_jobs;}}}
+vymaz jobu:
+{{{exec dbms_job.remove(job_number);}}}
+
+naplanovani jobu na spusteni aktualizace materializovaneho view
+{{{
+declare
+  my_job number;
+begin
+  dbms_job.submit(job =&gt; my_job,
+    what =&gt; 'begin dbms_mview.refresh(''ZANBI0X''); end;',
+    next_date =&gt; sysdate+1,
+    interval =&gt; 'sysdate+1');
+end;
+/
+}}}
+Nebo pridani marializovaneho view do existuji skupiny refresh_group:
+{{{
+BEGIN
+DBMS_REFRESH.ADD(
+name =&gt; '&quot;SAPR3&quot;.&quot;ZMVFIDV_BKPF&quot;',
+list =&gt; '&quot;SAPR3&quot;.&quot;ZANBI0X&quot;',
+lax =&gt; TRUE);
+END;
+/
+}}}
+Naplanovani refreshe groupy:
+{{{exec dbms_job.next_date(21,to_date('08.10.2009 13:00:00','dd.mm.yyyy hh24:mi:ss'));}}}
+
+Seznam refresh group:
+{{{select refgroup, owner, name from dba_rgroup;}}}
+
+Seznam materializovanych view v refresh groupe:
+{{{select refgroup, owner, name from dba_rchild;}}}
+
+Seznam materializovanych view a datum a cas jejich posledniho refreshe:
+{{{select owner, mview_name, to_char(last_refresh_date,'dd.mm.yyyy hh24:mi:ss'), last_refresh_type from dba_mviews;}}}
+
+Seznam bezicich jobu:
+{{{
+SELECT sid, r.job, log_user, r.this_date, r.this_sec
+FROM dba_jobs_running r, dba_jobs j
+WHERE r.job = j.job
+/
+}}}
+
+!!!Select na vypis volneho mista v DB, vcetne nejdelsiho volneho bloku.
+{{{
+set lines 250
+set pages 300
+set numwidth 11
+column &quot;Name&quot; format a20
+column &quot;File&quot; format a37
+column &quot;Mount Point&quot; format a50
+column &quot;Tablespace&quot; format a10
+column username format a10
+column osuser format a10
+column &quot;SQL&quot; format a64
+column sid format 999
+column serial# format 999999
+column cmd format 999
+column taddr format a8
+column lockwait format a8
+column machine format a20
+column program format a30
+break on &quot;Tspc:File:Blocks:Sid:Ser:User&quot;
+column &quot;Tspc:File:Blocks:Sid:Ser:User&quot; format a55
+ 
+select df.tablespace_name &quot;Name&quot;,round(df.sum_bytes/1024/1024,1) &quot;Total MB&quot;,
+round(df.sum_maxbytes/1024/1024,1) &quot;Max MB&quot;,
+round(fs.sum_bytes/1024/1024,1) &quot;Free MB&quot;,round(fs.max_bytes/1024/1024,1)
+&quot;Max Chunk MB&quot;,
+fsc.total_extents &quot;Free Extents&quot;,fsc.extents_coalesced
+&quot;Coal.Extents&quot;,percent_extents_coalesced &quot;% Coal.Extents&quot;,
+round(fs.sum_bytes/decode(df.sum_maxbytes,0,df.sum_bytes,df.sum_maxbytes)*100,1)
+&quot;% Free Space&quot;,
+round((0.2*df.sum_bytes-fs.sum_bytes)/0.8/1024/1024,1) &quot;MB to add&quot;
+from
+(select tablespace_name,sum(bytes) sum_bytes,sum(maxbytes) sum_maxbytes
+from dba_data_files group by tablespace_name) df
+left outer join
+(select tablespace_name,sum(bytes) sum_bytes,max(bytes) max_bytes from
+dba_free_space group by tablespace_name) fs
+on (df.tablespace_name=fs.tablespace_name)
+left outer join dba_free_space_coalesced fsc
+on (df.tablespace_name=fsc.tablespace_name)
+order by &quot;% Free Space&quot;;
+}}}
+!!!seznam zamku v databazi:
+{{{
+set linesize 200;
+COLUMN owner FORMAT A20
+COLUMN username FORMAT A20
+COLUMN object_owner FORMAT A20
+COLUMN object_name FORMAT A30
+COLUMN locked_mode FORMAT A15
+SELECT b.session_id AS sid,
+NVL(b.oracle_username, '(oracle)') AS username,
+a.owner AS object_owner,
+a.object_name,
+Decode(b.locked_mode, 0, 'None',
+1, 'Null (NULL)',
+2, 'Row-S (SS)',
+3, 'Row-X (SX)',
+4, 'Share (S)',
+5, 'S/Row-X (SSX)',
+6, 'Exclusive (X)',
+b.locked_mode) locked_mode,
+b.os_user_name
+FROM dba_objects a,
+v$locked_object b
+WHERE a.object_id = b.object_id
+ORDER BY 1, 2, 3, 4;
+}}}
+
+!!!Vypis nastaveni z controlfile:
+{{{set lines 200;}}}
+{{{select * from v$controlfile_record_section;}}}
+
+!!!Nastaveni uroveni parallelismu nad tabulkami a indexy:
+nastaveni parallelismu nad tabulkou:
+{{{alter table scott.emp parallel (degree 4);}}}
+a nad indexem:
+{{{alter index &lt;schema&gt;.&lt;name&gt; parallel (degree x);}}}
+pro vypnuti doufam
+{{{alter table table_name noparallel;}}}
+{{{alter index index_name noparallel;}}}
+pro zjisteni je to:
+{{{select table_name, degree from dba_tables where table_name = 'FKKMAKO';}}}
+{{{select index_name, degree from dba_indexes where index_name = 'FKKMAZE~Z01';}}}
+
+!!!Velikost datafile v MB:
+{{{
+select substr(tablespace_name,1,20) as tablespace_name, substr(file_name,1,50) file_name, bytes/1024/1024 as mb 
+from dba_data_files 
+where file_name='/oracle/DET/sapdata1/poold_12/poold.data12';
+}}}
+
+!!!Velikost tabulky/indexu v MB:
+{{{select substr(owner,1,15) as owner, substr(segment_name,1,20) as segment_name, bytes/1024/1024 as sizeMB from dba_segments where segment_name = 'DFKKOP';}}}
+
+!!!Vypis souboru v tablespace, zmena velikosti:
+Vypis datafiles v tablespace PSAPPOOLD:
+{{{select substr(tablespace_name,1,20) as tablespace_name, substr(file_name,1,50) file_name, bytes/1024/1024 as mb from dba_data_files where tablespace_name = 'PSAPPOOLD';}}}
+Zmena velikosti vybraneho datafile:
+{{{alter database datafile '/oracle/RMT/sapdata4/poold_20/poold.data20' resize 8192M;}}}
+
+!!!Zalozeni uzivatele, prideleni opravneni:
+{{{
+SQL&gt; create user wfm_sap identified by heslo1 default tablespace PSAPUSER1D;
+User created.
+SQL&gt; grant create session,resource to wfm_sap;
+Grant succeeded.
+SQL&gt; alter user wfm_sap quota unlimited on PSAPUSER1D;
+User altered.
+SQL&gt; grant select,update,insert on sapr3.ZHR_WFM_2001 to wfm_sap;
+Grant succeeded.
+SQL&gt; revoke insert on sapr3.ZHR_WFM_2001 from wfm_sap;
+Revoke succeeded.
+}}}
+
+{{{SELECT substr(grantee,1,15) as grantee, substr(owner,1,15) as owner,}}}
+{{{substr(table_name,1,25) as table_name , substr(privilege,1,20) as privilege}}}
+{{{FROM dba_tab_privs}}}
+{{{WHERE grantee = 'WFM_SAP';}}}
+
+/%
+!!!Pouziti nastroje oradebug na sledovani oracle enginu:
+{{{
+oradebug setospid &lt;UNIXPID&gt;
+oradebug event 10046 trace name context forever, level &lt;X&gt;
+oradebug tracefile_name
+oradebug event 10046 trace name context off --vypnutie
+oradebug close_trace
+
+tkprof &lt;tracefile_name&gt;
+}}}
+Uroven trace:
+0 - No trace. Like switching sql_trace off.
+2 - The equivalent of regular sql_trace.
+4 - The same as 2, but with the addition of bind variable values.
+8 - The same as 2, but with the addition of wait events.
+12 - The same as 2, but with both bind variable values and wait events.
+
+trochu vice na:
+http://www.oracleutilities.com/SQLPLus/oradebug.html
+%/
+!!!Zobrazeni DDL oracle objektu (tabulky, indexu):
+{{{
+set lines 200
+set pages 100
+set long 1000
+select dbms_metadata.get_ddl('TABLE', 'GENSETC', 'SAPR3') from dual;
+select dbms_metadata.get_ddl('INDEX', 'GENSETC~0', 'SAPR3') from dual;
+}}}
+
+!!!Odblokovani uzivatelu SAPu z Oracle:
+{{{select bname,uflag from &quot;SAPR3&quot;.&quot;USR02&quot; where uflag!='0' AND MANDT='003';}}}
+{{{update &quot;SAPR3&quot;.&quot;USR02&quot; set uflag = '0' where MANDT='003' AND bname='SAP_USER';}}}
+{{{commit;}}}
+V SAPu (jakemkoliv klientu): {{{/$sync}}}
+nastaveni datumu posledni zmeny hesla (aby sap nechtel nove)
+{{{update sapr3.usr02 set bcda1 = '20100305' where bname = 'USER' and mandt = '000';}}}
+{{{commit;}}}
+
+!!!Seznam long objektu v DB:
+{{{
+column &quot;owner&quot; format a10
+column &quot;table_name&quot; format a20
+column &quot;column_name&quot; format a20
+column &quot;data_type&quot; format a20
+select distinct owner, table_name, column_name, data_type from dba_tab_cols where data_type like '%LONG%' and owner = 'SAPR3';
+}}}
+
+!!!Seznam indexu k tabulce, jejich velikost a pocet extentu:
+{{{
+select i.index_name, i.tablespace_name, i.clustering_factor, i.last_analyzed,
+s.extents, s.bytes/1024/1024 as size_mb
+from dba_indexes i
+join dba_segments s on i.owner = s.owner and i.index_name = s.segment_name
+where i.index_name LIKE 'DFKKKO~%';
+}}}
+{{{
+select substr(s.segment_name,1,30) segment_name, s.tablespace_name, t.last_analyzed, i.last_analyzed,
+s.extents, s.bytes/1024/1024 as size_mb
+from dba_segments s
+left join dba_indexes i on i.owner = s.owner and i.index_name = s.segment_name
+left join dba_tables t on t.owner = s.owner and t.table_name = s.segment_name
+where s.segment_name = 'DFKKLOCKS'
+or s.segment_name like 'DFKKLOCKS~%'
+order by 1;
+}}}
+
+!!!Seznam 20 nejvetsich tabulek v tablespace:
+{{{
+set lines 130
+set pages 30
+select * from (
+select t.table_name, t.tablespace_name, t.last_analyzed, s.extents, s.bytes/1024/1024 as size_mb
+from dba_tables t
+join dba_segments s on t.owner = s.owner and t.table_name = s.segment_name
+where t.tablespace_name = 'PSAPBTABND'
+order by 5 desc
+)
+where rownum &lt; 21;
+}}}
+
+!!!Pouziti volneho textu v selectu, v tomto pripade k vytvoreni prikazu grant:
+{{{select 'grant select on sapsr3db.'||table_name||' to sapsr3;' from dba_tables where table_name like 'ZBC_%';}}}
+
+!!!Zjisteni verze SBP:
+podle [[sapnote 1696147 - Identify Oracle Patches or Bundle patches in SAP system|https://launchpad.support.sap.com/#/notes/1696147]]
+''As of Oracle Release 10g and up to 12c generally:''
+{{{
+select substr(action_time,1,30) as action_time,
+       substr(version,1,15) as version, 
+       substr(comments,1,50) as comments
+from dba_registry_history 
+order by action_time desc;  
+}}}
+''As of Oracle 12c:''
+{{{
+select patch_id,action,status,action_time,description,bundle_series,bundle_id from dba_registry_sqlpatch;
+}}}
+or
+{{{
+select action_time, version, comments from dba_registry_history order by action_time desc;
+}}}
+nebo pro Oracle 11 a nizsi
+{{{$ORACLE_HOME/OPatch/opatch lsinventory -all | grep &quot;Patch Set&quot;}}}
+a pro Oracle 12
+{{{$ORACLE_HOME/OPatch/opatch lsinventory -all | grep &quot;DATABASE BUNDLE PATCH&quot;}}}
+
+!!!Account in expired(grace) set to open and retain password:
+The query below will generate an ALTER USER statement to do it that works with the new &quot;enhanced&quot; passwords introduced in Ora v11:
+{{{
+select 'alter user ' || name || ' identified by values '''
+|| nvl2(spare4, spare4 || ';' || password, password) || '''' as stmt
+from sys.user$
+where coalesce(spare4, password) is not null
+and name in ('USER1', 'USER2') ;
+}}}
+
+!!!Zjisteni stavu online reorganizace:
+{{{
+SELECT NULL INST, NULL SID, NULL OPNAME, NULL TARGET, NULL START_TIME, NULL SOFAR, NULL TOTALWORK,
+  NULL ELAPSED_S, NULL REMAINING_S FROM DUAL WHERE 1 = 0
+UNION ALL (
+SELECT NULL INST, NULL SID, NULL OPNAME, NULL TARGET, NULL START_TIME, NULL SOFAR, NULL TOTALWORK,
+  NULL ELAPSED_S, NULL REMAINING_S FROM DUAL WHERE 1 = 0
+) UNION ALL ( SELECT * FROM (
+WITH BASIS_INFO AS
+( SELECT
+    DECODE(INSTANCE_NUMBER, -1, USERENV('INSTANCE'), INSTANCE_NUMBER) INSTANCE_NUMBER,
+    SESSION_ID,
+    ONLY_ACTIVE,
+    MIN_START_TIME
+  FROM
+  ( SELECT
+      -1 INSTANCE_NUMBER,        /* -1 for current instance, -2 for all instances */
+      -1 SESSION_ID,
+      'X' ONLY_ACTIVE,
+      TO_DATE('01.01.1000 01:00:00', 'dd.mm.yyyy hh24:mi:ss') MIN_START_TIME
+    FROM
+      DUAL
+  )
+)
+SELECT
+  SLO.INST_ID INST,
+  SLO.SID,
+  SLO.OPNAME,
+  SLO.TARGET,
+  TO_CHAR(SLO.START_TIME, 'dd.mm.yyyy hh24:mi:ss') START_TIME,
+  TO_CHAR(SLO.SOFAR, 99999990) SOFAR,
+  TO_CHAR(SLO.TOTALWORK, 999999999990) TOTALWORK,
+  TO_CHAR(SLO.ELAPSED_SECONDS, 99999990) ELAPSED_S,
+  TO_CHAR(SLO.TIME_REMAINING, 9999999990) REMAINING_S
+FROM
+  BASIS_INFO BI,
+  GV$SESSION_LONGOPS SLO
+WHERE
+  ( BI.SESSION_ID = -1 OR BI.SESSION_ID = SLO.SID ) AND
+  ( BI.INSTANCE_NUMBER = -2 OR BI.INSTANCE_NUMBER = SLO.INST_ID ) AND
+  ( BI.ONLY_ACTIVE = ' ' OR SLO.SOFAR &lt; SLO.TOTALWORK ) AND
+  SLO.START_TIME &gt;= BI.MIN_START_TIME
+));
+}}}
+
+!!!Analyza enq: TX - Row Lock Contention Error
+blokovani tabulky NRIV prikazem {{{SELECT /*+ FIRST_ROWS (1) */ * FROM &quot;NRIV&quot; WHERE &quot;CLIENT&quot;=:A0 AND &quot;OBJECT&quot;=:A1 AND &quot;SUBOBJECT&quot;=:A2 AND &quot;NRRANGENR&quot;=:A3 AND &quot;TOYEAR&quot;=:A4 FOR UPDATE}}}
+
+For which SQL is currently waiting on:
+{{{
+select sid, sql_text
+from v$session s, v$sql q
+where sid in (select sid from v$session where state in ('WAITING')
+                                          and wait_class != 'Idle'
+                                          and event='enq: TX - row lock contention'
+                                          and (q.sql_id = s.sql_id or q.sql_id = s.prev_sql_id));
+}}}
+The blocking session is:
+{{{
+select blocking_session, sid, serial#, wait_class, seconds_in_wait
+from v$session
+where blocking_session is not NULL
+order by blocking_session;
+}}}
+zkopirovano dba-oracle.com
+
+!!!Top 5 Timed Wait Events
+{{{
+set feedback off
+set verify off
+col dbid new_value v_dbid
+col min_snap new_value v_min_snap
+col max_snap new_value v_max_snap
+set termout off
+select (select dbid from v$database) dbid,1,min(dhs.snap_id) min_snap, max(dhs.snap_id) max_snap
+  from dba_hist_snapshot dhs
+ where dhs.end_interval_time &gt;= to_date(sysdate - 1)
+   and dhs.instance_number = 1
+ group by dbid
+/
+set termout on
+set heading off
+--select output from table(DBMS_WORKLOAD_REPOSITORY.awr_report_text (&amp;v_dbid,1,&amp;v_min_snap,&amp;v_max_snap))
+WITH aa AS
+(SELECT output, ROWNUM r
+FROM table(DBMS_WORKLOAD_REPOSITORY.awr_report_text (&amp;v_dbid, 1, &amp;v_min_snap, &amp;v_max_snap)))
+SELECT output top_five
+FROM aa, (SELECT r FROM aa
+WHERE output LIKE 'Top 5 Timed Foreground Events%') bb
+WHERE aa.r BETWEEN bb.r AND bb.r + 10
+order by bb.r
+/
+set heading on
+prompt
+prompt
+exit
+/
+}}}
+scriptsfororacle.blogspot.cz
+
+!!!Seznam indexu bez pole mandt:
+{{{
+select index_name from (
+  select index_name from dba_ind_columns where index_name like '%~Z%' 
+  minus 
+  select index_name from dba_ind_columns 
+    where (column_name = 'MANDT' or column_name = 'MANDANT' or column_name = 'CLIENT') 
+    and index_name like '%~Z%'
+) order by 1;
+}}}
+verze 2 - jen indexy pro tabulky, ktere maji pole mandt:
+{{{
+select index_name from (
+  select index_name from dba_ind_columns where table_name in (
+    select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT'
+  )
+)
+minus
+select index_name from dba_ind_columns where table_name in (
+  select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT') 
+  ) and column_name in ('MANDT','MANDANT','CLIENT')
+)
+order by 1;
+}}}
+verze 3 - jen indexy pro tabulky, ktere maji pole mandt a ktere nezalozil uzivatel SAP:
+{{{
+select index_name from (
+  select index_name from dba_ind_columns where table_name in (
+    select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT')
+  ) and index_name in (select CONCAT(sqltab,CONCAT('~',indexname)) from sapr3.DD12L where as4user &lt;&gt; 'SAP')
+  minus
+  select index_name from dba_ind_columns where table_name in (
+    select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT') 
+  ) and column_name in ('MANDT','MANDANT','CLIENT') 
+  and index_name in (select CONCAT(sqltab,CONCAT('~',indexname)) from sapr3.DD12L where as4user &lt;&gt; 'SAP')
+)
+order by 1;
+}}}
+
+!!!Nastartovani databaze v Read-Only rezimu:
+{{{
+shell&gt; sqlplus / as sysdba
+SQL&gt; startup OPEN READ ONLY;
+SQL&gt; select OPEN_MODE from V$DATABASE;
+OPEN_MODE
+-----
+READ ONLY
+
+SQL&gt; create table testme (a number);
+ORA-00604: error occurred at recursive SQL level 1
+ORA-16000: database open for read-only access
+}}}
+
+!!!Zjisteni tabulky, ktere patri konkretni LOB objekt
+{{{
+SYSTEM@TEST&gt; select OWNER,TABLE_NAME from dba_lobs where SEGMENT_NAME='SYS_LOB0000068405C00008$$';
+
+OWNER      TABLE_NAME
+—————————— ——————————
+TEST       AUDIT_LOG
+}}}
+
+!!!Problemy s aktualizaci db statistik
+select:
+{{{
+select event, seconds_in_wait from v$session_wait where sid in (select sid from
+v$session where username = 'OPS$RMTADM');
+}}}
+ukazal, ze vsechny sessions uzivatele {{{OPS$RMTADM}}} cekaji kvuli library cache lock, viz:
+{{{
+EVENT                                                  SECONDS_IN_WAIT
+------------------------------------------------------ ---------------
+library cache lock                                              397875
+library cache lock                                               13865
+library cache lock                                                 692
+}}}
+
+dalsi select: (ukradeny z http://allappsdba.blogspot.cz/2012/04/to-check-library-cache-lock-contention.html)
+{{{
+select sid Holder ,KGLPNUSE Sesion , KGLPNMOD Held, KGLPNREQ Req
+from x$kglpn , v$session
+where KGLPNHDL in (select p1raw from v$session_wait
+where wait_time=0 and event like '%library cache%')
+and KGLPNMOD &lt;&gt; 0
+and v$session.saddr=x$kglpn.kglpnuse;
+}}}
+ukazal session ID prosesu, ktery zpusobil lockwait:
+{{{
+    HOLDER SESION                 HELD        REQ
+---------- ---------------- ---------- ----------
+       960 07000008519D8AC0          2          0
+}}}
+
+Vypis z &quot;&quot;&quot;v$sessions&quot;&quot;&quot;
+{{{
+set pagesize 100
+set lines 1000
+col c1 for a9
+col c1 heading &quot;OS User&quot;
+col c2 for a9
+col c2 heading &quot;Oracle User&quot;
+col b1 for a9
+col b1 heading &quot;Unix PID&quot;
+col b2 for 9999 justify left
+col b2 heading &quot;SID&quot;
+col b3 for 99999 justify left
+col b3 heading &quot;SERIAL#&quot;
+col sql_text for a66
+break on b1 nodup on c1 nodup on c2 nodup on b2 nodup on b3 skip 3
+select c.spid b1, b.osuser c1, b.username c2, b.sid b2, b.serial# b3,
+a.sql_text
+from v$sqltext a, v$session b, v$process c
+where
+b.sid=960 and /* ONLY SPECIFIED SID */
+a.address = b.sql_address
+and b.paddr = c.addr
+and a.hash_value = b.sql_hash_value
+order by c.spid,a.hash_value,a.piece
+/
+}}}
+
+ukazal, ze jde o jakousi soucast aktualizace statistik, ktera bezela pod uzivatelem &quot;&quot;&quot;SAPR3&quot;&quot;&quot;:
+{{{
+Unix PID  OS User   Oracle Us SID   SERIAL# SQL_TEXT
+--------- --------- --------- ----- ------- ----------------------------------------------------------------
+1228834   rmtadm    SAPR3       960   56720 SELECT /*+ RULE */ DISTINCT &quot;ZZCUSTID&quot; FROM &quot;ZZISTSYNMD&quot; WHERE &quot;
+                                            MANDT&quot;=:A0 AND &quot;ZZSYNCT&quot; IN (:A1 ,:A2 ,:A3 ,:A4 ,:A5 ,:A6 ,:A7 ,
+                                            :A8 ,:A9 ,:A10 ,:A11 ) AND (&quot;ZZCUSTID&quot; IN (:A12 ,:A13 ,:A14 ,:A1
+                                            5 ,:A16 ,:A17 ,:A18 ,:A19 ,:A20 ,:A21 ,:A22 ,:A23 ,:A24 ,:A25 ,:
+                                            A26 ,:A27 ,:A28 ,:A29 ,:A30 ,:A31 ,:A32 ,:A33 ,:A34 ,:A35 ,:A36
+                                            ,:A37 ,:A38 ,:A39 ,:A40 ,:A41 ,:A42 ,:A43 ,:A44 ,:A45 ,:A46 ,:A4
+                                            7 ,:A48 ,:A49 ,:A50 ,:A51 ,:A52 ,:A53 ,:A54 ,:A55 ,:A56 ,:A57 ,:
+                                            A58 ,:A59 ,:A60 ,:A61 ,:A62 ,:A63 ,:A64 ,:A65 ,:A66 ,:A67 ,:A68
+}}}
+
+Pokusil jsem se process killnout v &quot;&quot;&quot;SAPu&quot;&quot;&quot; (restartem workprocessu) i v databazi prikazem:
+{{{alter system kill session '960,56720';}}}
+ale process se porad ukazoval jako active
+{{{select status from v$session where sid=960}}}
+Nakonec nezbylo nez process killnout na urovni operacniho systemu
+{{{kill -9 1228834}}}
+Proces se chvili tvaril jako killed a nakonec zmizel.
+Vsechny sessions uzivatele {{{OPS$RMTADM}}} (prvni select) se rozebehly
+{{{
+EVENT                                                  SECONDS_IN_WAIT
+------------------------------------------------------ ---------------
+library cache lock                                                   0
+library cache lock                                                   0
+library cache lock                                                   0
+}}}
+
+!!!Vypis objektu ve stavu INVALID
+{{{
+select unique substr(object_name,1,30) as object_name, object_type, owner from dba_objects where status = 'INVALID';
+}}}
+
+!!!Which session(s) generate a lot of redo log(s)
+How to find which SQL statement generates lots of redo logs.
+
+Firstly use below query to find out which sessions generate more redo logs:
+{{{
+SELECT  s.sid, s.serial#, s.username, s.program, i.block_changes
+FROM v$session s, v$sess_io i
+WHERE s.sid = i.sid AND i.block_changes &gt; 0
+ORDER BY 5 DESC, 1;
+}}}
+{{{block_changes}}} column provide us how much blocks have been changed the session
+
+P.S: You can omit {{{block_changes &gt; 0}}} condition if you want to see all result
+
+But, what about if you want to see amount of undo blocks and undo records accessed by the transaction?
+To do that use:
+{{{
+SELECT s.sid, s.serial#, s.username, s.program, s.machine, t.used_ublk, t.used_urec
+FROM v$session s, v$transaction t
+WHERE s.taddr = t.addr
+ORDER BY 6, 7 desc;
+}}}
+At the end, to get object lists which block changed historical information:
+{{{
+SELECT dhso.object_name, object_type, SUM (db_block_changes_delta)
+FROM dba_hist_seg_stat dhss, dba_hist_seg_stat_obj dhso, dba_hist_snapshot dhs
+WHERE     dhs.snap_id = dhss.snap_id 
+AND dhs.instance_number = dhss.instance_number
+AND dhss.obj# = dhso.obj#
+AND dhss.dataobj# = dhso.dataobj#
+AND begin_interval_time BETWEEN TO_DATE ('20-12-2012 00:00:00', 'DD-MM-YYYY HH24:mi:ss') AND TO_DATE ('20-12-201223:59:59', 'DD-MM-YYYY HH24:mi:ss')
+GROUP BY dhso.object_name, object_type
+HAVING SUM (db_block_changes_delta) &gt; 0
+ORDER BY 2, SUM (db_block_changes_delta) DESC
+}}}
+And to get which SQL statement used :
+{{{
+SELECT distinct dbms_lob.substr(sql_text,4000,1), optimizer_mode, module
+FROM dba_hist_sqlstat dhss,
+dba_hist_snapshot dhs,
+dba_hist_sqltext dhst
+WHERE upper(dhst.sql_text) LIKE '%AZ_PAY%' AND 
+dhss.snap_id=dhs.snap_id
+AND dhss.instance_Number=dhs.instance_number
+AND dhss.sql_id = dhst.sql_id --and rownum&lt;2;
+}}}
+Not: You can add additional column to get more detail info for investigation, such as :
+use : {{{dba_hist_sqlstat}}} dynamic view`s columns : {{{cpu_time_total}}}, {{{cpu_time_delta}}}, {{{elapsed_time_total}}}, {{{elapsed_time_delta}}}, {{{iowait_total}}}, {{{disk_reads_total}}} etc 
+
+Top 10 sessions which generate more redo logs:
+{{{
+select b.inst_id, b.SID, b.serial# sid_serial, b.username, machine, b.osuser, b.status, a.redo_mb MB
+from (select n.inst_id, sid, round(value/1024/1024) redo_mb from gv$statname n, gv$sesstat s
+where n.inst_id=s.inst_id and n.statistic#=134 and s.statistic# = n.statistic# order by value desc) a, gv$session b
+where b.inst_id=a.inst_id
+  and a.sid = b.sid
+and   rownum &lt;= 10;
+}}}
+Total count of redo generation:
+{{{
+select sum(round(gb)) total_redo_count from (select b.inst_id, b.SID, b.serial# sid_serial, b.username, machine, b.osuser, b.status, a.redo_gb GB 
+from (select n.inst_id, sid, round(value/1024/1024/1024) redo_gb from gv$statname n, gv$sesstat s 
+where n.inst_id=s.inst_id and n.statistic#=134 and s.statistic# = n.statistic# order by value desc ) a, gv$session b
+where b.inst_id=a.inst_id
+and a.sid = b.sid)
+}}}
+
+!!!Volne misto v DB
+{{{
+set linesize 132 tab off trimspool on
+set pagesize 105
+set pause off
+set echo off
+set feedb on
+
+column &quot;TOTAL ALLOC (MB)&quot; format 9,999,990.00
+column &quot;TOTAL PHYS ALLOC (MB)&quot; format 9,999,990.00
+column &quot;USED (MB)&quot; format  9,999,990.00
+column &quot;FREE (MB)&quot; format 9,999,990.00
+column &quot;% USED&quot; format 990.00
+
+select a.tablespace_name,
+       a.bytes_alloc/(1024*1024) &quot;TOTAL ALLOC (MB)&quot;,
+       a.physical_bytes/(1024*1024) &quot;TOTAL PHYS ALLOC (MB)&quot;,
+       nvl(b.tot_used,0)/(1024*1024) &quot;USED (MB)&quot;,
+       (nvl(b.tot_used,0)/a.bytes_alloc)*100 &quot;% USED&quot;
+from ( select tablespace_name,
+       sum(bytes) physical_bytes,
+       sum(decode(autoextensible,'NO',bytes,'YES',maxbytes)) bytes_alloc
+       from dba_data_files
+       group by tablespace_name ) a,
+     ( select tablespace_name, sum(bytes) tot_used
+       from dba_segments
+       group by tablespace_name ) b
+where a.tablespace_name = b.tablespace_name (+)
+--and   (nvl(b.tot_used,0)/a.bytes_alloc)*100 &gt; 10
+and   a.tablespace_name not in (select distinct tablespace_name from dba_temp_files)
+and   a.tablespace_name not like 'UNDO%'
+order by 1
+--order by 5
+/
+}}}
+
+!!!Oracle Flashback Recovery
+
+Nastaveni parametru
+{{{
+shutdown
+startup mount
+alter system set db_recovery_file_dest='/oracle/SID/sapdata1/flash' scope=spfile;
+alter system set db_recovery_file_dest_size=10G scope=spfile;
+alter system set db_flashback_retention_target=1440 scope=spfile;   #in minutes
+shutdown
+startup mount
+alter database flashback on;
+alter database open;
+}}}
+Check
+{{{
+select flashback_on, log_mode from v$database;
+select * from v$flashback_database_log;
+}}}
+Usage
+{{{
+CREATE RESTORE POINT before_patching;   # creates restore point with given name
+SELECT NAME, SCN, TIME, DATABASE_INCARNATION#,GUARANTEE_FLASHBACK_DATABASE,STORAGE_SIZE FROM V$RESTORE_POINT;   # lists all the restore points
+FLASHBACK DATABASE TO RESTORE POINT before_patching;
+}}}
+
+Vypis nejstarsiho SCN a casu, kam je mozne provest obnovu:
+{{{
+SELECT OLDEST_FLASHBACK_SCN, to_char(OLDEST_FLASHBACK_TIME,'dd.mm.yyyy hh24:mi:ss') as OLDEST_FLASHBACK_TIME
+FROM V$FLASHBACK_DATABASE_LOG;
+}}}
+Vypis velikosti flashback recovery:
+{{{
+SELECT FLASHBACK_SIZE FROM V$FLASHBACK_DATABASE_LOG;
+}}}
+
+Moznosti Flash recovery jsou k SCN, k casu a k checkpointu:
+{{{
+FLASHBACK DATABASE TO SCN 46963;
+
+FLASHBACK DATABASE TO RESTORE POINT BEFORE_CHANGES;
+
+FLASHBACK DATABASE TO TIME &quot;TO_DATE('09/20/05','MM/DD/YY')&quot;;
+}}}
+
+Vymaz restore pointu:
+{{{
+DROP RESTORE POINT before_patching;
+}}}</pre>
+</div>
 <div created="20201111101618876" modified="20201111101627975" title="EditorVI">
 <pre>&lt;html&gt;
   &lt;head&gt;
@@ -11462,6 +12694,1514 @@ Prihlaseni do systemu jako uzivatel sap* s defaultnim heslem:
 
 * povolit prihlaseni kerneloveho uzivatele sap*:
 `login/no_automatic_user_sapstar = 0`</pre>
+</div>
+<div created="20201111152456230" modified="20201111170421570" title="Oracle">
+<pre>!!!Zalozeni velkeho indexu pro SAP v oracle
+
+Pokud je potreba zalozit index pro tabulku vetsi nez 1GB, SAP doporucuje v sapnote 334224 zalozit index pomoci databazovych nastroju: &lt;br&gt;
+Je potreba uvolnit/vyrobit misto v PSAPTEMP - tam se bude vytvaret sort table. A potom mit dost mista v cilovem tablespace - pozor na to, ze to misto DB potrebuje v jednom kuse. Index bude vznikat v temporary datafile a az bude hotovy, oracle ho prepne na permanent. Viz hlaska ORA-1652: unable to extend temp segment by 163840 in tablespace
+
+Prikaz na zalozeni indexu:
+
+```
+create index sapr3.&quot;DFKKOP~Z02&quot;
+on sapr3.DFKKOP ( MANDT, AUGST, VKONT, BUKRS, AUGDT, GPART, OPUPW )
+tablespace PSAPBTABNI
+nologging
+parallel 8
+online;
+```
+
+Protoze v oracle 9i nedojde ke spocitani statistiky po zalozeni indexu, ale databaze ho hned zacne pouzivat, da se spocitat statistika nejdriv podle 5%
+
+```
+analyze index sapr3.&quot;DFKKOP~Z02&quot; estimate statistics sample 5 percent;
+```
+
+A potom vypoctem (pripadne) pres cely index. Nemelo by to nic zamykat, ani snizovat vykon a melo by to pouzivat tu uz vyrobenou statistiku
+
+```
+analyze index sapr3.&quot;DFKKOP~Z02&quot; compute statistics;
+```
+
+Sapove doporucuji jeste:
+
+```
+alter index sapr3.&quot;DFKKOP~Z02&quot; parallel 1;
+```
+
+!!!Presouvani tabulek do jinych tablespace
+
+pred zacatkem akce jsme predelali dictionary managed tablespace na localy managed:
+
+```
+execute DBMS_SPACE_ADMIN.TABLESPACE_MIGRATE_TO_LOCAL ('PSAPBTABD');
+execute DBMS_SPACE_ADMIN.TABLESPACE_MIGRATE_TO_LOCAL ('PSAPBTABI');
+```
+
+potom nastavili na zdrojove tabulce mensi velikost next extentu a vypnuli logovani zmen po dobu presunu:
+
+```
+alter table sapr3.DFKKOP storage (next 200M);
+alter table sapr3.DFKKOP nologging;
+```
+
+a zkontrolovali, ze je to dobre nastaveno:
+
+```
+select table_name, tablespace_name, next_extent, logging from dba_tables where table_name = 'DFKKOP';
+```
+
+samotny presun se provede prikazem:
+
+```
+alter table sapr3.DFKKOP move tablespace PSAPBTABD storage (initial 3000M next 100M pctincrease 0) parallel 2 nologging;
+```
+
+po presunu nastavili zpet logovani zmen a nastavili vetsi next nextent
+
+```
+alter table sapr3.DFKKOP storage (next 500M);
+alter table sapr3.DFKKOP logging;
+```
+
+zkontrolovali, ze je cilovy tablespace prazdny
+
+```
+select owner, segment_name, segment_type from dba_segments where tablespace_name = 'PSAPBTAB2D';
+```
+
+a tablespace vymazali:
+
+```
+drop tablespace PSAPBTAB2D including contents and datafiles;
+```
+
+zkontrolovali, ze z disku zmizely vsechny datafile:
+
+```
+find . -name '*btab2d*' -print
+```
+
+presun tabulky do jineho tablespace rozbije indexy nad presouvanou tabulkou, jejich seznam se vypise prikazem:
+
+```
+SQL&gt; select index_name, status from dba_indexes where status&lt;&gt;'VALID' and owner='SAPR3';
+ 
+INDEX_NAME              STATUS
+----------------------- ---------
+DFKKOP~0                UNUSABLE
+```
+
+a oprava se udela pomoci:
+
+```
+alter index SAPR3.&quot;DFKKOP~0&quot; rebuild online storage (initial 100M next 100M pctincrease 0) parallel 4 nologging;
+```
+
+pro kazdy index &lt;br&gt;
+nebo v pripade, ze bychom chteli index rebuildovat do jineho tablespace
+
+```
+alter index SAPR3.&quot;DFKKOP~0&quot; rebuild tablespace PSAPBTABNI online parallel 2 nologging;
+```
+
+Potom je potreba pro indexy spocitat statistiky:
+
+```
+analyze index SAPR3.&quot;DFKKOP~0&quot; estimate statistics sample 5 percent;
+```
+
+!!!Vypis nainstalovanych OPatchu
+
+```
+$ORACLE_HOME/OPatch/opatch lsinventory -invPtrLoc $ORACLE_HOME/oraInst.loc
+```
+
+Instalace noveho OPatche
+
+```
+$ORACLE_HOME/OPatch/opatch apply -invPtrLoc $ORACLE_HOME/oraInst.loc
+```
+
+A kdyz se posere jdk v oracle (jako po upgrade na 10.2.0.4)
+
+```
+$ORACLE_HOME/OPatch/opatch lsinventory -invPtrLoc $ORACLE_HOME/oraInst.loc -jdk /usr/java14
+```
+
+!!!MOpatch
+
+Ekvivalent OPatch paramtetru –invPtrLoc v MOpatchi je –p …priklad dole
+
+~~`/oracle/I02/102_64/MOPatch/mopatch.sh -d -v -p /oracle/I02/102_64/oraInst.loc -s /usr/sap/scratch/OraclePatch/SAP_102049_201108_HPUXIA64.zip`~~
+
+Aktualizace MOPatch: 
+
+```
+cd /oracle/&lt;DBSID&gt;/&lt;DB Version&gt;/
+unzip MOPATCHP_xxxxxx.ZIP
+unzip OPATCHP_xxxxxx.ZIP
+```
+
+Spusteni aktualizace: 
+
+```
+./mopatch.sh -v -s /oracle/&lt;SID&gt;/SBP/SAP12102P_1508-20012300.ZIP
+```
+
+vice [[Note 1027012 - MOPatch - Install Multiple Oracle Patches in One Run|https://service.sap.com/sap/support/notes/1027012]].
+
+!!!Nastaveni hodnoty next_extent
+
+Pro dictionary managed tablespaces SAP pocita hodnotu next_extent jobem &quot;adapt next extents&quot; v DB13.
+
+Pro velke tabulky/indext se muze stat, ze hodnota next_extent bude rovna maximu 2GB a zpusobovat velkou fragmentaci databaze.
+
+Maximalni velikost next extentu jde vynutit parametrem
+
+
+```
+next_max_size = &lt;velikost_v_mb&gt;M
+```
+
+v souboru {{{init&lt;DBSID&gt;.sap}}} viz. [[next_max_size|http://help.sap.com/saphelp_nwpi71/helpdata/en/46/ce2d80a5171827e10000000a1553f6/frameset.htm]]
+
+!!!seznam 20 nejvetsich objektu s nejvetsim next_extent:
+
+```
+select * from
+(select SEGMENT_NAME, SEGMENT_TYPE, TABLESPACE_NAME, NEXT_EXTENT
+from dba_segments where (next_extent is not null)
+order by next_extent desc) where rownum &lt; 21;
+```
+
+zmena velikosti next_extent pro tabulku/index:
+
+```
+alter table sapr3.TABLE_NAME storage (next 500M);
+alter index sapr3.&quot;INDEX_NAME~X&quot; storage (next 500M);
+```
+
+spusteni vypoctu next_extent pod uzivatelem &amp;lt;sid&amp;gt;adm:
+
+```
+brconnect -u / -c -f next -t ALL
+```
+
+!!!Prace s DB linky
+
+seznam DB linku na Oracle 9.2 (jako uzivatel sysdba)
+
+```
+select substr(u.name,1,10) owner
+,substr(l.name,1,25) db_link
+,substr(l.host,1,15) host
+,substr(l.userid||'/'||l.password,1,25) userpass
+from sys.link$ l, sys.user$ u
+where l.owner# = u.user#;
+```
+
+Pripadne jako vlastnik:
+
+```
+select substr(owner,1,10) as owner,
+substr(db_link,1,30) as db_link,
+substr(username,1,15) as username,
+substr(host,1,15) as host
+from dba_db_links;
+```
+
+Zalozeni DB linku
+
+```
+create database link JMENO_DB_LINKU
+connect to jmeno_uzivatele_ve_vzdalene_databazi
+identified by jeho_heslo
+using 'DBSID_V_TNSNAMES_ORA.WORLD';
+```
+
+Vymaz databazoveho linku
+
+```
+drop database link JMENO_DB_LINKU.WORLD;
+```
+
+Overeni funkcnosti DB linku
+
+```
+select * from dual@JMENO_DB_LINKU.WORLD;
+```
+
+Pouziti connect through, kdyz nezname heslo vlastnika linku:
+
+```
+create user through_user identified by zeus;
+alter user sapsr3 grant connect through through_user;
+```
+
+//There is also a corresponding revoke command to revoke the connect through syntax://
+
+```
+alter user sapsr3 revoke connect through through_user;
+```
+
+//Now that we have create a &quot;grant connect through&quot; assigned to user &quot;fred&quot;, we can connect//
+
+```
+connect through_user[sapsr3]/zeus;
+
+Connected.
+
+SQL&gt; show user
+
+USER is &quot;FRED&quot;
+```
+
+//zakazani uzivatele, odebrani opravneni://
+
+```
+alter user through_user account lock;
+alter user sapsr3 revoke connect through through_user;
+```
+
+!!!Kopirovani bezici databaze
+
+Pokud je potreba zkopirovat bezici databazi, je potreba vsechny tablespaces prepnout do &quot;begin backup&quot;
+
+uvedene scripty jsou nutne pro ''oracle 9i'', v oracle 10+ staci
+
+`ALTER DATABASE BEGIN BACKUP; a ALTER DATABASE END BACKUP;`
+
+```
+beginbackup.sh
+sqlplus -SL &quot;/as sysdba&quot; &lt;&lt;END_SQL
+declare
+i number;
+begin
+for i in (select tablespace_name from dba_tablespaces where contents &lt;&gt; 'TEMPORARY') loop
+execute immediate 'alter tablespace '||i.tablespace_name||' begin backup';
+end loop;
+end;
+/
+exit
+END_SQL
+```
+
+```
+endbackup.sh
+sqlplus -SL &quot;/as sysdba&quot; &lt;&lt;END_SQL
+declare
+i number;
+begin
+for i in (select tablespace_name from dba_tablespaces where contents &lt;&gt; 'TEMPORARY') loop
+execute immediate 'alter tablespace '||i.tablespace_name||' end backup';
+end loop;
+end;
+/
+exit
+END_SQL
+```
+
+kontrola:
+
+```
+select count(*) from V$BACKUP where status = 'ACTIVE';
+select count(*) from V$BACKUP where status = 'NOT ACTIVE';
+```
+
+!!!Statistiky pro tabulky a indexy:
+
+Urceni statistiky pomoci procedury dbms_stats.gather_&amp;lt;object&amp;gt;_stats:
+
+```
+exec dbms_stats.gather_table_stats(ownname =&gt; 'SAPR3', tabname =&gt; 'DFKKOP', estimate_percent =&gt; 5);
+```
+
+```
+exec dbms_stats.gather_index_stats(ownname =&gt; 'SAPR3', indname =&gt; 'DFKKOP~4', estimate_percent =&gt; 5);
+```
+
+nebo s urovni parallelismu 4:
+
+```
+exec dbms_stats.gather_table_stats(ownname =&gt; 'SAPR3', tabname =&gt; 'DFKKOP', estimate_percent =&gt; 5, degree =&gt; 4);
+```
+
+nebo pomoci sql prikazu:
+
+```
+analyze table sapr3.DFKKOP estimate statistics sample 5 percent;
+analyze index sapr3.&quot;DFKKOP~4&quot; estimate statistics sample 5 percent;
+```
+
+Statisku je mozne spocitat celou:
+
+```
+analyze index sapr3.&quot;DFKKOP~4&quot; compute statistics;
+```
+
+Seznam tabulek, ktere maji nejstarsi statistiky:
+
+```
+select * from (select table_name, last_analyzed from dba_tables where last_analyzed is not null order by last_analyzed asc) where rownum &lt; 90;
+```
+
+!!!Zjisteni s jak velkym vzorkem byla statistika spocitana:
+
+```
+SQL&gt; select table_name, last_analyzed, sample_size/num_rows*100 as percentage from dba_tables where table_name = 'RESB';
+TABLE_NAME  LAST_ANAL    PERCENTAGE
+----------  -----------  ----------
+RESB        07-MAR-12    10
+ 
+SQL&gt; select index_name, last_analyzed, sample_size/num_rows*100 as percentage from dba_indexes where table_name = 'RESB';
+INDEX_NAME   LAST_ANAL  PERCENTAGE
+-----------  ---------  ----------
+RESB~ZAK     07-MAR-12  100
+RESB~0       07-MAR-12  56.3113463
+RESB~M       07-MAR-12  34.6635699
+```
+
+!!!Seznam toho, co v DB bezi dele nez 6 sekund a jak dlouho to jeste pobezi:
+
+```
+column username format a10
+column opname format a20
+column target format a20
+select username,opname,target,round(((totalwork-sofar)/totalwork),4)*100 &quot;PCT_REMINING&quot;,round(time_remaining/60,2) &quot;Min&quot;
+from v$session_longops
+where time_remaining&gt;0;
+```
+
+!!!Vypis z V$SESSION:
+
+```
+set pagesize 100
+set lines 1000
+col c1 for a9
+col c1 heading &quot;OS User&quot;
+col c2 for a9
+col c2 heading &quot;Oracle User&quot;
+col b1 for a9
+col b1 heading &quot;Unix PID&quot;
+col b2 for 9999 justify left
+col b2 heading &quot;SID&quot;
+col b3 for 99999 justify left
+col b3 heading &quot;SERIAL#&quot;
+col sql_text for a66
+break on b1 nodup on c1 nodup on c2 nodup on b2 nodup on b3 skip 3
+select c.spid b1, b.osuser c1, b.username c2, b.sid b2, b.serial# b3,
+a.sql_text
+from v$sqltext a, v$session b, v$process c
+where
+-- b.sid=113 and /* ONLY SPECIFIED SID */
+a.address = b.sql_address
+and b.paddr = c.addr
+and a.hash_value = b.sql_hash_value
+order by c.spid,a.hash_value,a.piece
+/
+```
+
+!!!Seznam cekajicich session uzivatele SYS
+
+```
+select event, seconds_in_wait from v$session_wait where sid in (select sid from v$session where username = 'SYS');
+```
+
+!!!Seznam cekajicich session
+
+```
+set pagesize 100
+set lines 140
+column sid format 9999
+column username a20
+column event format a60
+column sec format 9999999
+select w.sid sid, s.username username, substr(w.event,1,60) event, w.seconds_in_wait sec
+from v$session_wait w
+join v$session s on s.sid = w.sid
+where w.event not in ('SQL*Net message from client')
+and s.username is not null;
+```
+
+!!!Seznam chained rows (A chained row is a row that is too large to fit into a single database data block) pro tablespace xxx :
+
+```
+select * from (
+select TABLE_NAME, CHAIN_CNT
+from dba_tables
+where TABLESPACE_NAME = ' xxx ' and CHAIN_CNT &lt;&gt; 0
+order by CHAIN_CNT desc
+) where rownum &lt; 30;
+```
+
+!!!Zobrazeni exekucniho planu pro DB dotaz:
+
+```
+set lines 200
+explain plan for
+SELECT opbel, xblnr, vkont, SUM( betrh ) AS betrh, waers, faedn, bldat, blart, hvorg
+FROM sapr3.dfkkop
+WHERE mandt = '003' AND augst = ' '
+GROUP BY opbel, xblnr, vkont, waers, faedn, bldat, blart, hvorg;
+select * from table (dbms_xplan.display);
+```
+
+!!!Find the last object in a oracle datafile
+
+Is always annoying to resize a datafile with empty space but some blocks occupied at the end of the file. &lt;br&gt;
+You get the:
+
+```
+ERROR at line 1:
+ORA-03214: File Size specified is smaller than minimum required
+```
+
+There are may brute force ways to solve this as rebuild or move everthing in the tablespace or exp/imp.
+
+Sometimes you just want resize one datafile to archive some monitoring limits with no impact to production.
+
+Find the last object in the datafiles for a specific tablespace (the is slow, checkout Metalink Note 422730)
+
+```
+select owner,segment_name,partition_name,segment_type
+from dba_extents
+where (file_id,block_id) in (select file_id,max(block_id) from dba_extents group by file_id)
+and tablespace_name like 'TBSP_NAME%'
+```
+
+If you have the object, you can do: &lt;br&gt;
+`Alter table move;` -- ! table unavailable, indexes need to be rebuild &lt;br&gt;
+or &lt;br&gt;
+`alter index rebuild;` -- index unavailable &lt;br&gt;
+or &lt;br&gt;
+`alter index rebuild online;` -- index available during rebuild
+
+!!!Presun datafile z sapdataX do sapdataY
+
+pozor: na spusteni prikazu alter database rename file je ''opravdu'' potreba mit databazi v ''mount''. NE open. &lt;br&gt;
+postup
+
+```
+shutdown immediate
+```
+
+v tuto chvili presunout (fyzicky) soubor z sapdataX do sapdataY
+
+```
+startup mount
+alter database rename file '/oracle/SID/sapdataX/poold_1/poold.data1' to '/oracle/SID/sapdataY/poold_1/poold.data1';
+alter database rename file '/oracle/SID/sapdataX/loadd_2/loadd.data2' to '/oracle/SID/sapdataY/loadd_2/loadd.data2';
+alter database rename file '/oracle/SID/sapdataX/stabd_4/stabd.data4' to '/oracle/SID/sapdataY/stabd_4/stabd.data4';
+shutdown immediate
+startup
+```
+
+kontrola
+
+```
+select count(*) from dba_data_files where status != 'AVAILABLE';
+select count(*) from dba_data_files where file_name not like '%/sapdataY/%';
+```
+
+vysledkem obou je 0
+
+!!!Relink Oracle
+
+Na Unix systemech
+
+```
+set $ORACLE_HOME, $ORACLE_BASE, $ORACLE_SID and also the $PATH
+```
+
+and the go into `$ORACLE_HOME/bin` and then fire the command `relink all`. &lt;br&gt;
+Before relinking Oracle, shut down both the database and the listener.
+
+```
+$ORACLE_HOME/bin/relink all;
+```
+
+!!!Aktualizace statistik vsech tabulek a indexu:
+
+```
+brconnect -u / -c -f stats -t oradict_stats
+brconnect -u / -c -f stats -t system_stats
+brconnect -c -u / -f stats -t all -f collect -p 4
+```
+
+!!!Default (temporary)tablespace:
+
+```
+ALTER DATABASE DEFAULT TABLESPACE PSAPSR3USR;
+ALTER DATABASE DEFAULT TEMPORARY TABLESPACE PSAPTEMP;
+```
+
+!!!Export/import schematu pomoci datove pumpy:
+
+V databazi je potreba vytvorit directory. Nejaka by (v Oracle 11g) mela existovat, pokud ji chceme pouzit, zjistime jeji jmeno pomoci:
+
+```
+set lines 200
+col directory_path for a100
+select * from dba_directories;
+```
+
+Je mozne pouzit existujici {{{DATA_PUMP_DIR}}}, pokud chceme/potrebujeme vytvorit novou, tak:
+
+```
+create directory export_directory as '/cesta_k_adresari_na_OS';
+```
+
+Nastavime uzivateli pravo na cteni/zapis:
+
+```
+grant read,write on directory DATA_PUMP_DIR to quest;
+```
+
+Potom uz je mozne udelat export, drop a import. Uzivatel se zakladat nemusi, import ho vytvori sam:
+
+```
+expdp schemas=QUEST directory=DATA_PUMP_DIR dumpfile=quest_schema.dmp logfile=quest_schema_exp.log
+drop user quest cascade;
+```
+
+a import/remap do noveho tablespace:
+
+```
+impdp schemas=QUEST directory=DATA_PUMP_DIR dumpfile=quest_schema.dmp logfile=quest_schema_imp.log remap_tablespace=PSAPUSER1D:PSAPSR3USR
+```
+
+''merged SQL prikazy page''
+
+!!!seznam nagrantovanych tabulek:
+
+```
+SELECT grantee, owner, table_name, privilege
+FROM dba_tab_privs
+WHERE grantee NOT IN ('SAPR3') AND owner = 'SAPR3';
+```
+
+!!!rychlost cteni databazovych bloku (test rychlosti DB na TS1)
+
+```
+SELECT file#, singleblkrdtim, lstiotim, maxiortm, maxiowtm
+FROM v$filestat;
+```
+
+lepsi:
+
+```
+select * from (
+ select a.file#,  substrb(b.file_name,1,50) as file_name, a.singleblkrdtim/a.singleblkrds*10 as average_wait 
+ from v$filestat a, dba_data_files b 
+ where a.file# = b.file_id 
+ and a.singleblkrds &gt; 0 
+ order by average_wait desc
+) where rownum &lt;11;
+```
+
+!!!Nastaveni auditovani databaze:
+
+do {{{init&lt;SID&gt;.ora}}} se doplni radek
+
+```
+audit_trail = db
+```
+
+v pripade pouziti spfile:
+
+```
+ALTER SYSTEM SET audit_trail = db SCOPE=SPFILE;
+```
+
+zaznamy auditu se zapisuji do tabulky {{{AUD$}}} ve schematu {{{SYS}}}
+a pokud ma v `SYS.AUD$` (dba_audit_trail) byt i konkretni SQL prikaz, je potreba nastavit audit_trail na db,extended
+
+```
+ALTER SYSTEM SET audit_trail = db,extended SCOPE=SPFILE;
+```
+
+!!!Nastaveni auditu pro pro vybrane tabulky:
+
+```
+AUDIT &lt;action&gt; on &lt;schema&gt;.&lt;table&gt; BY &lt;prepinac&gt;;
+```
+
+;kde moznosti &amp;lt;action&amp;gt; jsou:
+:ALL - protokoluje vsechno
+:INSERT, SELECT, UPDATE, DELETE (seznam vsech akci je v tabulce AUDIT_ACTIONS)
+:vice moznosti se oddeluje carkami, napriklad: INSERT,UPDATE,DELETE
+:a &amp;lt;prepinac&amp;gt; muze nabyvat hodnot
+:access - logoje se kazde provedeni sledovane akce
+:session - zapise se pouze jeden radek pro celou session
+
+priklady:
+
+```
+AUDIT INSERT,UPDATE on sapr3.zanbi0x BY SESSION;
+AUDIT SELECT on sapr3.ztajnatabulka BY ACCESS;
+```
+
+!!!Zjisteni stavu auditu tabulky:
+
+```
+select * from dba_obj_audit_opts
+where ALT != '-/-' or AUD != '-/-' or COM != '-/-' or DEL != '-/-'
+   or GRA != '-/-' or IND != '-/-' or INS != '-/-' or LOC != '-/-'
+   or REN != '-/-' or SEL != '-/-' or UPD != '-/-' or REF != '-/-'
+   or EXE != '-/-' or CRE != '-/-' or REA != '-/-' or WRI != '-/-';
+```
+
+zruseni auditovani:
+
+```
+noaudit &lt;akce&gt; on &lt;schema&gt;.&lt;table&gt;;
+```
+
+dalsi priklady:&lt;br&gt;
+zjistneni nastaveni auditu pro konkretni tabulku:
+
+```
+select * from dba_obj_audit_opts where owner = 'SAPR3' and object_name = 'ZANBI0X';
+```
+
+zruseni auditu pro konkretni tabulku:
+
+```
+noaudit all on sapr3.zanbi0x;
+```
+
+nastaveni auditu pro insert a update nad konkretni tabulkou, jeden zaznam za celou session:
+
+```
+audit insert,update on sapr3.zanbi0x by session;
+```
+
+!!!Nastaveni auditu pro vybrane akce konkretniho uzivatele:
+
+```
+audit select table, delete table, insert table, update table by &lt;username&gt;;
+audit table by &lt;username&gt;;
+```
+
+Prikaz &quot;audit table by &amp;lt;user&amp;gt;;&quot; dela audit DDL operaci, create, truncate, atd.
+vychozi nastaveni je audit by session, ktery ale od verze 11g stejne audituje vsechny zaznamy, pouze v jinem formatu. Audit by session jde vynutit prikazem:
+
+```
+audit select table by &lt;username&gt; by access;
+```
+
+Vypnuti auditu:
+
+```
+noaudit delete table, insert table, update table by &lt;username&gt;;
+noaudit table by &lt;username&gt;;
+```
+
+nejde `noaudit all;` ani `noaudit all by &lt;username&gt;;`
+
+Vypis nastaveni auditu pro uzivatele:
+
+```
+select substr(user_name,1,15) as user_name,
+       substr(audit_option,1,20) as audit_option,
+       success,
+       failure
+from dba_stmt_audit_opts;
+```
+
+Vypis auditniho protokolu v pripade audit by session:
+
+```
+select substr(username,1,15) as username,
+       substr(obj_name,1,30) as objname,
+       ses_actions
+FROM dba_audit_trail
+ORDER BY timestamp;
+```
+
+popis pole `SES_ACTIONS - VARCHAR2(19)`
+
+Session summary (a string of 16 characters, one for each action type in the order ALTER, AUDIT, COMMENT, DELETE, GRANT, INDEX, INSERT, LOCK, RENAME, SELECT, UPDATE, REFERENCES, and EXECUTE. Positions 14, 15, and 16 are reserved for future use. The characters are: &lt;br&gt;
+''-'' - None
+''S'' - Success
+''F'' - Failure
+''B'' - Both
+
+[[Dokumentace|http://docs.oracle.com/cd/B19306_01/server.102/b14237/statviews_3056.htm]]
+
+Vypis auditnyho protokolu by access:
+
+```
+COLUMN username FORMAT A8
+COLUMN obj_name FORMAT A30
+COLUMN action_name FORMAT A12
+COLUMN sql_text FORMAT A50
+SELECT username,obj_name,action_name, sql_text
+FROM dba_audit_trail
+ORDER BY timestamp;
+```
+
+!!!Materializovane view
+
+vytvoreni materializovaneho view:
+
+```
+CREATE MATERIALIZED VIEW SAPR3.ZANBI0X
+TABLESPACE PSAPBTABD
+REFRESH COMPLETE ON DEMAND
+AS SELECT T1.&quot;MANDT&quot;, T1.&quot;VBELN&quot;, T1.&quot;POSNR&quot;, T1.&quot;ERDAT&quot;, T1.&quot;MATNR&quot;, T3.&quot;OBKNR&quot;, T3.&quot;OBZAE&quot;, T3.&quot;SERNR&quot;
+FROM &quot;LIPS&quot; T1, &quot;SER01&quot; T2, &quot;OBJK&quot; T3
+WHERE T1.&quot;VBELN&quot; = T2.&quot;LIEF_NR&quot; AND T1.&quot;POSNR&quot; = T2.&quot;POSNR&quot; AND T2.&quot;OBKNR&quot; = T3.&quot;OBKNR&quot; AND ( T1.&quot;LGORT&quot; = '4001' OR T1.&quot;LGORT&quot; = '4091' OR T1.&quot;LGORT&quot; = '4092' OR T1.&quot;LGORT&quot; = '4094');
+```
+
+vymaz materializovaneho view:
+
+
+```
+DROP MATERIALIZED VIEW SAPR3.ZANBI0X;
+```
+
+(materializovane view nejde zmenit. Je potreba stare smazat a zalozit nove)
+
+zobrazeni definice materializovaneho view:
+
+```
+set long 200000
+select DBMS_Metadata.Get_DDL('MATERIALIZED_VIEW','ZANBI0X','SAPR3') from dual;
+```
+
+seznam jobu:
+
+```
+set lines 160
+select job, schema_user, last_date, next_date, substr(what,1,90) as what from dba_jobs;
+```
+
+nebo:
+
+```
+select job, substr(schema_user,1,10) &quot;sch_usr&quot;, to_char(last_date,'dd.mm.yyyy hh24:mi:ss') &quot;Last&quot;,to_char(next_date,'dd.mm.yyyy hh24:mi:ss') &quot;next&quot;, substr(interval,1,15) &quot;interval&quot;, substr(what,1,50) &quot;what&quot; from dba_jobs;
+```
+
+vymaz jobu:
+
+```
+exec dbms_job.remove(job_number);
+```
+
+naplanovani jobu na spusteni aktualizace materializovaneho view
+
+```
+declare
+  my_job number;
+begin
+  dbms_job.submit(job =&gt; my_job,
+    what =&gt; 'begin dbms_mview.refresh(''ZANBI0X''); end;',
+    next_date =&gt; sysdate+1,
+    interval =&gt; 'sysdate+1');
+end;
+/
+```
+
+Nebo pridani marializovaneho view do existuji skupiny refresh_group:
+
+```
+BEGIN
+DBMS_REFRESH.ADD(
+name =&gt; '&quot;SAPR3&quot;.&quot;ZMVFIDV_BKPF&quot;',
+list =&gt; '&quot;SAPR3&quot;.&quot;ZANBI0X&quot;',
+lax =&gt; TRUE);
+END;
+/
+```
+
+Naplanovani refreshe groupy:
+
+```
+exec dbms_job.next_date(21,to_date('08.10.2009 13:00:00','dd.mm.yyyy hh24:mi:ss'));
+```
+
+Seznam refresh group:
+
+```
+select refgroup, owner, name from dba_rgroup;
+```
+
+Seznam materializovanych view v refresh groupe:
+
+```
+select refgroup, owner, name from dba_rchild;}}}
+```
+
+Seznam materializovanych view a datum a cas jejich posledniho refreshe:
+
+
+```{select owner, mview_name, to_char(last_refresh_date,'dd.mm.yyyy hh24:mi:ss'), last_refresh_type from dba_mviews;}}}
+
+Seznam bezicich jobu:
+
+```
+SELECT sid, r.job, log_user, r.this_date, r.this_sec
+FROM dba_jobs_running r, dba_jobs j
+WHERE r.job = j.job
+/
+```
+
+!!!Select na vypis volneho mista v DB, vcetne nejdelsiho volneho bloku.
+
+```
+set lines 250
+set pages 300
+set numwidth 11
+column &quot;Name&quot; format a20
+column &quot;File&quot; format a37
+column &quot;Mount Point&quot; format a50
+column &quot;Tablespace&quot; format a10
+column username format a10
+column osuser format a10
+column &quot;SQL&quot; format a64
+column sid format 999
+column serial# format 999999
+column cmd format 999
+column taddr format a8
+column lockwait format a8
+column machine format a20
+column program format a30
+break on &quot;Tspc:File:Blocks:Sid:Ser:User&quot;
+column &quot;Tspc:File:Blocks:Sid:Ser:User&quot; format a55
+ 
+select df.tablespace_name &quot;Name&quot;,round(df.sum_bytes/1024/1024,1) &quot;Total MB&quot;,
+round(df.sum_maxbytes/1024/1024,1) &quot;Max MB&quot;,
+round(fs.sum_bytes/1024/1024,1) &quot;Free MB&quot;,round(fs.max_bytes/1024/1024,1)
+&quot;Max Chunk MB&quot;,
+fsc.total_extents &quot;Free Extents&quot;,fsc.extents_coalesced
+&quot;Coal.Extents&quot;,percent_extents_coalesced &quot;% Coal.Extents&quot;,
+round(fs.sum_bytes/decode(df.sum_maxbytes,0,df.sum_bytes,df.sum_maxbytes)*100,1)
+&quot;% Free Space&quot;,
+round((0.2*df.sum_bytes-fs.sum_bytes)/0.8/1024/1024,1) &quot;MB to add&quot;
+from
+(select tablespace_name,sum(bytes) sum_bytes,sum(maxbytes) sum_maxbytes
+from dba_data_files group by tablespace_name) df
+left outer join
+(select tablespace_name,sum(bytes) sum_bytes,max(bytes) max_bytes from
+dba_free_space group by tablespace_name) fs
+on (df.tablespace_name=fs.tablespace_name)
+left outer join dba_free_space_coalesced fsc
+on (df.tablespace_name=fsc.tablespace_name)
+order by &quot;% Free Space&quot;;
+```
+
+!!!seznam zamku v databazi:
+
+```
+set linesize 200;
+COLUMN owner FORMAT A20
+COLUMN username FORMAT A20
+COLUMN object_owner FORMAT A20
+COLUMN object_name FORMAT A30
+COLUMN locked_mode FORMAT A15
+SELECT b.session_id AS sid,
+NVL(b.oracle_username, '(oracle)') AS username,
+a.owner AS object_owner,
+a.object_name,
+Decode(b.locked_mode, 0, 'None',
+1, 'Null (NULL)',
+2, 'Row-S (SS)',
+3, 'Row-X (SX)',
+4, 'Share (S)',
+5, 'S/Row-X (SSX)',
+6, 'Exclusive (X)',
+b.locked_mode) locked_mode,
+b.os_user_name
+FROM dba_objects a,
+v$locked_object b
+WHERE a.object_id = b.object_id
+ORDER BY 1, 2, 3, 4;
+```
+
+!!!Vypis nastaveni z controlfile:
+
+```
+set lines 200;
+select * from v$controlfile_record_section;
+```
+
+!!!Nastaveni uroveni parallelismu nad tabulkami a indexy:
+
+nastaveni parallelismu nad tabulkou:
+
+```{{{alter table scott.emp parallel (degree 4);}}}
+a nad indexem:
+{{{alter index &lt;schema&gt;.&lt;name&gt; parallel (degree x);}}}
+pro vypnuti doufam
+{{{alter table table_name noparallel;}}}
+{{{alter index index_name noparallel;}}}
+pro zjisteni je to:
+{{{select table_name, degree from dba_tables where table_name = 'FKKMAKO';}}}
+{{{select index_name, degree from dba_indexes where index_name = 'FKKMAZE~Z01';}}}
+
+!!!Velikost datafile v MB:
+{{{
+select substr(tablespace_name,1,20) as tablespace_name, substr(file_name,1,50) file_name, bytes/1024/1024 as mb 
+from dba_data_files 
+where file_name='/oracle/DET/sapdata1/poold_12/poold.data12';
+}}}
+
+!!!Velikost tabulky/indexu v MB:
+{{{select substr(owner,1,15) as owner, substr(segment_name,1,20) as segment_name, bytes/1024/1024 as sizeMB from dba_segments where segment_name = 'DFKKOP';}}}
+
+!!!Vypis souboru v tablespace, zmena velikosti:
+Vypis datafiles v tablespace PSAPPOOLD:
+{{{select substr(tablespace_name,1,20) as tablespace_name, substr(file_name,1,50) file_name, bytes/1024/1024 as mb from dba_data_files where tablespace_name = 'PSAPPOOLD';}}}
+Zmena velikosti vybraneho datafile:
+{{{alter database datafile '/oracle/RMT/sapdata4/poold_20/poold.data20' resize 8192M;}}}
+
+!!!Zalozeni uzivatele, prideleni opravneni:
+{{{
+SQL&gt; create user wfm_sap identified by heslo1 default tablespace PSAPUSER1D;
+User created.
+SQL&gt; grant create session,resource to wfm_sap;
+Grant succeeded.
+SQL&gt; alter user wfm_sap quota unlimited on PSAPUSER1D;
+User altered.
+SQL&gt; grant select,update,insert on sapr3.ZHR_WFM_2001 to wfm_sap;
+Grant succeeded.
+SQL&gt; revoke insert on sapr3.ZHR_WFM_2001 from wfm_sap;
+Revoke succeeded.
+}}}
+
+{{{SELECT substr(grantee,1,15) as grantee, substr(owner,1,15) as owner,}}}
+{{{substr(table_name,1,25) as table_name , substr(privilege,1,20) as privilege}}}
+{{{FROM dba_tab_privs}}}
+{{{WHERE grantee = 'WFM_SAP';}}}
+
+/%
+!!!Pouziti nastroje oradebug na sledovani oracle enginu:
+{{{
+oradebug setospid &lt;UNIXPID&gt;
+oradebug event 10046 trace name context forever, level &lt;X&gt;
+oradebug tracefile_name
+oradebug event 10046 trace name context off --vypnutie
+oradebug close_trace
+
+tkprof &lt;tracefile_name&gt;
+}}}
+Uroven trace:
+0 - No trace. Like switching sql_trace off.
+2 - The equivalent of regular sql_trace.
+4 - The same as 2, but with the addition of bind variable values.
+8 - The same as 2, but with the addition of wait events.
+12 - The same as 2, but with both bind variable values and wait events.
+
+trochu vice na:
+http://www.oracleutilities.com/SQLPLus/oradebug.html
+%/
+!!!Zobrazeni DDL oracle objektu (tabulky, indexu):
+{{{
+set lines 200
+set pages 100
+set long 1000
+select dbms_metadata.get_ddl('TABLE', 'GENSETC', 'SAPR3') from dual;
+select dbms_metadata.get_ddl('INDEX', 'GENSETC~0', 'SAPR3') from dual;
+}}}
+
+!!!Odblokovani uzivatelu SAPu z Oracle:
+{{{select bname,uflag from &quot;SAPR3&quot;.&quot;USR02&quot; where uflag!='0' AND MANDT='003';}}}
+{{{update &quot;SAPR3&quot;.&quot;USR02&quot; set uflag = '0' where MANDT='003' AND bname='SAP_USER';}}}
+{{{commit;}}}
+V SAPu (jakemkoliv klientu): {{{/$sync}}}
+nastaveni datumu posledni zmeny hesla (aby sap nechtel nove)
+{{{update sapr3.usr02 set bcda1 = '20100305' where bname = 'USER' and mandt = '000';}}}
+{{{commit;}}}
+
+!!!Seznam long objektu v DB:
+{{{
+column &quot;owner&quot; format a10
+column &quot;table_name&quot; format a20
+column &quot;column_name&quot; format a20
+column &quot;data_type&quot; format a20
+select distinct owner, table_name, column_name, data_type from dba_tab_cols where data_type like '%LONG%' and owner = 'SAPR3';
+}}}
+
+!!!Seznam indexu k tabulce, jejich velikost a pocet extentu:
+{{{
+select i.index_name, i.tablespace_name, i.clustering_factor, i.last_analyzed,
+s.extents, s.bytes/1024/1024 as size_mb
+from dba_indexes i
+join dba_segments s on i.owner = s.owner and i.index_name = s.segment_name
+where i.index_name LIKE 'DFKKKO~%';
+}}}
+{{{
+select substr(s.segment_name,1,30) segment_name, s.tablespace_name, t.last_analyzed, i.last_analyzed,
+s.extents, s.bytes/1024/1024 as size_mb
+from dba_segments s
+left join dba_indexes i on i.owner = s.owner and i.index_name = s.segment_name
+left join dba_tables t on t.owner = s.owner and t.table_name = s.segment_name
+where s.segment_name = 'DFKKLOCKS'
+or s.segment_name like 'DFKKLOCKS~%'
+order by 1;
+}}}
+
+!!!Seznam 20 nejvetsich tabulek v tablespace:
+{{{
+set lines 130
+set pages 30
+select * from (
+select t.table_name, t.tablespace_name, t.last_analyzed, s.extents, s.bytes/1024/1024 as size_mb
+from dba_tables t
+join dba_segments s on t.owner = s.owner and t.table_name = s.segment_name
+where t.tablespace_name = 'PSAPBTABND'
+order by 5 desc
+)
+where rownum &lt; 21;
+}}}
+
+!!!Pouziti volneho textu v selectu, v tomto pripade k vytvoreni prikazu grant:
+{{{select 'grant select on sapsr3db.'||table_name||' to sapsr3;' from dba_tables where table_name like 'ZBC_%';}}}
+
+!!!Zjisteni verze SBP:
+podle [[sapnote 1696147 - Identify Oracle Patches or Bundle patches in SAP system|https://launchpad.support.sap.com/#/notes/1696147]]
+''As of Oracle Release 10g and up to 12c generally:''
+{{{
+select substr(action_time,1,30) as action_time,
+       substr(version,1,15) as version, 
+       substr(comments,1,50) as comments
+from dba_registry_history 
+order by action_time desc;  
+}}}
+''As of Oracle 12c:''
+{{{
+select patch_id,action,status,action_time,description,bundle_series,bundle_id from dba_registry_sqlpatch;
+}}}
+or
+{{{
+select action_time, version, comments from dba_registry_history order by action_time desc;
+}}}
+nebo pro Oracle 11 a nizsi
+{{{$ORACLE_HOME/OPatch/opatch lsinventory -all | grep &quot;Patch Set&quot;}}}
+a pro Oracle 12
+{{{$ORACLE_HOME/OPatch/opatch lsinventory -all | grep &quot;DATABASE BUNDLE PATCH&quot;}}}
+
+!!!Account in expired(grace) set to open and retain password:
+The query below will generate an ALTER USER statement to do it that works with the new &quot;enhanced&quot; passwords introduced in Ora v11:
+{{{
+select 'alter user ' || name || ' identified by values '''
+|| nvl2(spare4, spare4 || ';' || password, password) || '''' as stmt
+from sys.user$
+where coalesce(spare4, password) is not null
+and name in ('USER1', 'USER2') ;
+}}}
+
+!!!Zjisteni stavu online reorganizace:
+{{{
+SELECT NULL INST, NULL SID, NULL OPNAME, NULL TARGET, NULL START_TIME, NULL SOFAR, NULL TOTALWORK,
+  NULL ELAPSED_S, NULL REMAINING_S FROM DUAL WHERE 1 = 0
+UNION ALL (
+SELECT NULL INST, NULL SID, NULL OPNAME, NULL TARGET, NULL START_TIME, NULL SOFAR, NULL TOTALWORK,
+  NULL ELAPSED_S, NULL REMAINING_S FROM DUAL WHERE 1 = 0
+) UNION ALL ( SELECT * FROM (
+WITH BASIS_INFO AS
+( SELECT
+    DECODE(INSTANCE_NUMBER, -1, USERENV('INSTANCE'), INSTANCE_NUMBER) INSTANCE_NUMBER,
+    SESSION_ID,
+    ONLY_ACTIVE,
+    MIN_START_TIME
+  FROM
+  ( SELECT
+      -1 INSTANCE_NUMBER,        /* -1 for current instance, -2 for all instances */
+      -1 SESSION_ID,
+      'X' ONLY_ACTIVE,
+      TO_DATE('01.01.1000 01:00:00', 'dd.mm.yyyy hh24:mi:ss') MIN_START_TIME
+    FROM
+      DUAL
+  )
+)
+SELECT
+  SLO.INST_ID INST,
+  SLO.SID,
+  SLO.OPNAME,
+  SLO.TARGET,
+  TO_CHAR(SLO.START_TIME, 'dd.mm.yyyy hh24:mi:ss') START_TIME,
+  TO_CHAR(SLO.SOFAR, 99999990) SOFAR,
+  TO_CHAR(SLO.TOTALWORK, 999999999990) TOTALWORK,
+  TO_CHAR(SLO.ELAPSED_SECONDS, 99999990) ELAPSED_S,
+  TO_CHAR(SLO.TIME_REMAINING, 9999999990) REMAINING_S
+FROM
+  BASIS_INFO BI,
+  GV$SESSION_LONGOPS SLO
+WHERE
+  ( BI.SESSION_ID = -1 OR BI.SESSION_ID = SLO.SID ) AND
+  ( BI.INSTANCE_NUMBER = -2 OR BI.INSTANCE_NUMBER = SLO.INST_ID ) AND
+  ( BI.ONLY_ACTIVE = ' ' OR SLO.SOFAR &lt; SLO.TOTALWORK ) AND
+  SLO.START_TIME &gt;= BI.MIN_START_TIME
+));
+}}}
+
+!!!Analyza enq: TX - Row Lock Contention Error
+blokovani tabulky NRIV prikazem {{{SELECT /*+ FIRST_ROWS (1) */ * FROM &quot;NRIV&quot; WHERE &quot;CLIENT&quot;=:A0 AND &quot;OBJECT&quot;=:A1 AND &quot;SUBOBJECT&quot;=:A2 AND &quot;NRRANGENR&quot;=:A3 AND &quot;TOYEAR&quot;=:A4 FOR UPDATE}}}
+
+For which SQL is currently waiting on:
+{{{
+select sid, sql_text
+from v$session s, v$sql q
+where sid in (select sid from v$session where state in ('WAITING')
+                                          and wait_class != 'Idle'
+                                          and event='enq: TX - row lock contention'
+                                          and (q.sql_id = s.sql_id or q.sql_id = s.prev_sql_id));
+}}}
+The blocking session is:
+{{{
+select blocking_session, sid, serial#, wait_class, seconds_in_wait
+from v$session
+where blocking_session is not NULL
+order by blocking_session;
+}}}
+zkopirovano dba-oracle.com
+
+!!!Top 5 Timed Wait Events
+{{{
+set feedback off
+set verify off
+col dbid new_value v_dbid
+col min_snap new_value v_min_snap
+col max_snap new_value v_max_snap
+set termout off
+select (select dbid from v$database) dbid,1,min(dhs.snap_id) min_snap, max(dhs.snap_id) max_snap
+  from dba_hist_snapshot dhs
+ where dhs.end_interval_time &gt;= to_date(sysdate - 1)
+   and dhs.instance_number = 1
+ group by dbid
+/
+set termout on
+set heading off
+--select output from table(DBMS_WORKLOAD_REPOSITORY.awr_report_text (&amp;v_dbid,1,&amp;v_min_snap,&amp;v_max_snap))
+WITH aa AS
+(SELECT output, ROWNUM r
+FROM table(DBMS_WORKLOAD_REPOSITORY.awr_report_text (&amp;v_dbid, 1, &amp;v_min_snap, &amp;v_max_snap)))
+SELECT output top_five
+FROM aa, (SELECT r FROM aa
+WHERE output LIKE 'Top 5 Timed Foreground Events%') bb
+WHERE aa.r BETWEEN bb.r AND bb.r + 10
+order by bb.r
+/
+set heading on
+prompt
+prompt
+exit
+/
+}}}
+scriptsfororacle.blogspot.cz
+
+!!!Seznam indexu bez pole mandt:
+{{{
+select index_name from (
+  select index_name from dba_ind_columns where index_name like '%~Z%' 
+  minus 
+  select index_name from dba_ind_columns 
+    where (column_name = 'MANDT' or column_name = 'MANDANT' or column_name = 'CLIENT') 
+    and index_name like '%~Z%'
+) order by 1;
+}}}
+verze 2 - jen indexy pro tabulky, ktere maji pole mandt:
+{{{
+select index_name from (
+  select index_name from dba_ind_columns where table_name in (
+    select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT'
+  )
+)
+minus
+select index_name from dba_ind_columns where table_name in (
+  select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT') 
+  ) and column_name in ('MANDT','MANDANT','CLIENT')
+)
+order by 1;
+}}}
+verze 3 - jen indexy pro tabulky, ktere maji pole mandt a ktere nezalozil uzivatel SAP:
+{{{
+select index_name from (
+  select index_name from dba_ind_columns where table_name in (
+    select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT')
+  ) and index_name in (select CONCAT(sqltab,CONCAT('~',indexname)) from sapr3.DD12L where as4user &lt;&gt; 'SAP')
+  minus
+  select index_name from dba_ind_columns where table_name in (
+    select table_name from dba_tab_columns where column_name in ('MANDT','MANDANT','CLIENT') 
+  ) and column_name in ('MANDT','MANDANT','CLIENT') 
+  and index_name in (select CONCAT(sqltab,CONCAT('~',indexname)) from sapr3.DD12L where as4user &lt;&gt; 'SAP')
+)
+order by 1;
+}}}
+
+!!!Nastartovani databaze v Read-Only rezimu:
+{{{
+shell&gt; sqlplus / as sysdba
+SQL&gt; startup OPEN READ ONLY;
+SQL&gt; select OPEN_MODE from V$DATABASE;
+OPEN_MODE
+-----
+READ ONLY
+
+SQL&gt; create table testme (a number);
+ORA-00604: error occurred at recursive SQL level 1
+ORA-16000: database open for read-only access
+}}}
+
+!!!Zjisteni tabulky, ktere patri konkretni LOB objekt
+{{{
+SYSTEM@TEST&gt; select OWNER,TABLE_NAME from dba_lobs where SEGMENT_NAME='SYS_LOB0000068405C00008$$';
+
+OWNER      TABLE_NAME
+—————————— ——————————
+TEST       AUDIT_LOG
+}}}
+
+!!!Problemy s aktualizaci db statistik
+select:
+{{{
+select event, seconds_in_wait from v$session_wait where sid in (select sid from
+v$session where username = 'OPS$RMTADM');
+}}}
+ukazal, ze vsechny sessions uzivatele {{{OPS$RMTADM}}} cekaji kvuli library cache lock, viz:
+{{{
+EVENT                                                  SECONDS_IN_WAIT
+------------------------------------------------------ ---------------
+library cache lock                                              397875
+library cache lock                                               13865
+library cache lock                                                 692
+}}}
+
+dalsi select: (ukradeny z http://allappsdba.blogspot.cz/2012/04/to-check-library-cache-lock-contention.html)
+{{{
+select sid Holder ,KGLPNUSE Sesion , KGLPNMOD Held, KGLPNREQ Req
+from x$kglpn , v$session
+where KGLPNHDL in (select p1raw from v$session_wait
+where wait_time=0 and event like '%library cache%')
+and KGLPNMOD &lt;&gt; 0
+and v$session.saddr=x$kglpn.kglpnuse;
+}}}
+ukazal session ID prosesu, ktery zpusobil lockwait:
+{{{
+    HOLDER SESION                 HELD        REQ
+---------- ---------------- ---------- ----------
+       960 07000008519D8AC0          2          0
+}}}
+
+Vypis z &quot;&quot;&quot;v$sessions&quot;&quot;&quot;
+{{{
+set pagesize 100
+set lines 1000
+col c1 for a9
+col c1 heading &quot;OS User&quot;
+col c2 for a9
+col c2 heading &quot;Oracle User&quot;
+col b1 for a9
+col b1 heading &quot;Unix PID&quot;
+col b2 for 9999 justify left
+col b2 heading &quot;SID&quot;
+col b3 for 99999 justify left
+col b3 heading &quot;SERIAL#&quot;
+col sql_text for a66
+break on b1 nodup on c1 nodup on c2 nodup on b2 nodup on b3 skip 3
+select c.spid b1, b.osuser c1, b.username c2, b.sid b2, b.serial# b3,
+a.sql_text
+from v$sqltext a, v$session b, v$process c
+where
+b.sid=960 and /* ONLY SPECIFIED SID */
+a.address = b.sql_address
+and b.paddr = c.addr
+and a.hash_value = b.sql_hash_value
+order by c.spid,a.hash_value,a.piece
+/
+}}}
+
+ukazal, ze jde o jakousi soucast aktualizace statistik, ktera bezela pod uzivatelem &quot;&quot;&quot;SAPR3&quot;&quot;&quot;:
+{{{
+Unix PID  OS User   Oracle Us SID   SERIAL# SQL_TEXT
+--------- --------- --------- ----- ------- ----------------------------------------------------------------
+1228834   rmtadm    SAPR3       960   56720 SELECT /*+ RULE */ DISTINCT &quot;ZZCUSTID&quot; FROM &quot;ZZISTSYNMD&quot; WHERE &quot;
+                                            MANDT&quot;=:A0 AND &quot;ZZSYNCT&quot; IN (:A1 ,:A2 ,:A3 ,:A4 ,:A5 ,:A6 ,:A7 ,
+                                            :A8 ,:A9 ,:A10 ,:A11 ) AND (&quot;ZZCUSTID&quot; IN (:A12 ,:A13 ,:A14 ,:A1
+                                            5 ,:A16 ,:A17 ,:A18 ,:A19 ,:A20 ,:A21 ,:A22 ,:A23 ,:A24 ,:A25 ,:
+                                            A26 ,:A27 ,:A28 ,:A29 ,:A30 ,:A31 ,:A32 ,:A33 ,:A34 ,:A35 ,:A36
+                                            ,:A37 ,:A38 ,:A39 ,:A40 ,:A41 ,:A42 ,:A43 ,:A44 ,:A45 ,:A46 ,:A4
+                                            7 ,:A48 ,:A49 ,:A50 ,:A51 ,:A52 ,:A53 ,:A54 ,:A55 ,:A56 ,:A57 ,:
+                                            A58 ,:A59 ,:A60 ,:A61 ,:A62 ,:A63 ,:A64 ,:A65 ,:A66 ,:A67 ,:A68
+}}}
+
+Pokusil jsem se process killnout v &quot;&quot;&quot;SAPu&quot;&quot;&quot; (restartem workprocessu) i v databazi prikazem:
+{{{alter system kill session '960,56720';}}}
+ale process se porad ukazoval jako active
+{{{select status from v$session where sid=960}}}
+Nakonec nezbylo nez process killnout na urovni operacniho systemu
+{{{kill -9 1228834}}}
+Proces se chvili tvaril jako killed a nakonec zmizel.
+Vsechny sessions uzivatele {{{OPS$RMTADM}}} (prvni select) se rozebehly
+{{{
+EVENT                                                  SECONDS_IN_WAIT
+------------------------------------------------------ ---------------
+library cache lock                                                   0
+library cache lock                                                   0
+library cache lock                                                   0
+}}}
+
+!!!Vypis objektu ve stavu INVALID
+{{{
+select unique substr(object_name,1,30) as object_name, object_type, owner from dba_objects where status = 'INVALID';
+}}}
+
+!!!Which session(s) generate a lot of redo log(s)
+How to find which SQL statement generates lots of redo logs.
+
+Firstly use below query to find out which sessions generate more redo logs:
+{{{
+SELECT  s.sid, s.serial#, s.username, s.program, i.block_changes
+FROM v$session s, v$sess_io i
+WHERE s.sid = i.sid AND i.block_changes &gt; 0
+ORDER BY 5 DESC, 1;
+}}}
+{{{block_changes}}} column provide us how much blocks have been changed the session
+
+P.S: You can omit {{{block_changes &gt; 0}}} condition if you want to see all result
+
+But, what about if you want to see amount of undo blocks and undo records accessed by the transaction?
+To do that use:
+{{{
+SELECT s.sid, s.serial#, s.username, s.program, s.machine, t.used_ublk, t.used_urec
+FROM v$session s, v$transaction t
+WHERE s.taddr = t.addr
+ORDER BY 6, 7 desc;
+}}}
+At the end, to get object lists which block changed historical information:
+{{{
+SELECT dhso.object_name, object_type, SUM (db_block_changes_delta)
+FROM dba_hist_seg_stat dhss, dba_hist_seg_stat_obj dhso, dba_hist_snapshot dhs
+WHERE     dhs.snap_id = dhss.snap_id 
+AND dhs.instance_number = dhss.instance_number
+AND dhss.obj# = dhso.obj#
+AND dhss.dataobj# = dhso.dataobj#
+AND begin_interval_time BETWEEN TO_DATE ('20-12-2012 00:00:00', 'DD-MM-YYYY HH24:mi:ss') AND TO_DATE ('20-12-201223:59:59', 'DD-MM-YYYY HH24:mi:ss')
+GROUP BY dhso.object_name, object_type
+HAVING SUM (db_block_changes_delta) &gt; 0
+ORDER BY 2, SUM (db_block_changes_delta) DESC
+}}}
+And to get which SQL statement used :
+{{{
+SELECT distinct dbms_lob.substr(sql_text,4000,1), optimizer_mode, module
+FROM dba_hist_sqlstat dhss,
+dba_hist_snapshot dhs,
+dba_hist_sqltext dhst
+WHERE upper(dhst.sql_text) LIKE '%AZ_PAY%' AND 
+dhss.snap_id=dhs.snap_id
+AND dhss.instance_Number=dhs.instance_number
+AND dhss.sql_id = dhst.sql_id --and rownum&lt;2;
+}}}
+Not: You can add additional column to get more detail info for investigation, such as :
+use : {{{dba_hist_sqlstat}}} dynamic view`s columns : {{{cpu_time_total}}}, {{{cpu_time_delta}}}, {{{elapsed_time_total}}}, {{{elapsed_time_delta}}}, {{{iowait_total}}}, {{{disk_reads_total}}} etc 
+
+Top 10 sessions which generate more redo logs:
+{{{
+select b.inst_id, b.SID, b.serial# sid_serial, b.username, machine, b.osuser, b.status, a.redo_mb MB
+from (select n.inst_id, sid, round(value/1024/1024) redo_mb from gv$statname n, gv$sesstat s
+where n.inst_id=s.inst_id and n.statistic#=134 and s.statistic# = n.statistic# order by value desc) a, gv$session b
+where b.inst_id=a.inst_id
+  and a.sid = b.sid
+and   rownum &lt;= 10;
+}}}
+Total count of redo generation:
+{{{
+select sum(round(gb)) total_redo_count from (select b.inst_id, b.SID, b.serial# sid_serial, b.username, machine, b.osuser, b.status, a.redo_gb GB 
+from (select n.inst_id, sid, round(value/1024/1024/1024) redo_gb from gv$statname n, gv$sesstat s 
+where n.inst_id=s.inst_id and n.statistic#=134 and s.statistic# = n.statistic# order by value desc ) a, gv$session b
+where b.inst_id=a.inst_id
+and a.sid = b.sid)
+}}}
+
+!!!Volne misto v DB
+{{{
+set linesize 132 tab off trimspool on
+set pagesize 105
+set pause off
+set echo off
+set feedb on
+
+column &quot;TOTAL ALLOC (MB)&quot; format 9,999,990.00
+column &quot;TOTAL PHYS ALLOC (MB)&quot; format 9,999,990.00
+column &quot;USED (MB)&quot; format  9,999,990.00
+column &quot;FREE (MB)&quot; format 9,999,990.00
+column &quot;% USED&quot; format 990.00
+
+select a.tablespace_name,
+       a.bytes_alloc/(1024*1024) &quot;TOTAL ALLOC (MB)&quot;,
+       a.physical_bytes/(1024*1024) &quot;TOTAL PHYS ALLOC (MB)&quot;,
+       nvl(b.tot_used,0)/(1024*1024) &quot;USED (MB)&quot;,
+       (nvl(b.tot_used,0)/a.bytes_alloc)*100 &quot;% USED&quot;
+from ( select tablespace_name,
+       sum(bytes) physical_bytes,
+       sum(decode(autoextensible,'NO',bytes,'YES',maxbytes)) bytes_alloc
+       from dba_data_files
+       group by tablespace_name ) a,
+     ( select tablespace_name, sum(bytes) tot_used
+       from dba_segments
+       group by tablespace_name ) b
+where a.tablespace_name = b.tablespace_name (+)
+--and   (nvl(b.tot_used,0)/a.bytes_alloc)*100 &gt; 10
+and   a.tablespace_name not in (select distinct tablespace_name from dba_temp_files)
+and   a.tablespace_name not like 'UNDO%'
+order by 1
+--order by 5
+/
+}}}
+
+!!!Oracle Flashback Recovery
+
+Nastaveni parametru
+{{{
+shutdown
+startup mount
+alter system set db_recovery_file_dest='/oracle/SID/sapdata1/flash' scope=spfile;
+alter system set db_recovery_file_dest_size=10G scope=spfile;
+alter system set db_flashback_retention_target=1440 scope=spfile;   #in minutes
+shutdown
+startup mount
+alter database flashback on;
+alter database open;
+}}}
+Check
+{{{
+select flashback_on, log_mode from v$database;
+select * from v$flashback_database_log;
+}}}
+Usage
+{{{
+CREATE RESTORE POINT before_patching;   # creates restore point with given name
+SELECT NAME, SCN, TIME, DATABASE_INCARNATION#,GUARANTEE_FLASHBACK_DATABASE,STORAGE_SIZE FROM V$RESTORE_POINT;   # lists all the restore points
+FLASHBACK DATABASE TO RESTORE POINT before_patching;
+}}}
+
+Vypis nejstarsiho SCN a casu, kam je mozne provest obnovu:
+{{{
+SELECT OLDEST_FLASHBACK_SCN, to_char(OLDEST_FLASHBACK_TIME,'dd.mm.yyyy hh24:mi:ss') as OLDEST_FLASHBACK_TIME
+FROM V$FLASHBACK_DATABASE_LOG;
+}}}
+Vypis velikosti flashback recovery:
+{{{
+SELECT FLASHBACK_SIZE FROM V$FLASHBACK_DATABASE_LOG;
+}}}
+
+Moznosti Flash recovery jsou k SCN, k casu a k checkpointu:
+{{{
+FLASHBACK DATABASE TO SCN 46963;
+
+FLASHBACK DATABASE TO RESTORE POINT BEFORE_CHANGES;
+
+FLASHBACK DATABASE TO TIME &quot;TO_DATE('09/20/05','MM/DD/YY')&quot;;
+}}}
+
+Vymaz restore pointu:
+{{{
+DROP RESTORE POINT before_patching;
+}}}</pre>
 </div>
 <div created="20201111105434979" modified="20201111120623092" title="SAP">
 <pre>!!!Error: R3TR XXXX ... XXXX was repaired in this system
