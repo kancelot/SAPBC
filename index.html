@@ -223,6 +223,10 @@ Error message and password prompt
 
 <li>SAPgui</li>
 
+<li>Saprouter</li>
+
+<li>SCP</li>
+
 <li>Table of contents</li>
 
 </ul>
@@ -9726,7 +9730,7 @@ exports.parse = function() {
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111115445898" list="[[Table of contents]] SAPgui" modified="20201111121153210" title="$:/StoryList">
+<div created="20201111115445898" list="[[Table of contents]] SCP" modified="20201111123031835" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
@@ -11855,6 +11859,132 @@ Novy postup: &lt;br&gt;
 
 Now you should be in the data browser screen for the table you selected and all editing features you had when `&amp;SAP_EDIT` was available should be back again!
 Enjoy!</pre>
+</div>
+<div created="20201111122733202" modified="20201111123000306" title="Saprouter">
+<pre>''Vygenerovani certifikatu pro saprouter''
+
+http://service.sap.com/saprouter-sncadd &lt;br&gt;
+Zmacknout tlacitko &quot;Apply now&quot; a opsat si Distinguished Name, napriklad: &lt;br&gt;
+CN=saprouter.cz, OU=0000123456, OU=SAProuter, O=SAP, C=DE
+
+Z prikazove radky na spustit vygenerovani certifikacniho pozadavku: &lt;br&gt;
+
+```
+sapgenpse get_pse -v -r certreq -p local.pse &quot;CN=saprouter.cz, OU=0000123456, OU=SAProuter, O=SAP, C=DE&quot;
+```
+
+nezadavat pin. &lt;br&gt;
+Do souboru certreq se ulozi zadost o certifikat. Obsah souboru se vlozi do editacniho pole na strance http://service.sap.com/saprouter-sncadd &lt;br&gt;
+Odpoved se ulozi do souboru, napriklad certif2013.txt
+
+Certifikat se vygeneruje prikazem:
+
+```
+sapgenpse import_own_cert -c certif2013.txt -p local.pse
+```
+
+Nakonec je potreba spustit:
+
+```
+sapgenpse seclogin -p local.pse
+```
+
+Pokud spoustim saprouter pod jinym uzivatelem, nez na jakeho jsem prihlaseny, tak:
+
+```
+sapgenpse seclogin -p local.pse -O &lt;uzivatel na ktereho je spusteny saprouter&gt;
+```
+
+Overeni certifikatu a jeho platnosti:
+
+```
+sapgenpse maintain_pk -l -p local.pse
+```
+
+Vymaz stareho certifikatu:
+
+```
+/sapmnt/&lt;SID&gt;/exe/sapgenpse maintain_pk -d 1
+```
+
+(kde -d 1 smaze certifikat s cislem 1)</pre>
+</div>
+<div created="20201111123049670" modified="20201111123354245" title="SCP">
+<pre>!!!Pristup na vzdaleny system bez nutnosti zadani hesla
+
+- na zdrojovem systemu
+
+```
+rztsqd42p:tssadm 13&gt; ssh-keygen -t dsa -b 1024
+Generating public/private dsa key pair.
+Enter file in which to save the key (/home/tssadm/.ssh/id_dsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/tssadm/.ssh/id_dsa.
+Your public key has been saved in /home/tssadm/.ssh/id_dsa.pub.
+The key fingerprint is:
+71:3b:f7:64:4c:72:db:82:cb:de:da:e6:b7:44:d6:70 tssadm@rztsqd42
+rztsqd42p:tssadm 15&gt; cd ./.ssh
+rztsqd42p:tssadm 17&gt; ls -la
+total 32
+drwx------ 2 tssadm sapsys 256 Apr 16 09:20 .
+drwxr-xr-x 4 tssadm sapsys 4096 Apr 16 09:19 ..
+-rw------- 1 tssadm sapsys 1196 Apr 16 09:20 id_dsa
+-rw-r--r-- 1 tssadm sapsys 1117 Apr 16 09:20 id_dsa.pub
+-rw-r--r-- 1 tssadm sapsys 1773 Apr 15 11:23 known_hosts
+rztsqd42p:tssadm 18&gt; cat id_dsa.pub
+ssh-dss AAAAB3NzaC1kc3MAAAEBAOU92K-scratched
+```
+
+- na cilovem systemu
+
+```
+mkdir .ssh
+cd ./.ssh
+vi authorized_keys
+(vlozit obsah souboru id_dsa.pub na zdrojovem systemu)
+ssh-dss AAAAB3NzaC1kc3MAAAEBAOU92K-scratched
+```
+
+!!!Kopirovani pomoci scp
+
+`ssh uzivatel@cilovy_system` (pro prihlaseni pomoci ssh) &lt;br&gt;
+`scp soubor.ext uzivatel@cilovy_system:/adresar/kam/kopirujeme &amp;` (kopie souboru pomoci scp)
+
+priklady:
+
+```
+timex scp testfile.0 ts1adm@10.103.232.22:/usr/sap/scratch/transtest &amp;
+timex scp bigfile orats1@10.103.232.22:/filer3/oracle/transtest/test_big_file.0 &amp;
+```
+
+funguje take:
+
+```
+scp uzivatel@vzdalenyserver:/cesta/soubor /lokalni/cesta
+```
+
+timex spusti pocitani casu, jak dlouho bezela pozadovana operace
+
+Kopirovani seznamu souboru:
+
+```
+scp `cat filelist.txt` user@hostname:/path/subpath/subpath
+```
+
+a ten filelist se vygeneruje napriklad pomoci:
+
+```
+find SIDarch1*.dbf -type f &gt; /path/filelist.txt
+```
+
+nebo, pokud chceme kopirovat jen soubory novejsi, nez soubor SIDarch1_105.dbf
+
+```
+find SIDarch1*.dbf -type f -newer SIDarch1_105.dbf &gt; /path/filelist.txt
+```
+
+... pokracovani priste</pre>
 </div>
 <div created="20201110222858759" modified="20201111010224708" tags="toc" title="Table of contents">
 <pre>;Table of contents
