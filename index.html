@@ -201,6 +201,16 @@ Error message and password prompt
 
 <li>DeltaQueues</li>
 
+<li>EditorVI</li>
+
+<li>Filenet</li>
+
+<li>HANA</li>
+
+<li>IDoc</li>
+
+<li>Licence</li>
+
 <li>Table of contents</li>
 
 </ul>
@@ -9642,7 +9652,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111095304392" list="[[Table of contents]]" modified="20201111100957973" title="$:/StoryList">
+<div created="20201111101544580" list="[[Table of contents]]" modified="20201111102606931" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -9706,7 +9716,7 @@ Error message and password prompt
 <div created="20201111010222582" modified="20201111010222582" title="$:/temp/NewTagName">
 <pre></pre>
 </div>
-<div created="20201111010226343" modified="20201111011428522" title="$:/temp/search">
+<div created="20201111010226343" modified="20201111101602787" title="$:/temp/search">
 <pre></pre>
 </div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="$:/themes/tiddlywiki/vanilla" description="Emphasises individual tiddlers" name="Snow White" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/snowwhite" type="application/json" version="5.1.22">
@@ -10542,6 +10552,815 @@ To fill the set up tables of customizing cockpit we have the following transacti
 67014 Reorganizing update requests&lt;br&gt;
 652310 LBWE: Message MCEX 140 with extract structure change&lt;br&gt;
 &lt;/html&gt;</pre>
+</div>
+<div created="20201111101618876" modified="20201111101627975" title="EditorVI">
+<pre>&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;sapbc - Editor vi&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;static/style.css&quot; type=&quot;text/css&quot; /&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div class=&quot;wiki&quot; id=&quot;content_view&quot; style=&quot;display: block;&quot;&gt;
+&lt;strong&gt;vi Editor Commands&lt;/strong&gt;&lt;br /&gt;
+General Startup&lt;br /&gt;
+To use vi: vi filename&lt;br /&gt;
+To exit vi and save changes: &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ZZ&lt;/span&gt; or &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:wq&lt;/span&gt;&lt;br /&gt;
+To exit vi without saving changes: &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:q!&lt;/span&gt;&lt;br /&gt;
+To enter vi command mode: &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[esc]&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;Counts&lt;/strong&gt;&lt;br /&gt;
+A number preceding any vi command tells vi to repeat that command that many times.&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;font-family: Arial,Helvetica,sans-serif;&quot;&gt;&lt;strong&gt;Cursor Movement&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;h&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move left (backspace)&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;j&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move down&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;k&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move up&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;l&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move right (spacebar)&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[return]&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to the beginning of the next line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;last column on the current line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;0&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move cursor to the first column on the current line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move cursor to first nonblank column on the current line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;w&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to the beginning of the next word or punctuation mark&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;W&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move past the next space&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;b&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to the beginning of the previous word or punctuation mark&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;B&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to the beginning of the previous word, ignores punctuation&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;e&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;end of next word or punctuation mark&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;E&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;end of next word, ignoring punctuation&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;H&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move cursor to the top of the screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;M&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move cursor to the middle of the screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;L&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move cursor to the bottom of the screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;Screen Movement&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;G&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;span style=&quot;display: block; font-family: 'Courier New',Courier,monospace; text-align: center;&quot;&gt;&lt;br /&gt;
+&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to the last line in the file&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;xG&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to line x&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:x&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to line x&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;z+&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move current line to top of screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;z&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move current line to the middle of screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;z-&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move current line to the bottom of screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^F&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move forward one screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^B&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move backward one line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^D&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move forward one half screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^U&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move backward one half screen&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^R&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;redraw screen (does not work with VT100 type terminals)&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^L&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;redraw screen (does not work with Televideo terminals)&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;Inserting&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;r&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;replace character under cursor with next character typed&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;R&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;keep replacing character until [esc] is hit&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;i&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;insert before cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;a&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;append after cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;A&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;append at end of line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;O&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;open line above cursor and enter append mode&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;J&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;join line below to the current one&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;Text replacement&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:%s/OLDTEXT/NEWTEXT/g&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;replaces OLDTEXT with NEWTEXT in entire document&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:s/OLDTEXT/NEWTEXT/g&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;replaces OLDTEXT with NEWTEXT on current line only&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;Deleting&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;x&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;delete character under cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;dd&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;delete line under cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;dw&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;delete word under cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;db&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;delete word before cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;Copying Code&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;yy&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;(yank)'copies' line which may then be put by the p(put) command. Precede with a count for multiple lines.&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;Put Command&lt;/strong&gt;&lt;br /&gt;
+brings back previous deletion or yank of lines, words, or characters&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;P&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;bring back before cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;p&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;bring back after cursor&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;Find Commands&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;?&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;finds a word going backwards&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;/&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;finds a word going forwards&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;f&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;finds a character on the line under the cursor going forward&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;F&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;finds a character on the line under the cursor going backwards&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;t&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;find a character on the current line going forward and stop one character before it&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;T&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;find a character on the current line going backward and stop one character before it&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;;&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;repeat last f, F, t, T&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;Miscellaneous Commands&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;.&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;repeat last command&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;u&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;undoes last command issued&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;U&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;undoes all commands on one line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;xp&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;deletes first character and inserts after second (swap)&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;J&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;join current line with the next line&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^G&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;display current line number&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;%&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;if at one parenthesis, will jump to its mate&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;mx&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;mark current line with character x&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;'x&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;find line marked with character x&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+NOTE: Marks are internal and not written to the file.&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;Line Editor Mode&lt;/strong&gt;&lt;br /&gt;
+Any commands form the line editor ex can be issued upon entering line mode.&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;To enter&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;type &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;':'&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;To exit&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;press&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[return]&lt;/span&gt;or &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[esc]&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;READING FILES&lt;/strong&gt;&lt;br /&gt;
+copies (reads) filename after cursor in file currently editing&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:r filename&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;WRITE FILE&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:w&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;saves the current file without quitting&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;MOVING&lt;/strong&gt;&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:#&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to line #&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:$&lt;/span&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;move to last line of file&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;br /&gt;
+&lt;strong&gt;SHELL ESCAPE&lt;/strong&gt;&lt;br /&gt;
+executes 'cmd' as a shell command.&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;:!'cmd'&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<div created="20201111101714757" modified="20201111101814658" title="Filenet">
+<pre>Content repositories se nastavuji v transakci `OAC0`
+
+Certifikaty jde do content serveru prenest bud primo v tx OAC0 nebo v transakci OAHT (ikona budik)
+
+V transakci STRUST musi byt spravne nastaveny system PSE (pro filenet ve tvaru CN=SID)
+
+Na analyzu funkcnosti se pouziva report `RSCMST`, kde se vybere content repository (napriklad FR), zmackne budik a pak metoda testovani napriklad RSCMSTH1 (Test rozhraní HTTP použitím skupiny funkcí SCMS_HTTP).
+
+Hlubsi analyzu jde ziskat sapnutim sledovani na TCP/IP RFC zarizenich SAPHTTP a SAPHTTPA v tx SM59 (posledni zalozka Specialni volby - Nast.sledovani RFC).
+Vysledny log dev_http neni v adresari work, ale musi se cist reportem RSHTTP40 (odkud je mozne report i vymazat).
+
+Instalace ROOT CA certifikatu do SAP. transakce STRUST -&gt; menu Certifikat - Databaze. Zalozit novy zaznam. Potom (tlacitko) import certifikatu, zalozka soubor a nacist certifikat. (Tlacitko) export certifikatu, zalozka databaze a vybrat zaznam zalozeny na zacatku. Hotovo.</pre>
+</div>
+<div created="20201111101848677" modified="20201111102054542" title="HANA">
+<pre>!!!License key request for a new SAP HANA database
+Choose &quot;New system&quot; option and enter all required data provide below. &lt;br&gt;
+Provide the below listed data.
+
+*Provide the System ID
+*Product type
+*Product Version
+*Hostname of Server
+*System Usage Type
+*Operating System Type
+ 
+To proceed to the hardware data, choose &quot;Continue&quot;.
+
+*Enter your hardware key
+*License Type
+*Quantity (Amount of main memory in GB)
+*Validity until 
+ 
+Choose &quot;Save&quot; to save your entries. Choose &quot;Continue&quot; to display all the system data again. Enter your e-mail address and choose &quot;Send&quot;.Info: You can also split your acquired SAP HANA license (total amount) over several instances (also over several installation numbers). For test and development systems, you can request license keys as required. These license keys are permanent and contain the licensed memory amount number for each request at the most. 
+
+!!!Downloading the license key
+Login to SAP Market Place and Navigate to keys &amp; Requests -&gt; license Keys -&gt; Select it from list
+
+*From the SAP License Installation Overview screen select the respective installation.
+*click the required system ID and Choose &quot;Display System&quot;
+*In the next screen Choose &quot;Continue&quot; and select the relevant entry.
+*Then choose &quot;Display license script&quot; and &quot;Download to PC&quot;. 
+*You can then choose &quot;Open - File - Save as&quot; to save the license key file directly to your host.
+
+!!!Installing the license key
+You can install a permanent license key received by e-mail or by means of a download in your SAP HANA database only by using the SAP HANA studio. The prerequisite for this is a database user with the system authorization LICENSE ADMIN. Carry out the following steps to do this:
+
+*In the SAP HANA studio, navigate to the properties page of the relavant database for which you have requested the license key.
+*On the properties page, choose the button for &quot;installing the license key&quot;.
+*Navigate to your license file and select it.
+*After a successful confirmation, the properties page of the system is updated with the new license information if this is valid for the database.
+
+Another way of installing a license key is to use the SQL command line of the SAP HANA studio. In this case, you also require a database user with the system authorization LICENSE ADMIN, who can install a license key with the following SQL command:
+
+```
+SET SYSTEM LICENSE &quot;content of license file&quot;
+```
+
+Note that you must use the complete content of the license file, including the line breaks, for this command. If the specified license data is correct and corresponds to the database (hardware key, system ID), the license is updated in the database and you can verify it in the system view M_LICENSE.
+
+!!!Emergencies
+If a production standstill occurs, you can create a message with priority 1 under component XX-SER-LIKEY to request a temporary license key that is valid for one week. The following data is required for the license key to be issued: System ID, hardware key, and installation number. The key is issued immediately. Request a permanent license key within this week.
+</pre>
+</div>
+<div created="20201111102124011" modified="20201111102505606" title="IDoc">
+<pre>!!!IDOC (Intermediate Document)
+Slouzi ke komunikaci SAPu s okolnimi systemy.
+
+;''Transakce:''
+:BD87 - prehledova transakce prichozich a odchozich IDocs
+:WE02 - seznam IDocs
+:WE09 - hledani podle hodnoty pole v idocu
+:WE20 - partnerske dohody, logicke systemy
+:WE21 - porty ve zpracovani IDoc
+:BD64 - zobrazeni distribucniho modelu
+:OMTX a BD54 - zalozeni logickeho systemu
+:RZ12 - Udrzba skupin RFC serveru
+:SMQS - qRFC scheduler (monitor)
+:SM58 - Transakcni RFC
+
+;''Programy:''
+:RSARFCEX - preposlani Idocu, ktere zustavaji v SM58 (jako provedeni LUWs)
+:RBDMOIND - nastavuje status 12 pro IDocy, ktere ktere maji status 03 a uz nejsou ve fronte SM58
+:RSEOUT00 - IDocy ve stavu 30 dava do fronty SM58 (do stavu 03)
+:RBDAPP01 - zpracuje prichozi idocy, ktere zustanou ve stavu 64 (napriklad kvuli nedostatku zdroju)
+:RBDMANI2 - manualni zpracovani neodeslanych IDoc?
+:RSGWREGP - seznam programu zaregistrovanych na GW
+:RBDINPUT - manualni zpracovani prichozich idocu. Nejdriv se vybere stav a na dalsi obrazovce datum, typ zpravy a dalsi.
+:RC1_IDOC_SET_STATUS - nastaveni statusu pro idoc (napr. 31)
+
+;''Tabulky:''
+:EDIDC - hlavicky jobu, vcetne statusu
+:EDI40 - clusterova tabulka s obsahem IDocu v poli vardata
+:EDID4 - Datové záznamy IDocu od 4.0 dále (obsah idocu)
+
+;''Funkcni moduly:''
+:IDOC_READ_COMPLETELY - nacteni obsahu IDOCu funkci.
+
+''Selecty'' (v pripade stiznosti na neodchazeni IDOC z SAP na TIBCO)
+
+* pocet odeslanych idoc po dnech
+
+```
+select upddat, count(*) from sapr3.edidc where upddat &gt;= '&amp;datum' group by upddat order by 1;
+```
+
+Datum se zada ve tvaru YYYYMMDD
+
+* pocet idoc ve fronte SM58, cekajicicch na odeslani (stav RECORDED)
+
+```
+select substr(arfcdest,1,15) as arfcdest, arfcstate, arfcdatum, count(*) from sapr3.arfcsstate
+where arfcdatum &gt;= to_char(sysdate,'YYYYMMDD')-2 and arfcdest like 'R3TIBCO%'
+group by arfcdest, arfcstate, arfcdatum;
+```
+
+!!!IACOR
+(coz tak uplne nesouvisi s IDOC) &lt;br&gt;
+Upravu IACOR RFC zarizeni jde provadet bud v transakci SM31 - tabulka IACORDES
+nebo, jak pravi SAP v note 1088199: Use the maintenance of the view cluster IACOR_DES_SITES (transaction SM34)</pre>
+</div>
+<div created="20201111102537498" modified="20201111105328478" title="Licence">
+<pre>!!!!Monitorovani licenci uzivatelu
+Monitotovani se provadi pro produktvni systemy (v transakci USMM, zalozka &quot;systemova data&quot;, druh systemu &quot;Produktivni&quot;).
+V zalozce &quot;Ceniky&quot; je potreba nastavit spravny cenik (napriklad mySAP.com Solution Suite) a v zalozce &quot;Typy uzivatelu&quot; pouzivane typy, napriklad 52, 54 a 91. Uzivatelum, kteri se pouzivaji napriklad pro spousteni jobu, je mozne nastavit typ 91 (Test), za ktery se neplati.
+
+;Transakce:
+:USMM
+
+;Tabulky:
+:USH04 - Historie uzivatelu a opravneni. V poli PROFS radky zacinajici na C odpovidaji zalozeni uzivatele, M zmene a D vymazu.
+:USR41_MLD - Historie vicenasobnych prihlaseni
+
+!!!!Generovani a nahravani licence pro SAP server
+Licence pro SAP server se generuji na strance http://service.sap.com/licensekeys
+
+Vygenerovanou licenci jde do systemu nahrat na urovni opracniho systemu nebo z SAP. Soubor se nahrava pomoci prikazu:
+
+```
+saplicense -install ifile=soubor_s_licenci.txt
+```
+
+Nahrani docasne licence do systemu z prikazove radky:
+
+```
+saplicense -temp
+```
+
+;Transakce:
+:SLICENSE - sprava licenci SAP
+
+Prihlaseni do systemu jako uzivatel sap* s defaultnim heslem:
+
+* kontrola exitence uzivatele sap* (v klientu 000)
+`SELECT mandt, bname FROM sapr3.usr02 WHERE bname = 'SAP*';`
+
+* vymaz uzivatele SAP* z tabulky USR02 (a spravneho klienta)
+`DELETE FROM sapr3.usr02 WHERE mandt='000' AND bname='SAP*';`
+
+* povolit prihlaseni kerneloveho uzivatele sap*:
+`login/no_automatic_user_sapstar = 0`</pre>
 </div>
 <div created="20201110222858759" modified="20201111010224708" tags="toc" title="Table of contents">
 <pre>;Table of contents
