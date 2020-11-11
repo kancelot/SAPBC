@@ -219,6 +219,10 @@ Error message and password prompt
 
 <li>SAP</li>
 
+<li>SAP_ADS</li>
+
+<li>SAPgui</li>
+
 <li>Table of contents</li>
 
 </ul>
@@ -9722,7 +9726,7 @@ exports.parse = function() {
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111113833992" list="$:/AdvancedSearch $:/core/modules/parsers/wikiparser/rules/wikilink.js SAP" modified="20201111114008445" title="$:/StoryList">
+<div created="20201111115445898" list="[[Table of contents]] SAPgui" modified="20201111121153210" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
@@ -11435,7 +11439,7 @@ Prihlaseni do systemu jako uzivatel sap* s defaultnim heslem:
 * povolit prihlaseni kerneloveho uzivatele sap*:
 `login/no_automatic_user_sapstar = 0`</pre>
 </div>
-<div created="20201111105434979" modified="20201111113443461" title="SAP">
+<div created="20201111105434979" modified="20201111120623092" title="SAP">
 <pre>!!!Error: R3TR XXXX ... XXXX was repaired in this system
 
 (popsano v sapnote 1541124)
@@ -11717,6 +11721,140 @@ TCP 50000-59999
 TCP 1500-1599
 ```
 </pre>
+</div>
+<div created="20201111120729343" modified="20201111121032006" title="SAP_ADS">
+<pre>!Adobe Document Services Introduction
+The main purpose of this document is to provide a comprehensive guide for Adobe Document Services configuration on NW AS ABAP and NW AS JAVA with usage of basic authentication.
+
+! Prerequisites
+!! Check the IIOP Service and Startup Properties (NW AS JAVA )
+
+''ConfigTool'': /usr/sap/SAPSID/instance_name/j2ee/configtool/configtool.sh
+
+[img[ConfigTool|http://i.nahraj.to/f/1kqS.png]]
+
+! Creating a User for Basic Authentication
+!! Create a User for Basic Authentication (NW AS JAVA)
+
+
+```
+Username: ADSUSER
+Init password: ****************
+Role: ADSCALLERS (no authorization required)
+User Type: SYSTEM
+```
+
+!! Assigning security role in Java to the user ADSUSER (NW AS JAVA) 
+
+*Log on to the Visual Administrator. On the Cluster tab, choose Server x → Services → Security Provider.
+*On the Policy Configurations tab, in the Components area, select ''com.adobe/AdobeDocumentServices*AdobeDocumentServicesAssembly.jar''
+*On the Security Roles tab, select //ADSCaller// from the Security Roles list.
+*In the Mappings area, choose Add (Users/Groups). A dialog Choose Users or Groups is displayed. Search for user “ADSUSER” and include it in the Users window by selecting it and clicking OK
+*Repeat for the group “ADSCallers” in the Groups window.
+*Switch to the „read only“ mode
+[img[http://i.nahraj.to/f/1kqT.png]]
+
+[img[http://i.nahraj.to/f/1kqV.png]]
+
+! Creating ABAP Connection (NW AS ABAP)
+
+```
+Transaction: SM59
+Destination name: ADS
+Destination type: G
+Host: sapnwjavahostname.fq.dn
+Port: 50000
+Path: /AdobeDocumentServices/Config?style=rpc
+```
+
+[img[http://i.nahraj.to/f/1kqY.png]]
+
+! Activating the ICF Services (NW AS ABAP)
+
+```
+Transaction: SICF
+```
+
+[img[http://i.nahraj.to/f/1kr1.png]]
+
+! Creating a Destination Service (NW AS JAVA)
+* Log on to the Visual Administrator 
+* On the Cluster tab, choose // Server x → Services → Destinations//. Under //Runtime//, select //HTTP//. The available destinations are displayed. 
+* Choose //New// in the navigation panel, if the destination does not exist, yet. 
+* In the dialog box that follows, enter the name `FP_ICF_DATA_&lt;SID&gt;`, where //SID// is your ABAP system, for the new destination and choose OK. 
+* Under Connection Settings, enter the message server (or Web Dispatcher) of the SAP NetWeaver AS ABAP in the URL field: `http://&lt;hostname&gt;:&lt;HTTP_port&gt;` and in case of SSL, `https://&lt;hostname&gt;:&lt;HTTPS_port&gt;`
+* Enter the appropriate client number of the system, where the service user ADS_AGENT exists into the client field. Keep the other fields System IDand Language empty. Under Logon Data, choose BASICin the Authentication field. 
+* Enter ADS_AGENT in the Username field and enter the same password as given for this service user in the SAP NetWeaver AS ABAP in the Password field. 
+* Choose Save.
+
+[img[http://i.nahraj.to/f/1kr4.png]]</pre>
+</div>
+<div created="20201111121204708" modified="20201111121940059" title="SAPgui">
+<pre>!!!Adding text to the SAP logon/login screen
+Go to Transaction ''SE61'' and select the document class '''General Text''' (selection using F4 help), and create a text with the name ZLOGIN_SCREEN_INFO in the system language determined with the profile parameter zcsa/system_language. &lt;br&gt;
+If the text does not exist in the system language, no output is made.
+
+Note that there is space on the logon screen for 16 lines for every 45 fixed-font characters or for approximately 60 proportional font characters. &lt;br&gt;
+Title lines (can be recognized by format keys starting with a 'U') are highlighted in the display. &lt;br&gt;
+You may also output icons at the beginning of lines by using an icon code (for example, @1D@ for the STOP icon). You can get a list of icon codes from Report RSTXICON. Pay attention to the codes with two '@' symbols displayed by the report. You cannot include text symbols. The function 'include character' cannot be used. &lt;br&gt;
+Creating/changing this text requires a changeable system. Therefore, for production systems, SAP recommends maintaining the text in the upstream system and then transporting it. To do this, select a transportable (customer) development class when you create the text and save the active version prior to the export. &lt;br&gt;
+The transport is done via the transport object R3TR DOCT ZLOGIN_SCREEN_INFO &lt;br&gt;
+The text can be changed in the original system only (see TADIR entry R3TR DOCT ZLOGIN_SCREEN_INFO). When making a change in a non-original system, a modified text would be generated which cannot be represented sensefully on the initial screen.
+
+Caution - changed functions as of Release 6.40 &lt;br&gt;
+Except for the above-mentioned formatting possibilities for:
+
+* headings ('U') and
+* icons at the beginning of a line
+
+no further formatting is available that was was previously possible using SAPScript. &lt;br&gt;
+vice info: [[Note 205487 - Own text on SAPGui logon screen|http://service.sap.com/sap/support/notes/205487]]
+
+!!!Change SAP logon picture (splash screen)
+
+*Go to transaction SMW0
+*Select &quot;Binary data for WebRFC application&quot; and Hit Enter
+*At Object selection screen Click Execute
+*Click Settings -&gt; Maintain MIME types
+*Click the Create button and Fill in: TYPE: image/gif and EXTENSION: *.gif
+*Click Save
+*Click Back to the Binary data for WebRFC
+*Click Create and Fill in: Obj. name: ZXXXX.GIF and Description: Company Logo
+*Click Import and specify the filename where your GIF file is located. File type is BIN. Finish *press the Transfer button.
+*If successful, your logo will be shown in the Binary data for WebRFC.
+
+&lt;br&gt;
+
+*Go to transaction SM30
+*Table/View - SSM_CUST
+*Click Maintain
+*Click New Entries
+*Name Value to be set
+*START_IMAGE ZXXXX.GIF
+*RESIZE_IMAGE NO
+*HIDE_START_IMAGE NO
+*Logoff and Login again
+
+!!!Editace poli v tabulce SE16N (zastarale)
+
+# spustit transakci SE16N
+# vyplnit jmeno tabulky a dat enter (tak, aby se zobrazil seznam poli v tabulce)
+# do transkcniho policka napsat &amp;sap_edit
+# objevi se &quot;SAP editing function is activated&quot;
+# hodiny (F8) zobrazi rozsirene menu.
+
+!!!Editace tabulky pomoci &amp;sap_edit byla zrusena v sap note 1420281.
+Novy postup: &lt;br&gt;
+
+# Go to SE16N and type the table name you want to deal with
+# Instead of typing &amp;SAP_EDIT in the command window, type /H to activate the debug
+# Hit the F8 key to enter the data browser for the table you typed on step 1)
+# While in debug, type the name of the following two global variables on the right panel: GD-EDIT and GD-SAPEDIT
+# Change the values of BOTH variables to an uppercased X
+# Finally, type F8 to exit from debug
+
+Now you should be in the data browser screen for the table you selected and all editing features you had when `&amp;SAP_EDIT` was available should be back again!
+Enjoy!</pre>
 </div>
 <div created="20201110222858759" modified="20201111010224708" tags="toc" title="Table of contents">
 <pre>;Table of contents
