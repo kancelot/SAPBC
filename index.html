@@ -211,6 +211,8 @@ Error message and password prompt
 
 <li>Licence</li>
 
+<li>SAP</li>
+
 <li>Table of contents</li>
 
 </ul>
@@ -9652,7 +9654,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111101544580" list="[[Table of contents]]" modified="20201111102606931" title="$:/StoryList">
+<div created="20201111101544580" list="[[Table of contents]] SAP" modified="20201111105415091" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -11361,6 +11363,289 @@ Prihlaseni do systemu jako uzivatel sap* s defaultnim heslem:
 
 * povolit prihlaseni kerneloveho uzivatele sap*:
 `login/no_automatic_user_sapstar = 0`</pre>
+</div>
+<div created="20201111105434979" modified="20201111113443461" title="SAP">
+<pre>!!!Error: R3TR XXXX ... XXXX was repaired in this system
+
+(popsano v sapnote 1541124)
+
+In order to solve the incidence you have to do the following: &lt;br&gt;
+goto transaction SE03
+
+* Object in Requests
+* Search for Objects in Requests/Tasks
+* click the 'Execute' icon (F8)
+* in the 'Selection of objects' part of the window choose &quot;&quot;&quot;R3TR XXXX YYYY&quot;&quot;&quot; and also select the options 'Also search for sub-objects (not for generic entry)' and 'Modifiable'
+* click the 'Execute' icon (F8)
+* a list of transport request will be shown. Look for the request with status 'Modifiable' and release it.
+
+If you have more requests with this error &quot;was repaired in this system and must not be imported&quot;, please do the same for them. After that you can repeat the import where you found these error messages, this time the import should finish successfully.
+
+If no modifiable requests are shown, this means that, although the object is not included in any modifiable request, by any reason the object is still locked. Therefore, you have to unlock the object doing the following: &lt;br&gt;
+goto transaction SE03
+
+* Objects
+* Display Repaired Objects
+* click the 'Execute' icon (F8)
+* select the R3TR XXX YYYY object by single click on it
+* click the button 'Repair flag' (F5) to reset the repair of this object.
+
+!!!Maily ze SAPu na exchange
+Kdyz ze SAPu neodchazi maily, je potreba zkontrolovat job s programem `RSCONN01`. Pokud hlasi, ze program uz probiha, pak zkontrolovat lock na tabulce `SXDISP`.
+
+!!!Logovani zmen v tabulkach
+Logovani zmen se aktivuje parametrem rec/client moznosti jsou off, all a 003 (kde 003 je cislo konkretniho klienta) &lt;br&gt;
+Jestli je protokolovani zmen pro konkretni tabulku aktivni je mozne overit v &quot;Technical Settings&quot;, volba &quot;Log Data Changes&quot; &lt;br&gt;
+Zaznamy o zmenach jsou ulozeny v tabulce `DBTABLOG`, k jejich prohlizeni slouzi transakce `SCU3` nebo report `RSTBHIST`. &lt;br&gt;
+Vice na http://www.mariewagener.de/node/116/print &lt;br&gt;
+[[backup|https://drive.google.com/open?id=0By6d3B2jkJZXRjRySDd3RFVOdTQ&amp;authuser=0]]
+
+!!!Audit uzivatelu SM19
+Pokud je potreba auditovat uzivatele na zaklede PREFIX*, je potreba mit nastaveny parametr rsau/user_selection = 1 &lt;br&gt;
+http://service.sap.com/sap/support/notes/574914
+
+!!!Restart nahravani patchu, kdyz se nejde prihlasit do SAPu:
+pokud opravdu nelze jinak, patchovani je nekoncene a do systemu se neni mozne prihlasit, tak jako uzivatel `&lt;sid&gt;adm` spustit:
+
+```
+tp r3i all ${SAPSYSTEMNAME} pf=TP_DOMAIN_${SAPSYSTEMNAME}.PFL tag=SPAM
+```
+
+pro system `IJ1` tedy:
+
+```
+tp r3i all IJ1 pf=TP_DOMAIN_IJ1.PFL tag=SPAM
+```
+
+!!!Vymaz klienta v SAP
+( zkopirovano z http://www.erpgreat.com/basis/proper-way-to-delete-a-sap-client.htm ) &lt;br&gt;
+V pripade, ze vymaz klienta v transakci `SCC5` trva nesnesitelne dlouho, je mozne pouzit R3trans: &lt;br&gt;
+K vymazu klienta 200 je potreba udelat soubor &quot;del200&quot; s nasledujicim obsahem:
+
+```
+Clientremove
+Client = 200
+Select *
+```
+
+soubor se ulozi do /usr/sap/trans/bin &lt;br&gt;
+`$ cd /usr/sap/trans/bin` &lt;br&gt;
+`$ R3trans –w &lt;log file name&gt; -u 1 &lt;command file name&gt;` &lt;br&gt;
+Napriklad `R3trans -w del200.log -u 1 del200` &lt;br&gt;
+Ke kontrole stavu jde pouzit prikaz: &lt;br&gt;
+`$ tail -f del200`
+
+!!!Disable &quot;Import all&quot; (so called big truck) in STMS
+
+*Go to transaction `STMS` on SAP domain controller in client 000.
+*Choose &quot;System Overview&quot; (Shift + F6).
+*Double-click on productive system and go to &quot;Transport tool&quot; tab.
+*Add parameter `NO_IMPORT_ALL = 1`
+
+!!!Disable component version check in SMTS
+
+*Go to transaction STMS on SAP domain controller in client 000.
+*Choose &quot;System Overview&quot; (Shift + F6).
+*Double-click on productive system and go to &quot;Transport tool&quot; tab.
+*Add parameter `SP_TRANS_SYNC = OFF`
+
+!!!Vypis aplikaci na AS JAVA, identifikace aplikace ve stavu STARTING
+
+1) Call the telnet tool &lt;br&gt;
+`telnet &lt;host name&gt; &lt;telnet port 5NN08&gt;` &lt;br&gt;
+2)  Login as j2ee_admin (dual stack) or Administrator (java stack) &lt;br&gt;
+3)  List the cluster nodes &lt;br&gt;
+`lsc` &lt;br&gt;
+4) Jump to a server node &lt;br&gt;
+`jump &lt;ID&gt;` &lt;br&gt;
+5) Go to deploy service &lt;br&gt;
+`add deploy` &lt;br&gt;
+6) List all the applications that are currently starting &lt;br&gt;
+`list_app | grep -i starting` &lt;br&gt;
+Repeat step 6 until you can see that a particular application keeps showing up in starting status. &lt;br&gt;
+You now have the application that is taking time to start.
+
+!!!Neaktualni data v DB02
+Pokud jsou v transakci DB02 neaktualni data (obycejne v pripade, kdy je oracle na samostatnem serveru) byva pricina v tabulce
+`DB02_COLL_PLAN`. Nektere radky maji status &quot;I&quot; (inactive) misto &quot;A&quot;. Oprava je posana v sapnote 1002840:
+
+```
+You can re-activate collector modules as follows:
+1. Call report RSORACUP with parameter:
+CON_NAME = &lt;DB connection&gt;
+OPERATIO = DELETE
+2. If you are asked to delete entries in MONI, say NO.
+3. Call report RSORACUP again with parameters:
+CON_NAME = &lt;DB connection&gt;
+OPERATIO = CREATE
+```
+
+Hodnota `&lt;DB connection&gt;` bude pravdepodobne `DEFAULT`
+
+Duvody deaktivace je mozne dohledat v tabulce `DB02_COLL_LOG:` &lt;br&gt;
+Check if all collector modules are contained in table `DB02_COLL_PLAN` and are active (STATUS=A). Go to DB02 -&gt; Additional functions -&gt; Collector logs -&gt; Click on tab &quot;Modules&quot;. You should find around 60 to 65 modules (the exact number depend on your R/3 release/patch). All modules must be active (STATUS=A). If not, then refer to the collection log to know the causes about its deactivation. You can find the collection log in table DB02_COLL_LOG. Go to transaction SE16 and display only entries of DB02_COLL_LOG for the affected SMON_ID. Normally you only need to check the return code of the last collection date ever. The meaning of each return code is the following: &lt;br&gt;
+00 Successful execution &lt;br&gt;
+01 Successful execution: no data collected &lt;br&gt;
+02 Successful execution: dataset was already up-to-date &lt;br&gt;
+10 Database connection not possible &lt;br&gt;
+20 Monitor deactivated: Oracle release &lt; 9 &lt;br&gt;
+30 Submonitor deactivated: source submonitor was inactive &lt;br&gt;
+31 Submonitor deactivated: data upload exceeded fixed limit &lt;br&gt;
+32 Submonitor deactivated: runtime exceeded fixed limit &lt;br&gt;
+
+...ale co znamena treba kod 30?
+
+!!!Zobrazeni poctu soucasne prihlasenych uzivatelu:
+Have you tried ST07 -&gt; HISTORY -&gt; DATE -&gt; PERIOD DRILL DOWN, you can get the users logged in hourly and the report can be extended for up to 30 days.
+
+Ukradeno z http://scn.sap.com/thread/2107940 (na konci)
+
+!!!Export tabulky RFCDES
+
+```
+R3tr                tabu           RFCDES
+R3tr                tabu           RFCDOC
+R3tr                tabu           RFCDESSECU
+R3tr                tabu           RFCATTRIB
+R3tr                tabu           RFCCHECK
+R3tr                tabu           RFCGO
+R3tr                tabu           RFCTA
+R3tr                tabu           RFCCMC
+R3tr                tabu           RFCSTXTAB
+R3tr                tabu           RFCSYSACL
+R3tr                tabu           RFCTRUST
+R3tr                tabu           RFCTYPE
+```
+
+Enter the Table Keys as * for all the table entries &lt;br&gt;
+http://scn.sap.com/thread/3266036
+
+!!!Export partnerskych dohod
+The partner profiles are stored in the following tables:
+
+```
+Table EDPP1: General partner profile
+Table EDP12: Partner profile outbound, additional data NAST
+Table EDP13: Partner profile outbound
+Table EDP21: Partner profile inbound
+Table EDIPHONE: Connection to SAP telephony (optional)
+```
+
+You can use R3TR TABU to manually set the tables into a Customizing request (as of Release 46, into a SYST-type request).
+
+viz sapnote 182172 - Transport connection of IDoc partner profile &lt;br&gt; http://service.sap.com/sap/support/notes/182172
+
+!!!Pridani transportu do fronty z prikazove radky
+
+```
+tp pf=TP_DOMAIN_SAB.PFL addtobuffer SABK974520 UPB client003
+```
+
+!!!nastaveni standardnich jobu (mimo SM36)
+
+* SWW* joby se planuji v transakci SWU3, pod uzivatelem DDIC - zmacknout F9
+* EU_* joby se planuji jobem SAPRSEUJ
+* CODE_INSPECTION_DELETION - se10 - vybrat kterykoliv transport - menu request/task - complete check - objects
+* /BDL/TASK_PROCESSOR - transakce SDCCN - menu 'Goto' -&gt; 'Settings' -&gt; 'Task Processor
+* SAP_CCMS_TEXT_COL - aktivuje se v transakci ST06 - vlevo dole v settings - text history - change - assign defaults - save
+
+!!!Pridani certifikatu do SAP Java
+
+# Cluster &gt; Server &gt; Services &gt; Key Storage &gt; service_ssl &gt; Generate CSR Request ... //(Vygenerovani certifikacni zadosti xxxx.csr)//
+# Cluster &gt; Server &gt; Services &gt; Key Storage &gt; service_ssl &gt; Import CSR Response ... //(importovat podepsaný certifikát „xxxx.cer“)//
+# Cluster &gt; Server &gt; Services &gt; SSL Provider &gt; doubleclick na „Dispatcher“ &gt; Server Indentity tab &gt; Add… //(přidat podepsaný certifikát ze sekce service_ssl)//
+
+!!!Sort order na Linuxu (non Unicode)
+If you change from Windows or a UNIX on &quot;Red Hat Enterprise Linux 5&quot; or higher , you can recreate the original sort order for specific languages by installing &quot;compat-locales-sap&quot; RPM packages and activating the locales included there in the table TCP0C as described in [[SAP Note 187864|http://service.sap.com/sap/support/notes/187864]]. &lt;br&gt;
+You can find further and current information about &quot;compat-locales-sap&quot; PRM packages here: https://access.redhat.com/kb/docs/DOC-40475 (Note: You need a user account on the &quot;Red Hat Customer Portal&quot; for calling this site.) &lt;br&gt;
+To install the &quot;compat-locales-sap&quot; PRM packages on a system, you require a subscription for &quot;Red Hat Enterprise Linux for SAP Business Applications&quot;. This enables you to activate the channel &quot;RHEL for SAP&quot; on a RHEL5 (or higher) that is eventually used to provide the RPM packages. &lt;br&gt;
+If you use &quot;Red Hat Enterprise Linux 4&quot; (RHEL4) or you use a language in the SAP system and no adjusted locale exists for this language, you can request adjusted locales as a consulting service from &quot;Red Hat Global Professional Services&quot;. To do this, contact your Red Hat sales partner.&lt;br&gt;
+See also [[SAP Note 1069443|http://service.sap.com/sap/support/notes/1069443]]
+
+!!!Joby se nespousteji na aplikacnim serveru:
+[[note 544881 - Composite SAP note: Time-driven jobs do not run|http://service.sap.com/sap/support/notes/544881]] &lt;br&gt;
+[[note 394677 - Jobs do not run on certain servers|http://service.sap.com/sap/support/notes/394677]] &lt;br&gt;
+Opravit jde bud v transakci SM61 - vybrat aplikacni server, prejit na zalolzku &quot;Health check&quot; a spustit &quot;Kontrola&quot; nebo zkontrolovat (pripadne vymazat) z SM12 zamek Table = BTCREMTCLN    Argument = &lt;SERVER NAME&gt;
+
+!!!Component XXXXXX is locked against OCS package imports
+Apply SPAM update. If this was already done, then run report `RSSPAM15`
+
+!!!SAP DIA and BTC Workprocess utilization history
+in CCMS there is a possibility to measure the utilization of the Dia WPs in &quot;%&quot;. You can check the MTE in the path:
+
+```
+RZ20 --&gt; SAP CCMS Monitor Templates
+                --&gt; Entire System
+                     --&gt; &lt;SID&gt; --&gt; R/3 Services
+                         --&gt; Dialog --&gt; &lt;instance&gt;
+                               --&gt; Utilization
+```
+
+The data in the MTE is available for 24 hour, if you need history data, then you should activate collection of the data for this MTE in CPH (display details of the MTE, &quot;Central Performance History -&gt; Output as Report&quot;, configure and release the report to run). &lt;br&gt;
+For the BTC WPs you can use the MTE &quot;Utilization&quot; in the path as above &quot;R/3 Services -&gt; Background&quot;. &lt;br&gt;
+Or there is another MTE for the number of the free BTC WPs system wide:
+
+```
+RZ20 --&gt; SAP CCMS Monitor Templates
+               --&gt; Background Processing
+                    --&gt; System Wide
+                          --&gt; Background 
+                                --&gt; Background Service
+                               SystemWideFreeBPWP
+```
+
+!!!Prevod certifikatu P12 na PSE
+# Prevedl jsem P12 certifikat na PSE pomoci: `sapgenpse import_p12 -p /home/ts1adm/SAPTST1.pse SAPTST1.p12`. Spolu se jmenem PSE certifikatu je potreba uvest plnou cestu. `./` nestaci.
+# Pokud si `sapgenpse` stezuje na `Sorry, but certificate chain is incomplete, need certificate of`, je potreba pridat chybejici certifikat do prikazu: `sapgenpse import_p12 -r &quot;certifikat.cer&quot; -p /home/ts1adm/SAPTST1.pse SAPTST1.p12`
+# Vyexportoval jsem vsechno z strust (System_PSE, SSL server, SSL klient standardni a SSL klient anonymni)
+# Nahradil jsem SSL server a SSL klient standardni novym certifikatem. (Import soubor.pse -&gt; save as postupne SSL server a SSL klient). To smaze vsechno ze sekce seznam certifikatu.
+# Pridal do &quot;seznamu certifikatu&quot; pro SSL server i SSL klient standarni vsechny certifikaty, ktere tam byly. Umim to jen po jednom. Import zalozniho PSE, poklikat na certifikat, prepnout se do SSL server, s zmacknout tlacitko “Zahrnout do sezn.certif.“, save a znovu – import zalozniho PSE, poklikat ...
+
+!!!Otevreni portu pro Solution manager:
+!!!!Smer ERP -&gt; SolMan
+
+```
+TCP 3200-3399 
+TCP 3600-3699 
+TCP 6001 
+TCP 8000-8500 
+TCP 25000-25099 
+TCP 50000-59999
+```
+
+!!!!Smer SolMan -&gt; Aplikacni server
+
+```
+//TCP 22 (nepovinny)//
+TCP 515 
+TCP 1090 
+TCP 1095 
+TCP 1128 
+TCP 1129 
+TCP 3200-3399 
+TCP 3600-3699 
+TCP 4200-4399 
+TCP 4800-4899 
+TCP 5050 
+TCP 5800-5999 
+TCP 7200-7575 
+TCP 8000-8500 
+TCP 21212 
+TCP 21213 
+TCP 25000-25099 
+TCP 30000-39999 
+TCP 44300-44399 
+TCP 44400-44499 
+TCP 50000-59999
+```
+
+!!!!Smer SolMan -&gt; Databazovy server
+
+```
+//TCP 22 (nepovinny)//
+TCP 1500-1599
+```
+</pre>
 </div>
 <div created="20201110222858759" modified="20201111010224708" tags="toc" title="Table of contents">
 <pre>;Table of contents
