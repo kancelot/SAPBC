@@ -159,6 +159,8 @@ Error message and password prompt
 
 <li>$:/GitHub/Username</li>
 
+<li>$:/Import</li>
+
 <li>$:/isEncrypted</li>
 
 <li>$:/SiteSubtitle</li>
@@ -214,6 +216,8 @@ Error message and password prompt
 <li>EditorVI</li>
 
 <li>Filenet</li>
+
+<li>Formatting in WikiText</li>
 
 <li>HANA</li>
 
@@ -9723,6 +9727,16 @@ exports.parse = function() {
 <div created="20201110220039045" modified="20201110220041055" title="$:/GitHub/Username">
 <pre>kancelot</pre>
 </div>
+<div plugin-type="import" status="pending" title="$:/Import" type="application/json">
+<pre>{
+    &quot;tiddlers&quot;: {
+        &quot;Untitled&quot;: {
+            &quot;title&quot;: &quot;Untitled&quot;,
+            &quot;text&quot;: &quot;New Tiddler&quot;
+        }
+    }
+}</pre>
+</div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
 </div>
@@ -9750,13 +9764,13 @@ exports.parse = function() {
 <div created="20201110222857129" modified="20201110222857129" title="$:/state/tab/moresidebar-1850697562">
 <pre>$:/core/ui/MoreSideBar/All</pre>
 </div>
-<div created="20201110222856169" modified="20201110222856169" title="$:/state/tab/sidebar--595412856">
-<pre>$:/core/ui/SideBar/More</pre>
+<div created="20201110222856169" modified="20201111180232275" title="$:/state/tab/sidebar--595412856">
+<pre>$:/core/ui/SideBar/Open</pre>
 </div>
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111152450868" list="Oracle" modified="20201111152450868" title="$:/StoryList">
+<div list="[[Table of contents]]" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
@@ -12546,6 +12560,74 @@ Hlubsi analyzu jde ziskat sapnutim sledovani na TCP/IP RFC zarizenich SAPHTTP a 
 Vysledny log dev_http neni v adresari work, ale musi se cist reportem RSHTTP40 (odkud je mozne report i vymazat).
 
 Instalace ROOT CA certifikatu do SAP. transakce STRUST -&gt; menu Certifikat - Databaze. Zalozit novy zaznam. Potom (tlacitko) import certifikatu, zalozka soubor a nacist certifikat. (Tlacitko) export certifikatu, zalozka databaze a vybrat zaznam zalozeny na zacatku. Hotovo.</pre>
+</div>
+<div created="20201111175808972" modified="20201111180126688" tags="" title="Formatting in WikiText">
+<pre>Available character formatting includes:
+
+* &lt;code&gt;&amp;#96;backticks&amp;#96;&lt;/code&gt; for `code`
+** Alternatively, &lt;code&gt;&amp;#96;&amp;#96;double backticks allows &amp;#96;embedded&amp;#96; backticks&amp;#96;&amp;#96;&lt;/code&gt;
+* `''bold''` for ''bold text''
+* `//italic//` for //italic text//
+* `__underscore__` for __underscored text__
+* `^^superscript^^` for ^^superscripted^^ text
+* `,,subscript,,` for ,,subscripted,, text
+* `~~strikethrough~~` for ~~strikethrough~~ text
+
+---
+
+Within the text of a tiddler you can use special formatting called WikiText to control how the text is displayed.
+
+WikiText can be typed by using the [[Editor toolbar]] or by typing by hand. While the first is convenient the later can be faster when you know the WikiText markup code.
+
+! Simple Formatting
+
+At its simplest, WikiText lets you use familiar word-processing features like bold, italic, lists and tables. For example:
+
+```
+The ''quick'' brown ~~flea~~ fox //jumps// over the `lazy` dog
+```
+
+… displays as:
+
+The ''quick'' brown ~~flea~~ fox //jumps// over the `lazy` dog
+
+! Working with Tiddlers
+
+In WikiText, you can link to tiddlers using double square brackets, or by taking advantage of the automatic linking of CamelCase words:
+
+```
+This is a link to HelloThere, and one to [[History of TiddlyWiki]]
+```
+
+… displays as:
+
+This is a link to HelloThere, and one to [[History of TiddlyWiki]]
+
+! Macros
+
+Macros let you package repetitive fragments of WikiText so that you can easily reuse them.
+
+For example, here is the definition of a macro that generates a ~YouTube video URL from its unique identifier:
+
+```
+\define youtube(video)
+https://www.youtube.com/watch?v=$video$
+\end
+```
+
+With that definition in place, `&lt;&lt;youtube 1g66s7UbyuU&gt;&gt;` generates the URL https://www.youtube.com/watch?v=1g66s7UbyuU
+
+! Advanced WikiText
+
+Advanced WikiText features allow you to produce automated lists and interactive features like dropdown menus. In fact, the entire user interface of TiddlyWiki itself is written in WikiText, so any feature that you see in TiddlyWiki can be adapted for use in your own wikis.
+
+Some of the advanced features require complex coding. TiddlyWiki includes several built-in macros that simplify common user interface tasks, like tabs, tables of content, and lists of tiddlers.
+
+! Find out more
+
+See [[WikiText]] for a detailed introduction to writing WikiText.
+
+</pre>
 </div>
 <div created="20201111101848677" modified="20201111102054542" title="HANA">
 <pre>!!!License key request for a new SAP HANA database
