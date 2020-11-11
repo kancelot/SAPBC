@@ -233,7 +233,17 @@ Error message and password prompt
 
 <li>SED</li>
 
+<li>Shell</li>
+
+<li>SNC</li>
+
+<li>SSFS</li>
+
+<li>SubnetMask</li>
+
 <li>Table of contents</li>
+
+<li>Transakce</li>
 
 </ul>
 </p>
@@ -9736,7 +9746,7 @@ exports.parse = function() {
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20201111115445898" list="[[Table of contents]]" modified="20201111124436309" title="$:/StoryList">
+<div created="20201111115445898" list="[[Table of contents]]" modified="20201111144807525" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
@@ -12736,6 +12746,843 @@ By specifying both the lower and upper case character in brackets is equivalent 
 
 See more at: http://www.theunixschool.com/2014/08/sed-examples-remove-delete-chars-from-line-file.html#sthash.a0KkXozd.dpuf</pre>
 </div>
+<div created="20201111143557002" modified="20201111143744506" title="Shell">
+<pre>&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;sapbc - Programovani v shellu&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;static/style.css&quot; type=&quot;text/css&quot; /&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div class=&quot;wiki&quot; id=&quot;content_view&quot; style=&quot;display: block;&quot;&gt;
+&lt;h1 id=&quot;toc0&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru&quot;&gt;&lt;/a&gt;B.1 Ziskavani dat ze souboru&lt;/h1&gt;
+ Existuje nekolik prikazu, ktere umoznuji rozbit soubor do mensich casti, abychom mohli pracovat pouze s daty, ktere potrebujeme. Mezi tyto prikazy patri &lt;strong&gt;head&lt;/strong&gt;, &lt;strong&gt;tail&lt;/strong&gt;, &lt;strong&gt;cut&lt;/strong&gt;, &lt;strong&gt;uniq&lt;/strong&gt; a &lt;strong&gt;grep&lt;/strong&gt;.&lt;br /&gt;
+&lt;h2 id=&quot;toc1&quot;&gt; &lt;/h2&gt;
+ &lt;h2 id=&quot;toc2&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.1 Prikaz head&quot;&gt;&lt;/a&gt;B.1.1 Prikaz head&lt;/h2&gt;
+ Prikaz &lt;strong&gt;head&lt;/strong&gt; slouzi k zobrazeni urciteho &lt;em&gt;poctu&lt;/em&gt; prvnich radek ze souboru. Muzeme ho pouzit jako filtr - zapisuje do &lt;em&gt;stdout&lt;/em&gt; a pokud neuvedeme nazev &lt;em&gt;souboru&lt;/em&gt;, cte ze &lt;em&gt;stdin&lt;/em&gt;.&lt;br /&gt;
+&lt;h3 id=&quot;toc3&quot;&gt; &lt;/h3&gt;
+ &lt;h3 id=&quot;toc4&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.1 Prikaz head-B.1.1.1 Syntaxe&quot;&gt;&lt;/a&gt;B.1.1.1 Syntaxe&lt;/h3&gt;
+ Syntaxe prikazu head je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;head &lt;em&gt;-pocet&lt;/em&gt; [ &lt;em&gt;soubor&lt;/em&gt; ]&lt;/span&gt;&lt;br /&gt;
+kde &lt;em&gt;pocet&lt;/em&gt; urcuje pocet radek, ktere se maji vypsat (vychozi hodnota je 10)&lt;br /&gt;
+&lt;h3 id=&quot;toc5&quot;&gt; &lt;/h3&gt;
+ &lt;h3 id=&quot;toc6&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.1 Prikaz head-B.1.1.2 Priklad&quot;&gt;&lt;/a&gt;B.1.1.2 Priklad&lt;/h3&gt;
+ K zobrazeni prvnich tri radek ze souboru &lt;em&gt;/etc/passwd&lt;/em&gt; pouzijeme:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;head -3 /etc/passwd&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; root:x:0:1:Superuser:/:/usr/bin/ksh&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; daemon:x:1:1:System daemons:/etc:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; bin:x:2:2:Owner of system commands:/bin:&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc7&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.2 Prikaz tail&quot;&gt;&lt;/a&gt;B.1.2 Prikaz tail&lt;/h2&gt;
+ Prikaz &lt;strong&gt;tail&lt;/strong&gt; zobrazuje konec souboru, parametr muze byt bud &lt;em&gt;+pocet&lt;/em&gt; radek od zacatku nebo &lt;em&gt;-pocet&lt;/em&gt; radek od konce. Muzeme ho pouzit jako filtr - zapisuje do &lt;em&gt;stdout&lt;/em&gt; a pokud neuvedeme nazev &lt;em&gt;souboru&lt;/em&gt;, cte ze &lt;em&gt;stdin&lt;/em&gt;.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc8&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.2 Prikaz tail-B.1.2.1 Syntaxe&quot;&gt;&lt;/a&gt;B.1.2.1 Syntaxe&lt;/h3&gt;
+ Syntaxe prikazu tail je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;tail [ -lbc ] ±[ &lt;em&gt;pocet&lt;/em&gt; ] [ &lt;em&gt;soubor&lt;/em&gt; ]&lt;/span&gt;&lt;br /&gt;
+kde:&lt;br /&gt;
+&lt;em&gt;pocet&lt;/em&gt; urcuje kolik radek se ma vypsat. Vypis zacne bud na radce &lt;em&gt;+pocet&lt;/em&gt; od zacatku nebo &lt;em&gt;-pocet&lt;/em&gt; od konce (vychozi hodnota je -10)&lt;br /&gt;
+&lt;strong&gt;lbc&lt;/strong&gt; urcuje jednotky, ve kterych se uvadi pocet. &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;l&lt;/span&gt; pro radky, &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;b&lt;/span&gt; pro byty a &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;c&lt;/span&gt; pro znaky&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc9&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.2 Prikaz tail-B.1.2.2 Priklady&quot;&gt;&lt;/a&gt;B.1.2.2 Priklady&lt;/h3&gt;
+ K zobrazeni posledny radky ze souboru &lt;em&gt;/home/sidadm/startsap_DVEBMGS00.log&lt;/em&gt; pouzijeme:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;tail -1 /home/sidadm/startsap_DVEBMGS00.log&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Instance on host hostname started&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+K vypsani 3. a 4. radky souboru /etc/passwd pouzijeme prikaz &lt;em&gt;tail&lt;/em&gt; v kombinaci s prikazem &lt;em&gt;head&lt;/em&gt;:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;head -4 /etc/passwd | tail -2&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; bin:x:2:2:Owner of system commands:/bin:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; sys:x:3:3:Owner of system files:/usr/sys:&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Prikaz &lt;em&gt;tail&lt;/em&gt; take muzeme pouzit s volbou &lt;strong&gt;-f&lt;/strong&gt; pro souvisly vypis poslednich radek souboru, do ktereho nekdo zapisuje.&lt;br /&gt;
+To je uzitecne napriklad ke sledovani logu nebo sledovani narustu velikosti soboru, do ktereho zapisuje jiny proces. Napriklad:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;tail -f /oracle/SID/saptrace/background/alert_SID.log&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Completed checkpoint up to RBA [0x2548.2.10], SCN: 0x0907.e59afeb1&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Fri Apr 18 12:31:14 2008&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Beginning log switch checkpoint up to RBA [0x2549.2.10], SCN: 0x0907.e59bb007&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Thread 1 advanced to log sequence 9545&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Current log# 18 seq# 9545 mem# 0: /oracle/SID/origlogB/log_g08m1.dbf&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Current log# 18 seq# 9545 mem# 1: /oracle/SID/mirrlogA/log_g08m2.dbf&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Fri Apr 18 12:31:14 2008&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; ARC0: Media recovery disabled&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Fri Apr 18 13:01:18 2008&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Completed checkpoint up to RBA [0x2549.2.10], SCN: 0x0907.e59bb007&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc10&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.3 Prikaz cut&quot;&gt;&lt;/a&gt;B.1.3 Prikaz cut&lt;/h2&gt;
+ Prikazem &lt;strong&gt;cut&lt;/strong&gt; ziskame pole dat z kazde radky standardniho vstupu nebo z kazde radky urceneho souboru. Je to uzitecny nastroj pro ziskani sloupcu dat ze souboru, ktery ma tabulkovou strukturu, jako treba &lt;em&gt;/etc/passwd&lt;/em&gt;.&lt;br /&gt;
+Prikaz &lt;strong&gt;cut&lt;/strong&gt; muzeme pouzit jako filtr - zapisuje do &lt;em&gt;stdout&lt;/em&gt; a pokud neuvedeme nazev &lt;em&gt;souboru&lt;/em&gt;, cte ze &lt;em&gt;stdin&lt;/em&gt;.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc11&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.3 Prikaz cut-B.1.3.1 Syntaxe&quot;&gt;&lt;/a&gt;B.1.3.1 Syntaxe&lt;/h3&gt;
+ Syntaxe prikazu cut je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;cut [ moznosti ] seznam-poli [soubor]&lt;/span&gt;&lt;br /&gt;
+kde:&lt;br /&gt;
+&lt;em&gt;moznosti&lt;/em&gt; predstavuji:&lt;br /&gt;
+&lt;ul&gt;&lt;li&gt;&lt;strong&gt;-c&lt;/strong&gt; urcije pozici znaku&lt;/li&gt;&lt;li&gt;&lt;strong&gt;-f&lt;/strong&gt; urcuje pole&lt;/li&gt;&lt;li&gt;&lt;strong&gt;-d&lt;em&gt;c&lt;/em&gt;&lt;/strong&gt; se pouzva ve spolupraci s moznosti &lt;strong&gt;-f&lt;/strong&gt;, volba &lt;strong&gt;-d&lt;/strong&gt; urcuje, ze dalsi znak (v tomto pripade c) bude oddelovac poli. Vychozi hodnota je tabelator. (specialni znaky je potreba uzavrit do uvozovek napr &lt;strong&gt;-d&amp;quot; &amp;quot;&lt;/strong&gt;)&lt;/li&gt;&lt;/ul&gt;&lt;em&gt;seznam-poli&lt;/em&gt; je carkami oddeleny seznam znaku nebo cisel poli ve stoupajicim poradi. Znak minus (&lt;strong&gt;-&lt;/strong&gt;) definuje rozsahy. Napriklad:&lt;br /&gt;
+&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;-f 2,5-10 &lt;/span&gt;(pole 2 a 5-10)&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;-c -4,10 &lt;/span&gt;(znaky 1-4 a 10)&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;-c 2- &lt;/span&gt;(znaky 2-konec radky)&lt;/li&gt;&lt;/ul&gt;&lt;br /&gt;
+&lt;h3 id=&quot;toc12&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.3 Prikaz cut-B.1.3.2 Priklady&quot;&gt;&lt;/a&gt;B.1.3.2 Priklady&lt;/h3&gt;
+ Zobrazeni prvniho a pateho pole souboru &lt;em&gt;/etc/passwd&lt;/em&gt;, kde kazde pole je urceno oddelovacem&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;cut -d: -f1,5 /etc/passwd&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; root:Superuser&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; daemon:System daemons&lt;/span&gt;&lt;br /&gt;
+vypis jmen prihlasenych uzivatelu&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;who | cut -d&amp;quot; &amp;quot; -f 1&lt;/span&gt;&lt;br /&gt;
+odebrani prvnich dvou znaku z kazde radky v souboru myfile a ulozeni vysledku&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;cut -c 3- myfile &amp;gt; tmp$$; mv tmp$$ myfile&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc13&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.4 Prikaz uniq&quot;&gt;&lt;/a&gt;B.1.4 Prikaz uniq&lt;/h2&gt;
+ Prikaz &lt;strong&gt;uniq&lt;/strong&gt; cte data ze vstupniho souboru, porovnava sousedici radky a zjistuje jejich unikatnost. Ve standardu maze duplicitni radky. Prikaz uniq muze byt pouzit jako filtr - s vystupem do &lt;em&gt;stdout&lt;/em&gt; a ctenim vstupu z &lt;em&gt;stdin&lt;/em&gt;.&lt;br /&gt;
+Tento prikaz nachazi duplicitni radky pouze pokud jsou &lt;em&gt;sousedici&lt;/em&gt;. Pred pouzitim prikazu &lt;strong&gt;uniq&lt;/strong&gt; muze byt vhodne pripravit soubor pomoci prikazu &lt;strong&gt;sort&lt;/strong&gt;.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc14&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.4 Prikaz uniq-B.1.4.1 Syntaxe&quot;&gt;&lt;/a&gt;B.1.4.1 Syntaxe&lt;/h3&gt;
+ Syntaxe prikazu uniq je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;uniq [ &lt;em&gt;moznosti&lt;/em&gt; ] [ &lt;em&gt;vstupnisoubor&lt;/em&gt; [ &lt;em&gt;vystupnisoubor&lt;/em&gt; ] ]&lt;/span&gt;&lt;br /&gt;
+priklad &lt;em&gt;moznosti&lt;/em&gt;:&lt;br /&gt;
+&lt;strong&gt;-u&lt;/strong&gt; vypisuje pouze radky, ktere nejsou duplicitni&lt;br /&gt;
+&lt;strong&gt;-d&lt;/strong&gt; vypisuje pouze jednu kopii radek, ktere jsou duplicitni&lt;br /&gt;
+&lt;strong&gt;-c&lt;/strong&gt; u kazdeho radku vypise, kolikrat se v souboru nachazi&lt;br /&gt;
+&lt;br /&gt;
+Ve standardu &lt;em&gt;vstupnisoubor&lt;/em&gt; predstavuje &lt;em&gt;stdin&lt;/em&gt; (muzeme explicitne vyzadovat pomoci znaku minus) a &lt;em&gt;vystupnisoubor&lt;/em&gt; predstavuje &lt;em&gt;stdout&lt;/em&gt;.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc15&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.4 Prikaz uniq-B.1.4.2 Priklady&quot;&gt;&lt;/a&gt;B.1.4.2 Priklady&lt;/h3&gt;
+ Zobrazeni obsahu souboru inventory:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;cat inventory&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; CD-ROM&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; CD-ROM&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 17&amp;quot; monitor&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; tape&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 17&amp;quot; monitor&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 15&amp;quot; monitor&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; CD-ROM&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Zobrazeni polozek, ze kterych je inventura slozena:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;sort inventory | uniq&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 15&amp;quot; monitor&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 17&amp;quot; monitor&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; CD-ROM&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; tape&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Zobrazeni poctu polozek v inventure:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;sort inventory | uniq -c&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 1 15&amp;quot; monitor&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 2 17&amp;quot; monitor&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 3 CD-ROM&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 1 tape&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc16&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.5 Prikaz grep&quot;&gt;&lt;/a&gt;B.1.5 Prikaz grep&lt;/h2&gt;
+ Prikaz &lt;strong&gt;grep&lt;/strong&gt; prochazi vstupni soubor a hleda radky, ktere odpovidaji zadanemu vzoru a tyto radky obvykle vypisuje na &lt;em&gt;stdout&lt;/em&gt;. Pokud prohledava vice, nez jeden soubor, je spolu s nalezenym radkem vypsano jmeno souboru.&lt;br /&gt;
+Tento prikaz muzeme pouzit jako filtr-vystup zapisuje do &lt;em&gt;stdout,&lt;/em&gt; vstupem muze byt soubor nebo pokud neuvedeme nazev souboru, cte ze &lt;em&gt;stdin&lt;/em&gt;.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc17&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.5 Prikaz grep-B.1.5.1 Regularni vyrazy&quot;&gt;&lt;/a&gt;B.1.5.1 Regularni vyrazy&lt;/h3&gt;
+ Vzor, ktery &lt;strong&gt;grep&lt;/strong&gt; pouziva je bud znakovy retezec nebo &lt;em&gt;regularni vyraz&lt;/em&gt;. Tyto regularni vyrazy mohou byt pouzity dalsimi prikazy, napriklad &lt;strong&gt;vi&lt;/strong&gt; a &lt;strong&gt;sed&lt;/strong&gt;.&lt;br /&gt;
+Nejjednodussi formou regualrniho vyrazu je retezec znaku. Komplikovanejsi regularni vyraz pouziva metaznaky v znakovem retezci; takovy regularni vyraz bude odpovidat nekolika znakovym retezcum.&lt;br /&gt;
+&lt;br /&gt;
+Regularni vyrazy se v mnohem podobaji rozsirujicim znakum v shellu, ale nejsou stejne. Nekdy je nutne regularni vyrazy pro &lt;strong&gt;grep&lt;/strong&gt; uzavrit do apostofu ( &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;'&lt;/span&gt; ), aby se o jejich interpretaci nesnazil shell. Nasledujici metaznaky mohou byt pouzity pro tvorbu regularnich vyrazu:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;*&lt;/span&gt; (hvezdicka) odpovida 0 nebo vice vyskytum znaku pred hvezdickou (jednomu znaku). Napriklad vyraz &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;XA*Y&lt;/span&gt; odpovida podretezci &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;AAAA&lt;/span&gt; v retezci &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;XAAAAY&lt;/span&gt; a dokonce odpovida (nulovym vyskytem) v retezci &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;XY&lt;/span&gt;, ale neodpovida retezcum &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;XABCY&lt;/span&gt; ani &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;XAAAA&lt;/span&gt;.&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;.&lt;/span&gt;&lt;span style=&quot;font-family: Arial,Helvetica,sans-serif;&quot;&gt; (tecka) &lt;/span&gt;odpovida jakemukoliv jednomu znaku. Je obdobny znaku metaznaku &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;?&lt;/span&gt; pro shell. Kombinovany vyraz &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;.*&lt;/span&gt; odpovida jakemukoliv retezci jako metaznak &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;*&lt;/span&gt; pro shell.&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[list]&lt;/span&gt; odpovida jednomu znaku ze seznamu v zavorkach. Obdobne se chova metaznak &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[…]&lt;/span&gt; v shellu .&lt;br /&gt;
+&lt;ul&gt;&lt;li&gt;Napriklad vyraz &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;A[BCD]E &lt;/span&gt;odpovida recezcum &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ABE, ACE &lt;/span&gt;a &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ADE,&lt;/span&gt; ale ne &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ABCDE.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;Vyraz A[BCD]*E odpovida retezcum &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ABE, ACE n&lt;/span&gt;ebo &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ADE&lt;/span&gt;&lt;span style=&quot;font-family: Arial,Helvetica,sans-serif;&quot;&gt; s&lt;/span&gt;tejne jako &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ABDCDDCCBCBE&lt;/span&gt;&lt;span style=&quot;font-family: Arial,Helvetica,sans-serif;&quot;&gt; a&lt;/span&gt;&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; AE&lt;/span&gt;, ale neodpovida retezcum &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ABCDHE &lt;/span&gt;ani &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ABCD.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;Seznam muze take stanovovat rostouci rady znaku napriklad &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[0-9]&lt;/span&gt;nebo &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;[A-Za-z].&lt;/span&gt;&lt;/li&gt;&lt;li&gt;Pokud je prvnim znakem seznamu &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^&lt;/span&gt;&lt;span style=&quot;font-family: Arial,Helvetica,sans-serif;&quot;&gt;,&lt;/span&gt; pak vyraz odpovida znaku, ktery &lt;strong&gt;neni&lt;/strong&gt; uveden v seznamu.&lt;/li&gt;&lt;/ul&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$&lt;/span&gt; hledany vyraz musi byt na konci radky&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^&lt;/span&gt; hledany vyraz musi byt na zacatku radky. Pokud je vyraz uzavreny mezi znaky &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^&lt;/span&gt; i &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$&lt;/span&gt; pak hledanemu vyrazu musi odpovidat cela radka.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc18&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.5 Prikaz grep-B.1.5.2 Syntaxe prikazu grep&quot;&gt;&lt;/a&gt;B.1.5.2 Syntaxe prikazu grep&lt;/h3&gt;
+ Syntaxe prikazu grep je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;grep [ &lt;em&gt;moznosti&lt;/em&gt; ] '&lt;em&gt;vzor'&lt;/em&gt; [ &lt;em&gt;soubor&lt;/em&gt; ]&lt;/span&gt;&lt;br /&gt;
+kde moznosti predstavuji napriklad:&lt;br /&gt;
+&lt;strong&gt;-c&lt;/strong&gt; vystupem prikazu grep bude pouze pocet nalezenych radek&lt;br /&gt;
+&lt;strong&gt;-h&lt;/strong&gt; ve vysledku hledani nebude u nalezene radky jmeno souboru. (Pouze pokud grep prohledava vice souboru)&lt;br /&gt;
+&lt;strong&gt;-i&lt;/strong&gt; vyhledavaci vzor nerozlisuje velka a mala pismena&lt;br /&gt;
+&lt;strong&gt;-l&lt;/strong&gt; zobrazuje pouze jmena souboru, ve kterych byl vzor nalezen&lt;br /&gt;
+&lt;strong&gt;-n&lt;/strong&gt; kazda radka je uvedena cislem radky vstupniho souboru&lt;br /&gt;
+&lt;strong&gt;-v&lt;/strong&gt; zobrazuje pouze radky, ktere neobsahuji vzor&lt;br /&gt;
+&lt;strong&gt;-x&lt;/strong&gt; zobrazuje pouze vysledky, kdy cela radka presne odpovida vzoru&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc19&quot;&gt;&lt;a name=&quot;B.1 Ziskavani dat ze souboru-B.1.5 Prikaz grep-1.5.3 Priklady&quot;&gt;&lt;/a&gt;1.5.3 Priklady&lt;/h3&gt;
+ Zobrazeni radek ze souboru &lt;em&gt;/etc/conf/cf.d/mtune&lt;/em&gt; a &lt;em&gt;/etc/conf/cf.d/stune&lt;/em&gt; ktere urcuji velikost NFILE&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;grep NFILE /etc/conf/cf.d/?tune&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; /etc/conf/cf.d/mtune:NFILE 0 100 64000&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; /etc/conf/cf.d/stune:NFILE 200&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Zjisteni, kdy se prihlasil uzivatel steve&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;who | grep '^steve '&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; steve ttyp20 Oct 10 10:53&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Zobrazeni uzivatele anne, ale ne uzivatelu annette ani maryanne ze souboru &lt;em&gt;/etc/passwd&lt;/em&gt;:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;grep '^anne:' /etc/passwd&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; anne:x:201:50:Anne Sample:/usr/anne:bin/sh&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+zobrazeni radek, ktere maji alespon 4 znaky a konci na samohlaskou:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;grep '....[aeiou]$' colors&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; aqua&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; blue&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; magenta&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+zobrazeni radek, ktere maji prave 5 znaku a nekonci samohlaskou:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;grep '^....[^aeiou]$' colors&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; green&lt;/span&gt;&lt;br /&gt;
+(Regularni vyraz je ohranicen znaky &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^&lt;/span&gt; i &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$&lt;/span&gt; - tzn. zacatek i konec radku. Znak &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;^&lt;/span&gt; v seznamu znamena, ze hledame znaky, ktere nejsou v seznamu.)&lt;br /&gt;
+&lt;br /&gt;
+&lt;h1 id=&quot;toc20&quot;&gt;&lt;a name=&quot;B.3 Trideni obsahu souboru&quot;&gt;&lt;/a&gt;B.3 Trideni obsahu souboru&lt;/h1&gt;
+ Prikaz &lt;strong&gt;sort&lt;/strong&gt; setridi radky jednoho nebo vice souboru a vysledek vypise na standardni vystup. Pokud je uveden vice nez jeden soubor, vystupem je setridena kombinace vsech vstupnich souboru&lt;br /&gt;
+Standardne prikaz &lt;strong&gt;sort&lt;/strong&gt; radi vstupni radky lexikograficky (jako slovnik), ale toto chovani muzeme zmenit pomoci parametru.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc21&quot;&gt;&lt;a name=&quot;B.3 Trideni obsahu souboru-B.3.1 Syntaxe&quot;&gt;&lt;/a&gt;B.3.1 Syntaxe&lt;/h2&gt;
+ Syntaxe prikazu &lt;strong&gt;sort&lt;/strong&gt; je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;sort [ moznosti ] [ &lt;em&gt;+pole&lt;/em&gt; ] [ &lt;em&gt;soubor&lt;/em&gt; ]&lt;/span&gt;&lt;br /&gt;
+kde:&lt;br /&gt;
+&lt;strong&gt;-o&lt;/strong&gt; &lt;em&gt;soubor&lt;/em&gt; specifikuje, ze vystup se ulozi do uvedeneho souboru misto stdout&lt;br /&gt;
+&lt;strong&gt;-M&lt;/strong&gt; tridi mesice (napriklad &amp;quot;JAN&amp;quot; &amp;lt; &amp;quot;FEB&amp;quot; &amp;lt; &amp;quot;MAR&amp;quot; …)&lt;br /&gt;
+&lt;strong&gt;-r&lt;/strong&gt; obrati poradi&lt;br /&gt;
+&lt;strong&gt;-d&lt;/strong&gt; pouziva &amp;quot;slovnikove&amp;quot; poradi - pracuje pouze s alfanumerickymi znaky a s mezerami&lt;br /&gt;
+&lt;strong&gt;-b&lt;/strong&gt; ignoruje predni mezery&lt;br /&gt;
+&lt;strong&gt;-f&lt;/strong&gt; nerozlisuje mezi velkymi a malymi pismeny&lt;br /&gt;
+&lt;strong&gt;-t&lt;/strong&gt; &lt;em&gt;c&lt;/em&gt; pouzije &lt;em&gt;c&lt;/em&gt; jako oddelovac sloupcu&lt;br /&gt;
+&lt;strong&gt;-k&lt;/strong&gt; &lt;em&gt;klic&lt;/em&gt; definuje klic pro omezeni trideni na urcita pole. zakladni syntaxe je: &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;prvnipole,poslednipole[vlajka]&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc22&quot;&gt;&lt;a name=&quot;B.3 Trideni obsahu souboru-B.3.2 Priklady&quot;&gt;&lt;/a&gt;B.3.2 Priklady&lt;/h2&gt;
+ Nasledujici priklady pracuji se souborem phone-list:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;cat phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Norm MacDonald 4019&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Uve Denvers 4211&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Daurius Mills 4165&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Greg Clos 4410&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Tento priklad pouzije zakladni nastaveni prikazu sort a seradi soubor podle prvniho pole:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;sort phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Daurius Mills 4165&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Greg Clos 4410&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Norm MacDonald 4019&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Uve Denvers 4211&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Pokud chceme soubor seradit podle prijmeni, preskocime prvni pole pomoci parametru &lt;strong&gt;+1&lt;/strong&gt;:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;sort +1 phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Greg Clos 4410&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Uve Denvers 4211&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Norm MacDonald 4019&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Daurius Mills 4165&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Serazeni podle telefonniho cisla a ulozeni vystupu do souboru &lt;em&gt;ext&lt;/em&gt;:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;sort -b +2 phone-list &amp;gt; ext&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Norm MacDonald 4019&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Daurius Mills 4165&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Uve Denvers 4211&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Greg Clos 4410&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+alternativnim prikazem se stejnym vysledkem je &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;sort -k 3,3n phone-list&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Vypsani souboru &lt;em&gt;/etc/passwd&lt;/em&gt; serazeneho podle ciselneho ID uzivatele ve tretim sloupci oddelenem pomoci :&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;sort -t : -k 3,3n /etc/passwd&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; root:!:0:0::/root:/usr/bin/ksh&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; daemon:!:1:1::/etc:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; bin:!:2:2::/bin:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; sys:!:3:3::/usr/sys:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; uucp:!:5:5::/usr/lib/uucp:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; lp:*:11:11::/var/spool/lp:/bin/false&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Serazeni souboru &lt;em&gt;/etc/passwd&lt;/em&gt; nejprve podle ID skupiny (4. sloupec) a pote podle ID uzivatele:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;sort -t : -k 4,4n -k 3,3n /etc/passwd&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; root:!:0:0::/root:/usr/bin/ksh&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; daemon:!:1:1::/etc:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; ipsec:*:201:1::/etc/ipsec:/usr/bin/ksh&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; marty:!:21771:1:Martin Majer, UNIX Adm:/home/marty:/usr/bin/ksh&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; jirid:!:22214:1:Jiri Dvorak, UNIX Adm:/home/jirid:/usr/bin/ksh&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; premek:!:23521:1::/home/premek:/usr/bin/ksh&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; bin:!:2:2::/bin:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; sys:!:3:3::/usr/sys:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; adm:!:4:4::/var/adm:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; uucp:!:5:5::/usr/lib/uucp:&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h1 id=&quot;toc23&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk&quot;&gt;&lt;/a&gt;B.5 Zaklady awk&lt;/h1&gt;
+ &lt;strong&gt;Awk&lt;/strong&gt; je programovaci jazyk urceny na praci s obsahem souboru. &lt;strong&gt;Awk&lt;/strong&gt; cte data vzdy po jednom radku a pak je rozdeluje na pole. Kazde pole je retezec znaku bez mezer a tabelatoru. &lt;strong&gt;Awk&lt;/strong&gt; je primarne urceno na specialni formatovani textu.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc24&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.1 Syntaxe&quot;&gt;&lt;/a&gt;B.5.1 Syntaxe&lt;/h2&gt;
+ Syntaxe pro pouzivani awk z prikazove radky je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;awk &lt;em&gt;'vzor-akce prikaz'&lt;/em&gt; [ &lt;em&gt;vstupni_soubor&lt;/em&gt; ]&lt;/span&gt;&lt;br /&gt;
+kde struktora &lt;em&gt;prikazu vzor-akce&lt;/em&gt; je:&lt;br /&gt;
+vzor {akce}&lt;br /&gt;
+Napriklad tento program pouziva vzor a akci k vytisteni telefonniho cisla zamestnance &amp;quot;Mitch&amp;quot; ze souboru phone-list:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '/Mitch/ {print}' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+Vzor nebo akci nemusime uvest. Pokud uvedeme vzor, ale ne akci, tak jsou radky odpovidajici vzoru vytisteny. Nasledujici prikaz udela to same jako predchazejici:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '/Mitch/' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+Pokud uvedeme akci, ale ne vzor, pak je pozadovana akce provedena se vsemi radky. Tento program vypise vsechny radky ze souboru phone-list:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '{print}' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Norm MacDonald 4019&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Uve Denvers 4211&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Daurius Mills 4165&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Greg Clos 4410&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc25&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.2 Promenne poli&quot;&gt;&lt;/a&gt;B.5.2 Promenne poli&lt;/h2&gt;
+ Vzhledem k tomu, ze vetsina prace s awk predstavuje zpracovavani radku, awk poskytuje promenne poli, pro identifikaci poli v zaznamu:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$1, $2, $3, $4, …&lt;/span&gt;&lt;br /&gt;
+Obsah celeho radku je ulozen v promenne &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$0&lt;/span&gt;.&lt;br /&gt;
+Napriklad tento program vypise druhe a treti pole z kazde radky souboru phone-list, ktera obsahuje retezec &amp;quot;Pam&amp;quot;:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '/Pam/ {print $2, $3}' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc26&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.3 Vestavene promenne&quot;&gt;&lt;/a&gt;B.5.3 Vestavene promenne&lt;/h2&gt;
+ Spolu s promennymi poli (&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$1&lt;/span&gt;, &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$2&lt;/span&gt;) awk nabizi dalsi vestavene promenne. Zakladni sada vestavenych promennych obsahuje:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;NF&lt;/span&gt; celkovy soucet prectenych poli na radku&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;NR&lt;/span&gt; cislo radku, kteremu vyhovuje vzor awk prikazu&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;FILENAME&lt;/span&gt; jmeno aktualniho vstupniho souboru&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;FNR&lt;/span&gt; cislo radku v aktualnim souboru (pokud awk pracuje s vice soubory najednou, tak NR stale roste)&lt;br /&gt;
+Priklad pouziti promenne NR:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '/Pam/ {print NR,$0}' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 2 Pam Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; 6 Pam Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc27&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.4 Uzivatelem definovane promenne&quot;&gt;&lt;/a&gt;B.5.4 Uzivatelem definovane promenne&lt;/h2&gt;
+ Podobne jako v jinych programovacich jazycich je mozne definovat svoje vlastni probmenne k ulozeni dat.&lt;br /&gt;
+Napriklad promenna sum je pouzita k souctu hodnot ve tretim poli (&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$3&lt;/span&gt;)&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;{sum = sum + $3}&lt;/span&gt;&lt;br /&gt;
+nebo&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;awk '{ print sum = sum + $3 }' phone-list | tail -1&lt;/span&gt;&lt;br /&gt;
+Awk inicializuje promenne s hodnotou retezce &amp;quot;&amp;quot; (null) a numerickou hodnotou 0.&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc28&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.5 Operatory&quot;&gt;&lt;/a&gt;B.5.5 Operatory&lt;/h2&gt;
+ Programovaci jazyk awk obsahuje nekolik porovnavacich operatoru a regularnich vyrazu, ktere je mozne pouzit ke stanoveni vzoru.&lt;br /&gt;
+Relacni operatory:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;==&lt;/span&gt; rovna se&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;!&lt;strong&gt;=&lt;/strong&gt;&lt;/span&gt; nerovna se&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;&amp;lt;&lt;/span&gt; mensi nez&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;&amp;lt;=&lt;/span&gt; mensi nebo rovno&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;&amp;gt;&lt;/span&gt; vetsi nez&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;&amp;gt;=&lt;/span&gt; vetsi nebo rovno&lt;br /&gt;
+&lt;br /&gt;
+Tento awk program pouziva operator == k porovnani prvniho pole s textovym retezcem:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '$1 == &amp;quot;Mitch&amp;quot;' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Mitch Gromer 4842&lt;/span&gt;&lt;br /&gt;
+Tento program vypise vsechny radky, ktere zacinaji pismenem &amp;quot;N&amp;quot; az &amp;quot;Z&amp;quot;:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '$1 &amp;gt;= &amp;quot;N&amp;quot;' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Norm MacDonald 4019&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Laughlin 4423&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Uve Denvers 4211&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Macilhenny 4300&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Dalsimi operatory jsou ty, ktere je mozne pouzit s regularnimi vyrazy:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;~&lt;/span&gt; odpovida&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;!~&lt;/span&gt; neodpovida&lt;br /&gt;
+&lt;br /&gt;
+Napriklad tento program overuje, zda v souboru phone-list je linka 4300:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '$3 ~ /4300/ {print $1,$2}' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Pam Macilhenny&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc29&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.6 Regularni vyrazy&quot;&gt;&lt;/a&gt;B.5.6 Regularni vyrazy&lt;/h2&gt;
+ Vzory pro awk mohou byt tvoreny nasledujicimi regularnimi vyrazy:&lt;br /&gt;
+&lt;em&gt;znak&lt;/em&gt; jakykoliv znak (ne metaznak)&lt;br /&gt;
+&lt;em&gt;\znak&lt;/em&gt; literalni znak (napriklad &lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;\n&lt;/span&gt; pro konec radky)&lt;br /&gt;
+&lt;em&gt;^&lt;/em&gt; zacatek retezce&lt;br /&gt;
+&lt;em&gt;$&lt;/em&gt; konec retezce&lt;br /&gt;
+. jakykoliv znak, krome konce radky&lt;br /&gt;
+&lt;em&gt;[seznam]&lt;/em&gt; jakykoliv znak ze seznamu&lt;br /&gt;
+&lt;em&gt;[^seznam]&lt;/em&gt; jakykoliv znak, mimo znaku v seznamu&lt;br /&gt;
+&lt;br /&gt;
+Napriklad tento program vypise vsechny radky ze souboru &lt;em&gt;phone-list&lt;/em&gt;, kde druhe pole (prijmeni) zacina znakem &amp;quot;D&amp;quot;:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '$2 ~ /^D/' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Uve Denvers 4211&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Vsechny radky, kde prvni pole zacina na &amp;quot;D&amp;quot; nebo &amp;quot;G&amp;quot; lze vypsat pomoci:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;$ &lt;strong&gt;awk '$1 ~ /^[DG]/' phone-list&lt;/strong&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Daurius Mills 4165&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; Greg Clos 4410&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc30&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.7 Funkce&quot;&gt;&lt;/a&gt;B.5.7 Funkce&lt;/h2&gt;
+ V awk je k dispozici take nekolik funkci k manipulaci s textem a ciselnymi hodnotami:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;length(retezec)&lt;/span&gt; - vrati pocet znaku v &lt;em&gt;retezci&lt;/em&gt;. Bez parametru vrati pocet znaku celeho radku.&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;int(number)&lt;/span&gt; - vrati celociselnou cast &lt;em&gt;cisla&lt;/em&gt; v parametru.&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;index(retezec1, retezec2)&lt;/span&gt; - vrati pozici &lt;em&gt;retezce2&lt;/em&gt; v ramci &lt;em&gt;retezce1&lt;/em&gt; nebo 0, pokud &lt;em&gt;retezec2&lt;/em&gt; nenalezne.&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;substr(retezec, pozice, delka)&lt;/span&gt; - vrati podretezec &lt;em&gt;retezce&lt;/em&gt;, ktery zacina na &lt;em&gt;pozici&lt;/em&gt;. Jeho delku urcuje parametr &lt;em&gt;delka.&lt;/em&gt; Pokud parametr &lt;em&gt;delka&lt;/em&gt; neni zadany, pracuje se celym retezcem od znaku na &lt;em&gt;pozici&lt;/em&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h2 id=&quot;toc31&quot;&gt;&lt;a name=&quot;B.5 Zaklady awk-B.5.8 Formatovani awk vystupu&quot;&gt;&lt;/a&gt;B.5.8 Formatovani awk vystupu&lt;/h2&gt;
+ Pro lepe formatovany vystup je v &lt;strong&gt;awk&lt;/strong&gt; k dispozici vyraz &lt;strong&gt;printf&lt;/strong&gt;. Zakladni syntaze je:&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;{ printf &amp;quot;&lt;em&gt;format&lt;/em&gt;&amp;quot; [ &lt;em&gt;arg&lt;/em&gt; ] }&lt;/span&gt;&lt;br /&gt;
+kde format je slozen z:&lt;br /&gt;
+Literalnich znaku - znakove retezce, ktere jsou zkopirovany do vystupu&lt;br /&gt;
+Konverzni specifikace - konvertuje argumenty podle specifikace&lt;br /&gt;
+&lt;ul&gt;&lt;li&gt;%s bez konverze&lt;/li&gt;&lt;li&gt;%d argument se vypise jako decimalni cislo&lt;/li&gt;&lt;li&gt;%c argument se vypise jako znak&lt;/li&gt;&lt;/ul&gt;Escape sequences - specialni jinak nenapsatelne znaky&lt;br /&gt;
+&lt;ul&gt;&lt;li&gt;\b backspace&lt;/li&gt;&lt;li&gt;\r carriage return&lt;/li&gt;&lt;li&gt;\n novy radek&lt;/li&gt;&lt;li&gt;\t tabelator&lt;/li&gt;&lt;/ul&gt;&lt;br /&gt;
+Napriklad printf lze pouzit k formatovani vystupu ze souboru sales, kde nas zajimaji vysledky za Q1 a cisla chceme v decimalnim formatu:&lt;br /&gt;
+&lt;br /&gt;
+
+&lt;style type=&quot;text/css&quot;&gt;&lt;!--
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.text  {font-family:monospace;}
+.text .imp {font-weight: bold; color: red;}
+.text span.xtra { display:block; }
+
+--&gt;
+&lt;/style&gt;&lt;pre class=&quot;text&quot;&gt;$ cat sales
+Americas  Q1    44500      1200
+Americas  Q2     8660      2450
+Asia      Q1     8650      6637
+Asia      Q2    10730      1269
+Australia Q2    29200       400
+Australia Q1    38400        14
+Europe    Q1    50900       920
+Europe    Q2     3286        26&lt;/pre&gt;
+
+&lt;br /&gt;
+
+&lt;style type=&quot;text/css&quot;&gt;&lt;!--
+/**
+ * GeSHi (C) 2004 - 2007 Nigel McNie, 2007 - 2008 Benny Baumann
+ * (http://qbnz.com/highlighter/ and http://geshi.org/)
+ */
+.text  {font-family:monospace;}
+.text .imp {font-weight: bold; color: red;}
+.text span.xtra { display:block; }
+
+--&gt;
+&lt;/style&gt;&lt;pre class=&quot;text&quot;&gt;$ awk '$2 ~ /Q1/ {printf &amp;quot;%10s %9d.00 %9d.00\n&amp;quot;, $1, $3, $4}' sales
+  Americas     44500.00      1200.00
+      Asia      8650.00      6637.00
+ Australia     38400.00        14.00
+    Europe     50900.00       920.00
+&amp;nbsp;&lt;/pre&gt;
+
+nekolik dalsich priklau:&lt;br /&gt;
+Pouziti AWK na vybrani jmena souboru ve vystupu ls -l&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;ls -ltr ${HOME}/sapcheck/*.chk | tail -1 | awk '{printf(&amp;quot;%s\n&amp;quot;,$9)}'&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+Zmena oddelovace poli v AWK na : ve vystupu ze souboru group&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt;grep 'sapsys' /etc/group | awk -F: '{printf(&amp;quot;%s\n&amp;quot;,$3)}'&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;font-family: arial; font-size: 13px; line-height: 19px;&quot;&gt; Celkova velikost vsech souboru &lt;span style=&quot;font-family: 'Courier New'; font-size: 12px; line-height: 18px;&quot;&gt;SABarch1*.dbf &lt;/span&gt;v adresari v GB&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;font-family: 'Courier New',Courier,monospace;&quot;&gt; ls -l SABarch1*.dbf | awk '{ printf(&amp;quot;Celkova velikost v GB: %.2f\n&amp;quot;, (sum = sum + $5)/1024/1024/1024 ) }' | tail -1 &lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+...pokracovani priste
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<div created="20201111143848196" modified="20201111143853485" title="SNC">
+<pre>&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;sapbc - SNC&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;static/style.css&quot; type=&quot;text/css&quot; /&gt;
+    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html;charset=utf-8&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div class=&quot;wiki&quot; id=&quot;content_view&quot; style=&quot;display: block;&quot;&gt;
+&lt;h1 id=&quot;toc0&quot;&gt;&lt;a name=&quot;Configuring SNC (AS ABAP)&quot;&gt;&lt;/a&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Configuring SNC (AS ABAP)&lt;/span&gt;&lt;/h1&gt;
+ &lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Prerequisites:&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;- installed SAP Cryptographic library and license ticket&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;- set the environment variable SECUDIR (SECUDIR must be set to the location of the license ticket; i.e.: G:\usr\sap\&amp;lt;SID&amp;gt;\&amp;lt;instance&amp;gt;\sec &lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;(To check, use transaction SM49 to execute the external command ENV)&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;SECUDIR=/usr/sap/UPB/DVEBMGS20/sec&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;SECUDIR=/usr/sap/TSS/DVEBMGS20/sec&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;1. Create new Personal Security Environment&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;STRUST&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;- generate PSE (Private Security Environment)&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;- set PIN (password) for the environment (the password/PIN must be set, if not set - the system will fail to start!&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;- add the SNC certificate to the Certificate List&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;2. Change Profile Parameters&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;RZ10&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+
+
+&lt;table class=&quot;wiki_table&quot;&gt;
+    &lt;tr&gt;
+        &lt;td&gt;Parameter Name&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;User-Defined Value&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;sec/libsapsecu&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;/usr/sap/UPB/SYS/exe/run/libsapcrypto.o&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ssf/name&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;SAPSECULIB&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;ssf/ssfapi_lib&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;/usr/sap/UPB/SYS/exe/run/libsapcrypto.o&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/accept_insecure_cpic&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;1&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/accept_insecure_gui&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;1&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/accept_insecure_r3int_rfc&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;1&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/accept_insecure_rfc&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;1&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/enable&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;1&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/force_login_screen&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;1&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/gssapi_lib&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;/usr/sap/UPB/SYS/exe/run/libsapcrypto.o&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/identity/as&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;p:CN=UPB, OU=I4020015367, OU=SAP Web AS, O=SAP Trust Community, C=DE&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;snc/permit_insecure_start&lt;br /&gt;
+&lt;/td&gt;
+        &lt;td&gt;1&lt;br /&gt;
+&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Note: other profile parameters were overtaken from the default profile (see the Resources &amp;quot;Profile Parameter Settings on AS ABAP&amp;quot; for details)&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;3. Restart the system&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;4. Exchange SNC Security Certificates&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;&amp;lt;SID1&amp;gt; &amp;lt;=&amp;gt; &amp;lt;SID2&amp;gt;&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Note: the SNC certificate can be exported via transaction STRUSTSSO2&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;5. Maintain Access Control List for systems&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Transaction SNC0&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;New Entries&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;SID: &amp;lt;SID1&amp;gt;&lt;/span&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Canonical name: p:&amp;lt;SNC name&amp;gt;&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Note: the ACL must be maintained in both communicating systems&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Voilais! You are done!&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;h3 id=&quot;toc1&quot;&gt;&lt;a name=&quot;Configuring SNC (AS ABAP)--Resources&quot;&gt;&lt;/a&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;&lt;a name=&quot;Configuring SNC (AS ABAP)--Resources&quot;&gt;&lt;/a&gt;Resources&lt;/span&gt;&lt;/h3&gt;
+ &lt;br /&gt;
+&lt;strong&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Configuring SNC on AS ABAP&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;&lt;a class=&quot;wiki_link_ext&quot; href=&quot;http://help.sap.com/saphelp_nw73ehp1/helpdata/en/0d/482bb8013243f1b6e2439091e3022f/content.htm?frameset=/en/ca/a0eb373bcf4ed0ae6e959908127d13/frameset.htm&quot; rel=&quot;nofollow&quot;&gt;http://help.sap.com/saphelp_nw73ehp1/helpdata/en/0d/482bb8013243f1b6e2439091e3022f/content.htm?frameset=/en/ca/a0eb373bcf4ed0ae6e959908127d13/frameset.htm&lt;/a&gt;&lt;/span&gt;&lt;br /&gt;
+&lt;br /&gt;
+&lt;strong&gt;&lt;span style=&quot;background-color: #ffffff;&quot;&gt;Profile Parameter Settings on AS ABAP&lt;/span&gt;&lt;/strong&gt;&lt;br /&gt;
+&lt;span style=&quot;background-color: #ffffff;&quot;&gt;&lt;a class=&quot;wiki_link_ext&quot; href=&quot;http://help.sap.com/saphelp_nw73ehp1/helpdata/en/ca/a0eb373bcf4ed0ae6e959908127d13/content.htm&quot; rel=&quot;nofollow&quot;&gt;http://help.sap.com/saphelp_nw73ehp1/helpdata/en/ca/a0eb373bcf4ed0ae6e959908127d13/content.htm&lt;/a&gt;&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+</div>
+<div created="20201111143920206" modified="20201111144617531" title="SSFS">
+<pre>''SSFS konfigurace''
+
+```
+cd /usr/sap/${SAPSYSTEMNAME}/SYS/global
+mkdir security
+mkdir security/rsecssfs
+mkdir security/rsecssfs/data
+mkdir security/rsecssfs/key
+
+chmod 700 /usr/sap/${SAPSYSTEMNAME}/SYS/global/security/rsecssfs
+chmod 700 /usr/sap/${SAPSYSTEMNAME}/SYS/global/security/rsecssfs/data
+chmod 700 /usr/sap/${SAPSYSTEMNAME}/SYS/global/security/rsecssfs/key
+```
+
+''Add the parameters to the default profile DEFAULT.PFL''
+
+```
+cdpro
+vi DEFAULT.PFL
+rsec/ssfs_datapath = $(DIR_GLOBAL)$(DIR_SEP)security$(DIR_SEP)rsecssfs$(DIR_SEP)data
+rsec/ssfs_keypath  = $(DIR_GLOBAL)$(DIR_SEP)security$(DIR_SEP)rsecssfs$(DIR_SEP)key
+```
+
+''Add to profiles (user &amp;lt;sid&amp;gt;adm):''
+
+```
+cd
+vi .sapenv.csh .sapenv.sh
+
+#SSFS installation 23.7.2015
+setenv RSEC_SSFS_DATAPATH /usr/sap/&lt;SID&gt;/SYS/global/security/rsecssfs/data
+setenv RSEC_SSFS_KEYPATH /usr/sap/&lt;SID&gt;/SYS/global/security/rsecssfs/key
+
+#SSFS installation 23.7.2015
+export RSEC_SSFS_DATAPATH=/usr/sap/&lt;SID&gt;/SYS/global/security/rsecssfs/data
+export RSEC_SSFS_KEYPATH=/usr/sap/&lt;SID&gt;/SYS/global/security/rsecssfs/key
+```
+
+''//relogin//''
+
+```
+rsecssfx put DB_CONNECT/DEFAULT_DB_USER SAPR3 -plain
+rsecssfx put DB_CONNECT/DEFAULT_DB_PASSWORD &lt;password&gt;
+rsecssfx list
+
+chmod 600 /usr/sap/${SAPSYSTEMNAME}/SYS/global/security/rsecssfs/data/SSFS_${SAPSYSTEMNAME}.DAT
+ls -la /usr/sap/${SAPSYSTEMNAME}/SYS/global/security/rsecssfs/data/SSFS_${SAPSYSTEMNAME}.DAT
+```
+
+''!!!! Aktivace, vyzaduje restart SAP a DB !!!!''
+
+''Activate SSFS:'' &lt;br&gt;
+Add the parameter to the default profile `DEFAULT.PFL`
+
+```
+rsdb/ssfs_connect = 1
+```
+
+OS profile parameter
+
+```
+vi .sapenv.csh .sapenv.sh
+setenv rsdb_ssfs_connect 1
+export rsdb_ssfs_connect=1
+```
+
+''reset parameter &quot;&quot;&quot;REMOTE_OS_AUTHENT&quot;&quot;&quot;''
+
+```
+sqlplus / as sysdba
+show parameter REMOTE_OS_AUTHENT
+alter system reset REMOTE_OS_AUTHENT scope=SPFILE;
+```
+
+''!!!! Kontrola !!!!''
+Checking the successful changeover
+
+Restart the SAP system and check whether the connect was successful. If the changeover was successful, the developer trace (&quot;&quot;&quot;SM50&quot;&quot;&quot;) should contain the following entry:
+
+```
+           B read_con_info_ssfs(): DBSL supports extended connect protocol
+B   ==&gt; connect info for default DB will be read from ssfs
+```
+
+Check this for all of the application servers.
+In addition, make sure that the SAP tools are still able to connect to the database. To do this, perform an R3trans test connect on the application servers as &amp;lt;sid&amp;gt;adm:
+
+```
+           R3trans -d
+```
+
+If R3trans was able to connect to the database successfully, the message &quot;R3trans finished (0000).&quot; should be displayed. You must now also check trans.log in the current directory for the following entry:
+
+```
+           B read_con_info_ssfs(): DBSL supports extended connect protocol
+B   ==&gt; connect info for default DB will be read from ssfs
+```</pre>
+</div>
+<div created="20201111144737742" modified="20201111144747560" title="SubnetMask">
+<pre>source: https://www.aelius.com/njh/subnet_sheet.html
+
+!!!Subnet Mask Cheat Sheet
+
+| | Addresses | Hosts | Netmask | Amount of a Class C |
+| /30 | 4 | 2 | 255.255.255.252 | 1/64 |
+| /29 | 8 | 6 | 255.255.255.248 | 1/32 |
+| /28 | 16 | 14 | 255.255.255.240 | 1/16 |
+| /27 | 32 | 30 | 255.255.255.224 | 1/8 |
+| /26 | 64 | 62 | 255.255.255.192 | 1/4 |
+| /25 | 128 | 126 | 255.255.255.128 | 1/2 |
+| /24 | 256 | 254 | 255.255.255.0 | 1 |
+| /23 | 512 | 510 | 255.255.254.0 | 2 |
+| /22 | 1024 | 1022 | 255.255.252.0 | 4 |
+| /21 | 2048 | 2046 | 255.255.248.0 | 8 |
+| /20 | 4096 | 4094 | 255.255.240.0 | 16 |
+| /19 | 8192 | 8190 | 255.255.224.0 | 32 |
+| /18 | 16384 | 16382 | 255.255.192.0 | 64 |
+| /17 | 32768 | 32766 | 255.255.128.0 | 128 |
+| /16 | 65536 | 65534 | 255.255.0.0 | 256 |
+
+!!!Guide to sub-class C blocks
+
+|&gt;|&gt;|/25 -- 2 Subnets -- 126 Hosts/Subnet |h
+|Network # |IP Range |Broadcast |
+|.0 |.1-.126 |.127 |
+|.128 |.129-.254 |.255 |
+
+|&gt;|&gt;|/26 -- 4 Subnets -- 62 Hosts/Subnet |h
+|Network # |IP Range |Broadcast |
+|.0 |.1-.62 |.63 |
+|.64|.65-.126 |.127 |
+|.128 |.129-.190 |.191 |
+|.192 |.193-.254 |.255 |
+
+|&gt;|&gt;|/27 -- 8 Subnets -- 30 Hosts/Subnet |h
+|Network # |IP Range |Broadcast |
+|.0   |.1-.30    |.31  |
+|.32  |.33-.62   |.63  |
+|.64  |.65-.94   |.95  |
+|.96  |.97-.126  |.127 |
+|.128 |.129-.158 |.159 |
+|.160 |.161-.190 |.191 |
+|.192 |.193-.222 |.223 |
+|.224 |.225-.254 |.255 |
+
+|&gt;|&gt;|/28 -- 16 Subnets -- 14 Hosts/Subnet |h
+|Network # |IP Range |Broadcast |
+|.0   |.1-.14    |.15  |
+|.16  |.17-.30   |.31  |
+|.32  |.33-.46   |.47  |
+|.48  |.49-.62   |.63  |
+|.64  |.65-.78   |.79  |
+|.80  |.81-.94   |.95  |
+|.96  |.97-.110  |.111 |
+|.112 |.113-.126 |.127 |
+|.128 |.129-.142 |.143 |
+|.144 |.145-.158 |.159 |
+|.160 |.161-.174 |.175 |
+|.176 |.177-.190 |.191 |
+|.192 |.193-.206 |.207 |
+|.208 |.209-.222 |.223 |
+|.224 |.225-.238 |.239 |
+|.240 |.241-.254 |.255 |
+
+|&gt;|&gt;|/29 -- 32 Subnets -- 6 Hosts/Subnet |h
+|Network # |IP Range |Broadcast |
+|.0   |.1-.6     |.7   |
+|.8   |.9-.14    |.15  |
+|.16  |.17-.22   |.23  |
+|.24  |.25-.30   |.31  |
+|.32  |.33-.38   |.39  |
+|.40  |.41-.46   |.47  |
+|.48  |.49-.54   |.55  |
+|.56  |.57-.62   |.63  |
+|.64  |.65-.70   |.71  |
+|.72  |.73-.78   |.79  |
+|.80  |.81-.86   |.87  |
+|.88  |.89-.94   |.95  |
+|.96  |.97-.102  |.103 |
+|.104 |.105-.110 |.111 |
+|.112 |.113-.118 |.119 |
+|.120 |.121-.126 |.127 |
+|.128 |.129-.134 |.135 |
+|.136 |.137-.142 |.143 |
+|.144 |.145-.150 |.151 |
+|.152 |.153-.158 |.159 |
+|.160 |.161-.166 |.167 |
+|.168 |.169-.174 |.175 |
+|.176 |.177-.182 |.183 |
+|.184 |.185-.190 |.191 |
+|.192 |.193-.198 |.199 |
+|.200 |.201-.206 |.207 |
+|.208 |.209-.214 |.215 |
+|.216 |.217-.222 |.223 |
+|.224 |.225-.230 |.231 |
+|.232 |.233-.238 |.239 |
+|.240 |.241-.246 |.247 |
+|.248 |.249-.254 |.255 |
+
+|&gt;|&gt;|/30 -- 64 Subnets -- 2 Hosts/Subnet |h
+|Network # |IP Range |Broadcast |
+|.0   |.1-.2     |.3   |
+|.4   |.5-.6     |.7   |
+|.8   |.9-.10    |.11  |
+|.12  |.13-.14   |.15  |
+|.16  |.17-.18   |.19  |
+|.20  |.21-.22   |.23  |
+|.24  |.25-.26   |.27  |
+|.28  |.29-.30   |.31  |
+|.32  |.33-.34   |.35  |
+|.36  |.37-.38   |.39  |
+|.40  |.41-.42   |.43  |
+|.44  |.45-.46   |.47  |
+|.48  |.49-.50   |.51  |
+|.52  |.53-.54   |.55  |
+|.56  |.57-.58   |.59  |
+|.60  |.61-.62   |.63  |
+|.64  |.65-.66   |.67  |
+|.68  |.69-.70   |.71  |
+|.72  |.73-.74   |.75  |
+|.76  |.77-.78   |.79  |
+|.80  |.81-.82   |.83  |
+|.84  |.85-.86   |.87  |
+|.88  |.89-.90   |.91  |
+|.92  |.93-.94   |.95  |
+|.96  |.97-.98   |.99  |
+|.100 |.101-.102 |.103 |
+|.104 |.105-.106 |.107 |
+|.108 |.109-.110 |.111 |
+|.112 |.113-.114 |.115 |
+|.116 |.117-.118 |.119 |
+|.120 |.121-.122 |.123 |
+|.124 |.125-.126 |.127 |
+|.128 |.129-.130 |.131 |
+|.132 |.133-.134 |.135 |
+|.136 |.137-.138 |.139 |
+|.140 |.141-.142 |.143 |
+|.144 |.145-.146 |.147 |
+|.148 |.149-.150 |.151 |
+|.152 |.153-.154 |.155 |
+|.156 |.157-.158 |.159 |
+|.160 |.161-.162 |.163 |
+|.164 |.165-.166 |.167 |
+|.168 |.169-.170 |.171 |
+|.172 |.173-.174 |.175 |
+|.176 |.177-.178 |.179 |
+|.180 |.181-.182 |.183 |
+|.184 |.185-.186 |.187 |
+|.188 |.189-.190 |.191 |
+|.192 |.193-.194 |.195 |
+|.196 |.197-.198 |.199 |
+|.200 |.201-.202 |.203 |
+|.204 |.205-.206 |.207 |
+|.208 |.209-.210 |.211 |
+|.212 |.213-.214 |.215 |
+|.216 |.217-.218 |.219 |
+|.220 |.221-.222 |.223 |
+|.224 |.225-.226 |.227 |
+|.228 |.229-.230 |.231 |
+|.232 |.233-.234 |.235 |
+|.236 |.237-.238 |.239 |
+|.240 |.241-.242 |.243 |
+|.244 |.245-.246 |.247 |
+|.248 |.249-.250 |.251 |
+|.252 |.253-.254 |.255 |</pre>
+</div>
 <div created="20201110222858759" modified="20201111010224708" tags="toc" title="Table of contents">
 <pre>;Table of contents
 :[[AIX]]
@@ -12765,6 +13612,76 @@ See more at: http://www.theunixschool.com/2014/08/sed-examples-remove-delete-cha
 :[[Transakce]]
 :[[Weby]]
 :[[Workflow]]</pre>
+</div>
+<div created="20201111144849302" modified="20201111145348126" title="Transakce">
+<pre>;''Transakce, na ktere bych nerad zapomnel:''
+:TU02 - Seznam zmen v profilech sap
+:EWZ5 - Blokovani uzivatelu - zablokuje vsechny NEoznacene uzivatele.
+:CG3Y - Download souboru
+:CG3Z - Upload souboru
+:SM65 - Background Processing Test Tool
+:SE13 - Dictionary: Technical settings
+:SCU3 - Table history
+:SM61 - Display control object list (job scheduler control)
+:SREPO - Srovnani repository
+:SE21 - Zobrazeni/udrzba packetu
+:DB17 - Nastaveni kontrolnich podminek BR*tools
+:SE93 - Uzdrba transakce
+:SRT_UTIL - Pomucky pro webove sluzby
+:SMSY - SOLMAN, konfigurace napojenych systemu
+:AISUSER - Vazba mezi uzivatelem a S-userem
+:SNRO - Udrzba objektu cisel intervalu
+:SM56 - Reset bufferu ciselne rady
+:OAM1 - monitor -&gt; test spojeni - test spojeni na SAP ArchiveLink
+:OHAT - Odeslani certifikatu na HTTP Content Server
+:ANST - Automated Note Search Tool
+:SM35 - Davkovy vstup (zpracovani mapy)
+:BD64 - zobrazeni distribucniho modelu
+:''Monitoring BW''
+:RSPCM
+:BWCCMS
+:RSMO / RSMON
+:RSA7
+----
+:SBGRFCCONF - bgRFC Configuration
+:RSTPRFC - Create Destination in Client for Import Postprocessing
+
+&amp;nbsp;
+
+;''Uzitecne reporty:''
+:RSUSR100 - report na zmenove doklady uzivatelu
+:RSUSR200 - report uzivatelu podle posledniho prihlaseni a/nebo zmeny hesla
+:RSAUPURG - vymaz auditniho protokolu SM20 (vymaz jde i z transakce SM18)
+:RDSMOP_MAIN - generovani early watch reportu
+:RSGWREGP - seznam registrovanych programu na gateway
+:RSPO_SHOW_SPO_NUM - kontrola obsazenosti ciselne rady SPO_NUM
+:/TMWFLOW/MO_UI_BASKET_AUTHORIZ (SAP-OSS as I_OSS_RFC) - potvrzeni balicku na OSS
+:RSCMST - Test CMS repository (ArchiveLink)
+:RSTS0022 - vymaz nekonzistenci TemSe
+:RSSPAM15 - odemceni komponenty pro saint upgrade (locked against OCS package import)
+:BTC_MASS_JOB_CHANGE - hromadna zmena jobu
+:SSF_ALERT_CERTEXPIRE - kontrola certifikatu, kterym konci platnost
+----
+:SAP_RSADMIN_MAINTAIN - udrzba tabulky RSADMIN viz: https://wiki.scn.sap.com/wiki/display/BI/Important+RSADMIN+Parameters
+----
+:ZZRK040 - zruseni expirace uctu
+
+&amp;nbsp;
+
+;''Uzitecne tabulky:''
+:E070 - Transportni system: Hlavicka pozadavku/uloh
+:E070L - Cislo posledniho transportniho pozadavku
+:USR05 - ID parametru kmen.soub.uživ.
+:USR40 - Tabulka zakazanych hesel
+:TSP03 - Spool: Deklarace tiskárny
+:TSP03C - Spool: Popis zařízení - rozšíření
+:TSTC - Kody transakci SAP
+:TSTCT - Texty kodu transakci
+:T002 - Jazykovy klic (komp.BC-I18)
+:AGR_AGRS - Role v slozenych rolich
+:NRIV - Ciselne intervaly
+
+</pre>
 </div>
 
 
