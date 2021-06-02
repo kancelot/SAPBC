@@ -211,6 +211,8 @@ Error message and password prompt
 
 <li>$:/themes/tiddlywiki/vanilla/options/sidebarlayout</li>
 
+<li>ABAP</li>
+
 <li>AIX</li>
 
 <li>Archivace</li>
@@ -9736,7 +9738,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20210308081057450" list="TableOfContents Oracle" modified="20210308081057450" title="$:/StoryList">
+<div created="20210602071047413" list="TableOfContents ABAP" modified="20210602071047413" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20201111113546606" modified="20201111113546606" title="$:/temp/advancedsearch">
@@ -9923,6 +9925,46 @@ Error message and password prompt
 </div>
 <div created="20201111210238050" modified="20201111210238050" title="$:/themes/tiddlywiki/vanilla/options/sidebarlayout">
 <pre>fluid-fixed</pre>
+</div>
+<div created="20210602071054007" modified="20210602071338660" title="ABAP">
+<pre>!! How to restricting range entry for SELECT-OPTIONS
+
+```
+DATA: lw_opt_list TYPE sscr_opt_list,
+           lw_restrict TYPE sscr_restrict,
+           lw_ass      TYPE sscr_ass.
+
+CONSTANTS: lc_opt_list TYPE rsrest_opl VALUE 'OPT_LIST',
+           lc_s        TYPE rsscr_kind VALUE 'S',
+           lc_mat      TYPE blockname VALUE 'S_OBJID', &quot;&lt;-Change to your select-option
+           lc_inc      TYPE c VALUE 'I'.
+
+  lw_opt_list-name = lc_opt_list.
+  lw_opt_list-options-bt = space.
+  lw_opt_list-options-eq = 'X'.
+  APPEND lw_opt_list TO lw_restrict-opt_list_tab.
+
+  lw_ass-kind = lc_s.
+  lw_ass-name = lc_mat.
+  lw_ass-sg_main = lc_inc.
+  lw_ass-op_main = lc_opt_list.
+  APPEND lw_ass TO lw_restrict-ass_tab.
+
+  CALL FUNCTION 'SELECT_OPTIONS_RESTRICT'
+    EXPORTING
+      restriction            = lw_restrict
+    EXCEPTIONS
+      too_late               = 1
+      repeated               = 2
+      selopt_without_options = 3
+      selopt_without_signs   = 4
+      invalid_sign           = 5
+      empty_option_list      = 6
+      invalid_kind           = 7
+      repeated_kind_a        = 8
+      OTHERS                 = 9.
+```
+</pre>
 </div>
 <div created="20201110223614062" modified="20201231095214990" title="AIX">
 <pre>''Uzitecne prikazy operacniho systemu AIX:''
@@ -15290,8 +15332,9 @@ B   ==&gt; connect info for default DB will be read from ssfs
 |.248 |.249-.250 |.251 |
 |.252 |.253-.254 |.255 |</pre>
 </div>
-<div created="20201110222858759" modified="20201114103225645" tags="toc" title="TableOfContents">
+<div created="20201110222858759" modified="20210602071045877" tags="toc" title="TableOfContents">
 <pre>;Table of contents
+:[[ABAP]]
 :[[AIX]]
 :[[Archivace]]
 :[[BRtools]]
